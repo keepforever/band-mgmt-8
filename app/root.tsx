@@ -1,4 +1,3 @@
-import { useForm, getFormProps } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
 import {
@@ -16,31 +15,31 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
-	useFetcher,
-	useFetchers,
 	useLoaderData,
 	useMatches,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
-import { z } from 'zod'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
+import { Logo } from './components/logo.tsx'
 import { EpicProgress } from './components/progress-bar.tsx'
 import { SearchBar } from './components/search-bar.tsx'
+import { ThemeSwitch } from './components/theme-switch.tsx'
 import { useToast } from './components/toaster.tsx'
 import { Button } from './components/ui/button.tsx'
-import { Icon, href as iconsHref } from './components/ui/icon.tsx'
+import { href as iconsHref } from './components/ui/icon.tsx'
 import { EpicToaster } from './components/ui/sonner.tsx'
 import { UserDropdown } from './components/user-dropdown.tsx'
+import { useTheme } from './hooks/useTheme.ts'
+import { ThemeFormSchema } from './schemas/theme-form-schema.ts'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import { getUserId, logout } from './utils/auth.server.ts'
-import { ClientHintCheck, getHints, useHints } from './utils/client-hints.tsx'
+import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
 import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
 import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
-import { useRequestInfo } from './utils/request-info.ts'
 import { type Theme, setTheme, getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
@@ -146,10 +145,6 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 	}
 	return headers
 }
-
-const ThemeFormSchema = z.object({
-	theme: z.enum(['system', 'light', 'dark']),
-})
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
@@ -260,19 +255,6 @@ function App() {
 	)
 }
 
-function Logo() {
-	return (
-		<Link to="/" className="group grid leading-snug">
-			<span className="font-light transition group-hover:-translate-x-1">
-				epic
-			</span>
-			<span className="font-bold transition group-hover:translate-x-1">
-				notes
-			</span>
-		</Link>
-	)
-}
-
 function AppWithProviders() {
 	const data = useLoaderData<typeof loader>()
 	return (
@@ -283,84 +265,6 @@ function AppWithProviders() {
 }
 
 export default withSentry(AppWithProviders)
-
-/**
- * @returns the user's theme preference, or the client hint theme if the user
- * has not set a preference.
- */
-export function useTheme() {
-	const hints = useHints()
-	const requestInfo = useRequestInfo()
-	const optimisticMode = useOptimisticThemeMode()
-	if (optimisticMode) {
-		return optimisticMode === 'system' ? hints.theme : optimisticMode
-	}
-	return requestInfo.userPrefs.theme ?? hints.theme
-}
-
-/**
- * If the user's changing their theme mode preference, this will return the
- * value it's being changed to.
- */
-export function useOptimisticThemeMode() {
-	const fetchers = useFetchers()
-	const themeFetcher = fetchers.find(f => f.formAction === '/')
-
-	if (themeFetcher && themeFetcher.formData) {
-		const submission = parseWithZod(themeFetcher.formData, {
-			schema: ThemeFormSchema,
-		})
-
-		if (submission.status === 'success') {
-			return submission.value.theme
-		}
-	}
-}
-
-function ThemeSwitch({ userPreference }: { userPreference?: Theme | null }) {
-	const fetcher = useFetcher<typeof action>()
-
-	const [form] = useForm({
-		id: 'theme-switch',
-		lastResult: fetcher.data?.result,
-	})
-
-	const optimisticMode = useOptimisticThemeMode()
-	const mode = optimisticMode ?? userPreference ?? 'system'
-	const nextMode =
-		mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system'
-	const modeLabel = {
-		light: (
-			<Icon name="sun">
-				<span className="sr-only">Light</span>
-			</Icon>
-		),
-		dark: (
-			<Icon name="moon">
-				<span className="sr-only">Dark</span>
-			</Icon>
-		),
-		system: (
-			<Icon name="laptop">
-				<span className="sr-only">System</span>
-			</Icon>
-		),
-	}
-
-	return (
-		<fetcher.Form method="POST" {...getFormProps(form)}>
-			<input type="hidden" name="theme" value={nextMode} />
-			<div className="flex gap-2">
-				<button
-					type="submit"
-					className="flex h-8 w-8 cursor-pointer items-center justify-center"
-				>
-					{modeLabel[mode]}
-				</button>
-			</div>
-		</fetcher.Form>
-	)
-}
 
 export function ErrorBoundary() {
 	// the nonce doesn't rely on the loader so we can access that
