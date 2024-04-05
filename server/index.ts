@@ -118,7 +118,7 @@ app.use(
           process.env.SENTRY_DSN ? '*.sentry.io' : null,
           "'self'",
         ].filter(Boolean),
-        'font-src': ["'self'"],
+        'font-src': ["'self'", 'https://use.typekit.net'],
         'frame-src': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'script-src': [
