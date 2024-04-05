@@ -7,16 +7,16 @@ import { ThemeFormSchema } from '#app/schemas/theme-form-schema.js'
  * value it's being changed to.
  */
 export function useOptimisticThemeMode() {
-	const fetchers = useFetchers()
-	const themeFetcher = fetchers.find(f => f.formAction === '/')
+  const fetchers = useFetchers()
+  const themeFetcher = fetchers.find(f => f.formAction === '/')
 
-	if (themeFetcher && themeFetcher.formData) {
-		const submission = parseWithZod(themeFetcher.formData, {
-			schema: ThemeFormSchema,
-		})
+  if (themeFetcher && themeFetcher.formData) {
+    const submission = parseWithZod(themeFetcher.formData, {
+      schema: ThemeFormSchema,
+    })
 
-		if (submission.status === 'success') {
-			return submission.value.theme
-		}
-	}
+    if (submission.status === 'success') {
+      return submission.value.theme
+    }
+  }
 }

@@ -7,11 +7,11 @@ import { useRequestInfo } from '#app/utils/request-info.ts'
  * has not set a preference.
  */
 export function useTheme() {
-	const hints = useHints()
-	const requestInfo = useRequestInfo()
-	const optimisticMode = useOptimisticThemeMode()
-	if (optimisticMode) {
-		return optimisticMode === 'system' ? hints.theme : optimisticMode
-	}
-	return requestInfo.userPrefs.theme ?? hints.theme
+  const hints = useHints()
+  const requestInfo = useRequestInfo()
+  const optimisticMode = useOptimisticThemeMode()
+  if (optimisticMode) {
+    return optimisticMode === 'system' ? hints.theme : optimisticMode
+  }
+  return requestInfo.userPrefs.theme ?? hints.theme
 }
