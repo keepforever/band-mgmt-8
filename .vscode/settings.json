@@ -15,5 +15,10 @@
   ],
   "workbench.editorAssociations": {
     "*.db": "sqlite-viewer.view"
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#2D1C76",
+    "titleBar.activeBackground": "#3F27A6",
+    "titleBar.activeForeground": "#FDFCFE"
   }
 }
