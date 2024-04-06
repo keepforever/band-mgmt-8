@@ -204,7 +204,6 @@ function App() {
     <Document nonce={nonce} theme={theme} allowIndexing={allowIndexing} env={data.ENV}>
       {user ? (
         <LayoutAuthenticated themeSwitch={<ThemeSwitch userPreference={data.requestInfo.userPrefs.theme} />}>
-          <div>hello</div>
           <Outlet />
         </LayoutAuthenticated>
       ) : (

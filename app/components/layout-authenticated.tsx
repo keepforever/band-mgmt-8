@@ -1,18 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Link } from '@remix-run/react'
+import { Link, NavLink } from '@remix-run/react'
 import { Fragment, useState } from 'react'
+import { Icon } from '#app/components/ui/icon.js'
+import { navigation } from '#app/constants/navigation.js'
 import { cn } from '#app/utils/misc.js'
 import { LogoutButton } from './logout-button'
-import { Icon } from './ui/icon'
 
-const navigation = [
-  { iconName: 'sun', name: 'Dashboard', href: '#', icon: <Icon name="sun" />, current: true },
-  { iconName: 'sun', name: 'Team', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Projects', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Calendar', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Documents', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Reports', href: '#', icon: <Icon name="sun" />, current: false },
-]
 const teams = [
   { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
   { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
@@ -84,18 +77,17 @@ export function LayoutAuthenticated({
                         <ul className="-mx-2 space-y-1">
                           {navigation.map(item => (
                             <li key={item.name}>
-                              <a
-                                href={item.href}
-                                className={cn(
-                                  item.current
-                                    ? 'bg-gray-50 text-indigo-600'
-                                    : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                                  'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                                )}
+                              <NavLink
+                                to={item.to}
+                                className={({ isActive }) =>
+                                  cn({
+                                    'bg-primary text-primary-foreground': isActive,
+                                    'bg-background text-foreground': !isActive,
+                                  })
+                                }
                               >
-                                <Icon name={item.iconName as any} className="h-6 w-6 shrink-0" aria-hidden="true" />
                                 {item.name}
-                              </a>
+                              </NavLink>
                             </li>
                           ))}
                         </ul>
@@ -157,18 +149,17 @@ export function LayoutAuthenticated({
                 <ul className="-mx-2 space-y-1">
                   {navigation.map(item => (
                     <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className={cn(
-                          item.current
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                          'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                        )}
+                      <NavLink
+                        to={item.to}
+                        className={({ isActive }) =>
+                          cn({
+                            'bg-primary text-primary-foreground': isActive,
+                            'bg-background text-foreground': !isActive,
+                          })
+                        }
                       >
-                        <Icon name={item.iconName as any} className="h-6 w-6 shrink-0" aria-hidden="true" />
                         {item.name}
-                      </a>
+                      </NavLink>
                     </li>
                   ))}
                 </ul>
