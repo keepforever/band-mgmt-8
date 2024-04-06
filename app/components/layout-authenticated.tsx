@@ -1,6 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { Link } from '@remix-run/react'
 import { Fragment, useState } from 'react'
 import { cn } from '#app/utils/misc.js'
+import { LogoutButton } from './logout-button'
 import { Icon } from './ui/icon'
 
 const navigation = [
@@ -128,6 +130,9 @@ export function LayoutAuthenticated({
                           ))}
                         </ul>
                       </li>
+                      <li>
+                        <LogoutButton />
+                      </li>
                     </ul>
                   </nav>
                 </div>
@@ -144,6 +149,7 @@ export function LayoutAuthenticated({
           <div className="flex h-16 shrink-0 items-center">
             <img className="h-8 w-auto" src="/img/user.png" alt="Your Company" />
             {themeSwitch}
+            <Link to="/login">Log In</Link>
           </div>
           <nav className="flex flex-1 flex-col">
             <ul className="flex flex-1 flex-col gap-y-7">
@@ -206,6 +212,9 @@ export function LayoutAuthenticated({
                   <span className="sr-only">Your profile</span>
                   <span aria-hidden="true">Tom Cook</span>
                 </a>
+              </li>
+              <li>
+                <LogoutButton />
               </li>
             </ul>
           </nav>
