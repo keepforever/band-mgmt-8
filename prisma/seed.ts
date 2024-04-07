@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker'
 import { promiseHash } from 'remix-utils/promise'
+import { songs } from '#app/constants/songs'
 import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
 
 async function seed() {
-  console.log('🌱 Seeding...')
+  console.info('🌱 Seeding...')
   console.time(`🌱 Database has been seeded`)
 
   console.time('🧹 Cleaned up the database...')
@@ -24,6 +25,52 @@ async function seed() {
     }
   }
   console.timeEnd('🔑 Created permissions...')
+
+  console.time('🔑 Created bands...')
+  await prisma.band.create({
+    data: {
+      name: faker.company.name(),
+      members: {
+        create: [
+          {
+            isAdmin: true,
+            user: {
+              create: {
+                name: faker.person.firstName(),
+                username: faker.internet.userName(),
+                email: faker.internet.email(),
+              },
+            },
+          },
+        ],
+      },
+    },
+  })
+
+  console.time('🔑 Created bands...')
+  await prisma.band.create({
+    data: {
+      name: faker.company.name(),
+      members: {
+        create: [
+          {
+            isAdmin: true,
+            user: {
+              create: {
+                name: faker.person.firstName(),
+                username: faker.internet.userName(),
+                email: faker.internet.email(),
+              },
+            },
+          },
+        ],
+      },
+    },
+  })
+  console.timeEnd('🎸 Created bands...')
+
+  console.time('🔑 Created songs...')
+  console.timeEnd('🔑 Created songs...')
 
   console.time('👑 Created roles...')
   await prisma.role.create({
@@ -127,7 +174,7 @@ async function seed() {
 
   const githubUser = await insertGitHubUser('MOCK_CODE_GITHUB_KODY')
 
-  await prisma.user.create({
+  const kodyUser = await prisma.user.create({
     select: { id: true },
     data: {
       email: 'kody@kcd.dev',
@@ -240,6 +287,106 @@ async function seed() {
     },
   })
   console.timeEnd(`🐨 Created admin user "kody"`)
+
+  console.time('🎸 Created KODY band...')
+  const kodyBand = await prisma.band.create({
+    data: {
+      name: faker.company.name(),
+      members: {
+        create: [
+          {
+            isAdmin: true,
+            user: {
+              connect: {
+                id: kodyUser.id,
+              },
+            },
+          },
+        ],
+      },
+    },
+  })
+  console.timeEnd('🎸 Created KODY band...')
+
+  console.time('🎸 Created songs...')
+  for (const song of songs) {
+    await prisma.song.create({
+      data: {
+        title: song.title,
+        artist: song.artist,
+        bandSongs: {
+          create: [
+            {
+              band: {
+                connect: {
+                  id: kodyBand.id,
+                },
+              },
+            },
+          ],
+        },
+      },
+    })
+  }
+
+  console.timeEnd('🎸 Created songs...')
+
+  console.time('🏟️ Created venues...')
+  const venueIds = []
+  for (let index = 0; index < 10; index++) {
+    const tempId = await prisma.venue.create({
+      data: {
+        location: faker.location.city(),
+        name: faker.company.name(),
+        bands: {
+          create: [
+            {
+              band: {
+                connect: {
+                  id: kodyBand.id,
+                },
+              },
+            },
+          ],
+        },
+      },
+    })
+    venueIds.push(tempId.id)
+  }
+  console.timeEnd('🏟️ Created venues...')
+
+  // create events
+  console.time('📅 Created events...')
+  for (let index = 0; index < 10; index++) {
+    const tempDate = faker.date.future().setHours(0, 0, 0, 0)
+    const datePayload = new Date(tempDate)
+
+    await prisma.event.create({
+      data: {
+        date: datePayload,
+        location: faker.location.city(),
+        name: faker.company.name(),
+        venue: {
+          connect: {
+            // get random venue id
+            id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],
+          },
+        },
+        bands: {
+          create: [
+            {
+              band: {
+                connect: {
+                  id: kodyBand.id,
+                },
+              },
+            },
+          ],
+        },
+      },
+    })
+  }
+  console.timeEnd('📅 Created events...')
 
   console.timeEnd(`🌱 Database has been seeded`)
 }
