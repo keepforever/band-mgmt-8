@@ -63,7 +63,7 @@ export async function action({ request }: ActionFunctionArgs) {
     request,
     session,
     remember: remember ?? false,
-    redirectTo,
+    redirectTo: redirectTo ?? '/bands',
   })
 }
 
