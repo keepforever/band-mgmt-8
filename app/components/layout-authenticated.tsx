@@ -1,16 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Link, NavLink } from '@remix-run/react'
+import { Link, NavLink, useLocation, useParams, useRouteLoaderData } from '@remix-run/react'
 import { Fragment, useState } from 'react'
 import { Icon } from '#app/components/ui/icon.js'
-import { navigation } from '#app/constants/navigation.js'
+import { bandSubNavigation, navigation, settingsNavigation } from '#app/constants/navigation.js'
+import { type loader as rootLoader } from '#app/root.tsx'
 import { cn } from '#app/utils/misc.js'
 import { LogoutButton } from './logout-button'
-
-const teams = [
-  { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
-]
 
 export function LayoutAuthenticated({
   children,
@@ -20,6 +15,18 @@ export function LayoutAuthenticated({
   themeSwitch: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const data = useRouteLoaderData<typeof rootLoader>('root')
+  const params = useParams()
+  const location = useLocation()
+
+  const userBands =
+    data?.user?.bands?.map(band => ({
+      id: band.band.id,
+      name: band.band.name,
+      to: `/bands/${band.band.id}`,
+      initial: band.band.name[0],
+      current: params.bandId === band.band.id,
+    })) ?? []
 
   return (
     <div>
@@ -92,32 +99,76 @@ export function LayoutAuthenticated({
                           ))}
                         </ul>
                       </li>
+
+                      {/* Your Bands */}
+
                       <li>
-                        <div className="text-xs font-semibold leading-6 text-gray-400">Your teams</div>
+                        <div className="text-xs font-semibold leading-6 text-gray-400">Your Bands</div>
                         <ul className="-mx-2 mt-2 space-y-1">
-                          {teams.map(team => (
-                            <li key={team.name}>
-                              <a
-                                href={team.href}
+                          {userBands.map(band => (
+                            <li key={band.name}>
+                              <Link
+                                to={band.to}
                                 className={cn(
-                                  team.current
-                                    ? 'bg-gray-50 text-indigo-600'
-                                    : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                                  band.current
+                                    ? 'bg-gray-800 text-foreground'
+                                    : 'text-gray-400 hover:bg-gray-800 hover:text-foreground',
                                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                                 )}
                               >
-                                <span
-                                  className={cn(
-                                    team.current
-                                      ? 'border-indigo-600 text-indigo-600'
-                                      : 'border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600',
-                                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
-                                  )}
-                                >
-                                  {team.initial}
+                                <span className="truncate">{band.name}</span>
+                              </Link>
+
+                              <ul className="ml-4 mt-2 space-y-1">
+                                {bandSubNavigation.map(item => {
+                                  const isActive =
+                                    location.pathname.includes(item.to) && location.pathname.includes(band.to)
+
+                                  return (
+                                    <li key={item.name}>
+                                      <Link
+                                        to={`${band.to}${item.to}`}
+                                        className={cn(
+                                          'group flex gap-x-3 rounded-md p-2 text-xs font-semibold leading-6',
+                                          {
+                                            'bg-gray-800 text-foreground': isActive,
+                                            'text-gray-400 hover:bg-gray-800 hover:text-foreground': !isActive,
+                                          },
+                                        )}
+                                      >
+                                        <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                        {item.name}
+                                      </Link>
+                                    </li>
+                                  )
+                                })}
+                              </ul>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+
+                      {/* Settings */}
+
+                      <li>
+                        <div className="text-xs font-semibold leading-6 text-gray-400">Your Settings</div>
+                        <ul className="-mx-2 mt-2 space-y-1">
+                          {settingsNavigation.map(item => (
+                            <li key={item.name}>
+                              <Link
+                                to={item.to}
+                                className={cn(
+                                  item.current
+                                    ? 'bg-gray-800 text-foreground'
+                                    : 'text-gray-400 hover:bg-gray-800 hover:text-foreground',
+                                  'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                )}
+                              >
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-foreground">
+                                  {item.name[0]}
                                 </span>
-                                <span className="truncate">{team.name}</span>
-                              </a>
+                                <span className="truncate">{item.name}</span>
+                              </Link>
                             </li>
                           ))}
                         </ul>
@@ -164,45 +215,71 @@ export function LayoutAuthenticated({
                   ))}
                 </ul>
               </li>
+              {/* Your Bands */}
+
               <li>
-                <div className="text-xs font-semibold leading-6 text-gray-400">Your teams</div>
+                <div className="text-xs font-semibold leading-6 text-gray-400">Your Bands</div>
                 <ul className="-mx-2 mt-2 space-y-1">
-                  {teams.map(team => (
-                    <li key={team.name}>
-                      <a
-                        href={team.href}
-                        className={cn(
-                          team.current
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                          'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                        )}
+                  {userBands.map(band => (
+                    <li key={band.name}>
+                      <NavLink
+                        to={band.to}
+                        className={({ isActive }) =>
+                          cn({
+                            'bg-primary text-primary-foreground': isActive,
+                            'bg-background text-foreground': !isActive,
+                          })
+                        }
                       >
-                        <span
-                          className={cn(
-                            team.current
-                              ? 'border-indigo-600 text-indigo-600'
-                              : 'border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600',
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
-                          )}
-                        >
-                          {team.initial}
-                        </span>
-                        <span className="truncate">{team.name}</span>
-                      </a>
+                        <span className="truncate">{band.name}</span>
+                      </NavLink>
+
+                      <ul className="ml-4 mt-2 space-y-1">
+                        {bandSubNavigation.map(item => {
+                          return (
+                            <li key={item.name}>
+                              <NavLink
+                                to={`${band.to}${item.to}`}
+                                className={({ isActive }) => {
+                                  return cn('hover:text-blue-500', {
+                                    'bg-primary text-primary-foreground': isActive,
+                                    'bg-background text-foreground': !isActive,
+                                  })
+                                }}
+                              >
+                                <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                {item.name}
+                              </NavLink>
+                            </li>
+                          )
+                        })}
+                      </ul>
                     </li>
                   ))}
                 </ul>
               </li>
-              <li className="-mx-6 mt-auto">
-                <a
-                  href="https://tailwindui.com"
-                  className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
-                >
-                  <img className="h-8 w-8 rounded-full bg-gray-50" src="/img/user.png" alt="" />
-                  <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">Tom Cook</span>
-                </a>
+
+              {/* Settings */}
+
+              <li>
+                <div className="text-xs font-semibold leading-6 text-gray-400">Your Settings</div>
+                <ul className="-mx-2 mt-2 space-y-1">
+                  {settingsNavigation.map(item => (
+                    <li key={item.name}>
+                      <NavLink
+                        to={item.to}
+                        className={({ isActive }) =>
+                          cn({
+                            'bg-primary text-primary-foreground': isActive,
+                            'bg-background text-foreground': !isActive,
+                          })
+                        }
+                      >
+                        <span className="truncate">{item.name}</span>
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
               </li>
               <li>
                 <LogoutButton />
