@@ -248,3 +248,13 @@ export async function downloadFile(url: string, retries: number = 0) {
     return downloadFile(url, retries + 1)
   }
 }
+
+// Format date using Intl.DateTimeFormat
+export const formatDate = (dateString: string) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    timeZone: 'UTC', // Use UTC to avoid timezone offsets
+  }).format(new Date(dateString))
+}
