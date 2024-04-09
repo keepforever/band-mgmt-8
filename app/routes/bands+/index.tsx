@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
-import { Link, json, useNavigate } from '@remix-run/react'
+import { Link, json } from '@remix-run/react'
 import { BandSummary } from '#app/components/band-summary.js'
 import { Button } from '#app/components/ui/button'
 import { requireUserId } from '#app/utils/auth.server'
