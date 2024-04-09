@@ -99,6 +99,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
                     select: {
                       name: true,
                       id: true,
+                      members: {
+                        select: {
+                          user: {
+                            select: {
+                              id: true,
+                            },
+                          },
+                        },
+                      },
+                      events: {
+                        select: {
+                          event: {
+                            select: {
+                              id: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
