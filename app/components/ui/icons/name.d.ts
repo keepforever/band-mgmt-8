@@ -19,6 +19,7 @@ export type IconName =
   | 'lock-closed'
   | 'lock-open-1'
   | 'magnifying-glass'
+  | 'monkey'
   | 'moon'
   | 'pencil-1'
   | 'pencil-2'

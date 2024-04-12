@@ -103,7 +103,7 @@ export function LayoutAuthenticated({
                       {/* Your Bands */}
 
                       <li>
-                        <div className="text-xs font-semibold leading-6 text-gray-400">Your Bands</div>
+                        <div className="text-xs font-semibold leading-6 text-foreground">Your Bands</div>
                         <ul className="-mx-2 mt-2 space-y-1">
                           {userBands.map(band => (
                             <li key={band.name}>
@@ -111,8 +111,8 @@ export function LayoutAuthenticated({
                                 to={band.to}
                                 className={cn(
                                   band.current
-                                    ? 'bg-gray-800 text-foreground'
-                                    : 'text-gray-400 hover:bg-gray-800 hover:text-foreground',
+                                    ? 'bg-background text-foreground'
+                                    : 'text-foreground hover:bg-background hover:text-foreground',
                                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                                 )}
                               >
@@ -131,8 +131,8 @@ export function LayoutAuthenticated({
                                         className={cn(
                                           'group flex gap-x-3 rounded-md p-2 text-xs font-semibold leading-6',
                                           {
-                                            'bg-gray-800 text-foreground': isActive,
-                                            'text-gray-400 hover:bg-gray-800 hover:text-foreground': !isActive,
+                                            'bg-background text-foreground': isActive,
+                                            'text-foreground hover:bg-background hover:text-foreground': !isActive,
                                           },
                                         )}
                                       >
@@ -151,7 +151,7 @@ export function LayoutAuthenticated({
                       {/* Settings */}
 
                       <li>
-                        <div className="text-xs font-semibold leading-6 text-gray-400">Your Settings</div>
+                        <div className="text-xs font-semibold leading-6 text-foreground">Your Settings</div>
                         <ul className="-mx-2 mt-2 space-y-1">
                           {settingsNavigation.map(item => (
                             <li key={item.name}>
@@ -159,12 +159,12 @@ export function LayoutAuthenticated({
                                 to={item.to}
                                 className={cn(
                                   item.current
-                                    ? 'bg-gray-800 text-foreground'
-                                    : 'text-gray-400 hover:bg-gray-800 hover:text-foreground',
+                                    ? 'bg-background text-foreground'
+                                    : 'text-foreground hover:bg-background hover:text-foreground',
                                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                                 )}
                               >
-                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-foreground">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-background text-[0.625rem] font-medium text-foreground group-hover:text-foreground">
                                   {item.name[0]}
                                 </span>
                                 <span className="truncate">{item.name}</span>
@@ -218,7 +218,7 @@ export function LayoutAuthenticated({
               {/* Your Bands */}
 
               <li>
-                <div className="text-xs font-semibold leading-6 text-gray-400">Your Bands</div>
+                <div className="text-xs font-semibold leading-6 text-foreground">Your Bands</div>
                 <ul className="-mx-2 mt-2 space-y-1">
                   {userBands.map(band => (
                     <li key={band.name}>
@@ -262,7 +262,7 @@ export function LayoutAuthenticated({
               {/* Settings */}
 
               <li>
-                <div className="text-xs font-semibold leading-6 text-gray-400">Your Settings</div>
+                <div className="text-xs font-semibold leading-6 text-foreground">Your Settings</div>
                 <ul className="-mx-2 mt-2 space-y-1">
                   {settingsNavigation.map(item => (
                     <li key={item.name}>

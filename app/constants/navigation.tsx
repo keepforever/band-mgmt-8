@@ -69,4 +69,16 @@ export const settingsNavigation = [
     icon: TempIcon,
     current: false,
   },
+  {
+    name: 'Profile',
+    to: '/settings/profile',
+    icon: TempIcon,
+    current: false,
+  },
+  {
+    name: 'Invitations',
+    to: '/settings/invitations',
+    icon: TempIcon,
+    current: false,
+  },
 ]

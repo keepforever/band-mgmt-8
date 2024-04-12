@@ -99,8 +99,17 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function EditUserProfile() {
   const data = useLoaderData<typeof loader>()
 
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(
+      function () {},
+      function (err) {
+        console.error('Could not copy text: ', err)
+      },
+    )
+  }
+
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-4">
       <div className="flex justify-center">
         <div className="relative h-52 w-52">
           <img
@@ -128,7 +137,7 @@ export default function EditUserProfile() {
             <Icon name="envelope-closed">Change email from {data.user.email}</Icon>
           </Link>
         </div>
-        <div>
+        {/* <div>
           <Link to="two-factor">
             {data.isTwoFactorEnabled ? (
               <Icon name="lock-closed">2FA is enabled</Icon>
@@ -136,17 +145,20 @@ export default function EditUserProfile() {
               <Icon name="lock-open-1">Enable 2FA</Icon>
             )}
           </Link>
-        </div>
+        </div> */}
         <div>
           <Link to={data.hasPassword ? 'password' : 'password/create'}>
             <Icon name="dots-horizontal">{data.hasPassword ? 'Change Password' : 'Create a Password'}</Icon>
           </Link>
         </div>
         <div>
+          <Button onClick={() => copyToClipboard(String(data.user?.id))}>Copy User ID</Button>
+        </div>
+        {/* <div>
           <Link to="connections">
             <Icon name="link-2">Manage connections</Icon>
           </Link>
-        </div>
+        </div> */}
         <div>
           <Link reloadDocument download="my-epic-notes-data.json" to="/resources/download-user-data">
             <Icon name="download">Download your data</Icon>
