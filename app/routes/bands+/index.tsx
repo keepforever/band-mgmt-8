@@ -13,31 +13,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function BandsIndex() {
   const user = useOptionalUser()
 
-  console.log('\n', `user = `, user, '\n')
-
   return (
     <div>
-      <div className="flex justify-between">
+      <div className="mb-4 flex justify-between">
         <h1 className="text-3xl font-bold">Your Bands</h1>
         <Button asChild variant="default" size="lg">
           <Link to="new">Create</Link>
         </Button>
       </div>
 
-      {user?.bands?.map(band => {
-        const memberCount = band.band.members.length
-        const bandName = band.band.name
-
-        return (
-          <BandSummary
-            id={band?.band?.id}
-            key={band?.band?.id}
-            name={bandName}
-            memberCount={memberCount}
-            upcomingEventsCount={band?.band?.events.length}
-          />
-        )
-      })}
+      <BandSummary user={user} />
     </div>
   )
 }

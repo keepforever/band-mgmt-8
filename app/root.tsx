@@ -62,7 +62,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    { title: data ? 'Epic Notes' : 'Error | Epic Notes' },
+    { title: data ? 'Band Mgmt' : 'Error | Epic Notes' },
     { name: 'description', content: `Your own captain's log` },
   ]
 }
@@ -99,11 +99,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
                     select: {
                       name: true,
                       id: true,
+                      setlists: {
+                        select: {
+                          setlistId: true,
+                          setlist: {
+                            select: {
+                              id: true,
+                              name: true,
+                            },
+                          },
+                        },
+                      },
                       members: {
                         select: {
                           user: {
                             select: {
                               id: true,
+                              name: true,
                             },
                           },
                         },
@@ -113,6 +125,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
                           event: {
                             select: {
                               id: true,
+                              date: true,
+                              venue: {
+                                select: {
+                                  name: true,
+                                  location: true,
+                                },
+                              },
                             },
                           },
                         },

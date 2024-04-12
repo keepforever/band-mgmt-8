@@ -1,3 +1,15 @@
+import { redirect, type LoaderFunctionArgs } from '@remix-run/node'
+import { requireUserId } from '#app/utils/auth.server.js'
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request)
+  if (!userId) {
+    return {}
+  } else {
+    return redirect('/bands')
+  }
+}
+
 export default function Index() {
   return (
     <main className="font-poppins grid h-full place-items-center">
