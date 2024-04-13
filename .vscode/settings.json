@@ -19,6 +19,11 @@
   "workbench.colorCustomizations": {
     "activityBar.background": "#2D1C76",
     "titleBar.activeBackground": "#3F27A6",
-    "titleBar.activeForeground": "#FDFCFE"
+    "titleBar.activeForeground": "#FDFCFE",
+    // tab colors
+    "tab.activeBackground": "#04b3ee7e", // Background color of the active tab
+    "tab.activeForeground": "#ffffff", // Text color of the active tab
+    "tab.border": "#44475a", // Border color between tabs
+    "tab.activeBorder": "#50fa7b"
   }
 }

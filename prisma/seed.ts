@@ -357,7 +357,7 @@ async function seed() {
 
   // create events
   console.time('📅 Created events...')
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 4; index++) {
     const tempDate = faker.date.future().setHours(0, 0, 0, 0)
     const datePayload = new Date(tempDate)
 
