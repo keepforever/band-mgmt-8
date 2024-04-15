@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { promiseHash } from 'remix-utils/promise'
-import { songs } from '#app/constants/songs'
+// import { songs } from '#app/constants/songs'
 import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
@@ -316,28 +316,27 @@ async function seed() {
   })
   console.timeEnd('🎸 Created KODY band...')
 
-  console.time('🎸 Created songs...')
-  for (const song of songs) {
-    await prisma.song.create({
-      data: {
-        title: song.title,
-        artist: song.artist,
-        bandSongs: {
-          create: [
-            {
-              band: {
-                connect: {
-                  id: kodyBand.id,
-                },
-              },
-            },
-          ],
-        },
-      },
-    })
-  }
-
-  console.timeEnd('🎸 Created songs...')
+  // console.time('🎸 Created songs...')
+  // for (const song of songs) {
+  //   await prisma.song.create({
+  //     data: {
+  //       title: song.title,
+  //       artist: song.artist,
+  //       bandSongs: {
+  //         create: [
+  //           {
+  //             band: {
+  //               connect: {
+  //                 id: kodyBand.id,
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   })
+  // }
+  // console.timeEnd('🎸 Created songs...')
 
   console.time('🏟️ Created venues...')
   const venueIds = []

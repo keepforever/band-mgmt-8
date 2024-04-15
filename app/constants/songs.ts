@@ -1,80 +1,81 @@
 export const songs = [
-  {
-    artist: 'Bowling for Soup',
-    title: '1985',
-  },
-  {
-    artist: 'Pearl Jam',
-    title: 'Alive',
-  },
-  {
-    artist: 'Smash Mouth',
-    title: 'All Star',
-  },
-  {
-    artist: 'Blink-182',
-    title: 'All the Small Things',
-  },
-  {
-    artist: 'Tom Petty and the Heartbreakers',
-    title: 'American Girl',
-  },
-  {
-    artist: 'Green Day',
-    title: 'Basket Case',
-  },
-  {
-    artist: 'Weezer',
-    title: 'Buddy Holly',
-  },
-  {
-    artist: 'Rage Against the Machine',
-    title: 'Bulls on Parade',
-  },
-  {
-    artist: 'Hole',
-    title: 'Celebrity Skin',
-  },
-  {
-    artist: 'The Presidents of the United States of America',
-    title: 'Cleveland Rocks',
-  },
-  {
-    artist: 'Semisonic',
-    title: 'Closing Time',
-  },
-  {
-    artist: 'The Offspring',
-    title: 'Come Out and Play',
-  },
-  {
-    artist: 'Radiohead',
-    title: 'Creep',
-  },
-  {
-    artist: 'Blink-182',
-    title: 'Dammit',
-  },
-  {
-    artist: '311',
-    title: 'Down',
-  },
-  {
-    artist: 'Rob Zombie',
-    title: 'Dragula',
-  },
-  {
-    artist: 'Foo Fighters',
-    title: 'Everlong',
-  },
-  {
-    artist: 'Sum 41',
-    title: 'Fat Lip',
-  },
-  {
-    artist: 'Harvey Danger',
-    title: 'Flagpole Sitta',
-  },
+  {},
+  // {
+  //   artist: 'Bowling for Soup',
+  //   title: '1985',
+  // },
+  // {
+  //   artist: 'Pearl Jam',
+  //   title: 'Alive',
+  // },
+  // {
+  //   artist: 'Smash Mouth',
+  //   title: 'All Star',
+  // },
+  // {
+  //   artist: 'Blink-182',
+  //   title: 'All the Small Things',
+  // },
+  // {
+  //   artist: 'Tom Petty and the Heartbreakers',
+  //   title: 'American Girl',
+  // },
+  // {
+  //   artist: 'Green Day',
+  //   title: 'Basket Case',
+  // },
+  // {
+  //   artist: 'Weezer',
+  //   title: 'Buddy Holly',
+  // },
+  // {
+  //   artist: 'Rage Against the Machine',
+  //   title: 'Bulls on Parade',
+  // },
+  // {
+  //   artist: 'Hole',
+  //   title: 'Celebrity Skin',
+  // },
+  // {
+  //   artist: 'The Presidents of the United States of America',
+  //   title: 'Cleveland Rocks',
+  // },
+  // {
+  //   artist: 'Semisonic',
+  //   title: 'Closing Time',
+  // },
+  // {
+  //   artist: 'The Offspring',
+  //   title: 'Come Out and Play',
+  // },
+  // {
+  //   artist: 'Radiohead',
+  //   title: 'Creep',
+  // },
+  // {
+  //   artist: 'Blink-182',
+  //   title: 'Dammit',
+  // },
+  // {
+  //   artist: '311',
+  //   title: 'Down',
+  // },
+  // {
+  //   artist: 'Rob Zombie',
+  //   title: 'Dragula',
+  // },
+  // {
+  //   artist: 'Foo Fighters',
+  //   title: 'Everlong',
+  // },
+  // {
+  //   artist: 'Sum 41',
+  //   title: 'Fat Lip',
+  // },
+  // {
+  //   artist: 'Harvey Danger',
+  //   title: 'Flagpole Sitta',
+  // },
   // {
   // 	artist: 'Bush',
   // 	title: 'Glycerine',

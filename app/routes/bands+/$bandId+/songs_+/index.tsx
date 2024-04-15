@@ -17,24 +17,25 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     },
   })
 
-  const songs = await prisma.song.findMany({
+  const songs = await prisma.bandSong.findMany({
     where: {
-      bandSongs: {
-        every: {
-          bandId,
+      bandId,
+    },
+    select: {
+      song: {
+        select: {
+          id: true,
+          title: true,
+          artist: true,
+          status: true,
+          rating: true,
+          youtubeUrl: true,
         },
       },
     },
-    select: {
-      id: true,
-      title: true,
-      artist: true,
-      status: true,
-      rating: true,
-      youtubeUrl: true,
-    },
   })
-  return json({ songs, songCount })
+
+  return json({ songs: songs.map(song => song.song), songCount })
 }
 
 export default function BandIdIndex() {
@@ -64,6 +65,10 @@ export default function BandIdIndex() {
       dataIndex: 'youtubeUrl',
     },
   ]
+
+  console.group(`%cindex.tsx`, 'color: yellow; font-size: 13px; font-weight: bold;')
+  console.log('\n', `songs = `, songs, '\n')
+  console.groupEnd()
 
   return (
     <div>

@@ -136,6 +136,7 @@ model Song {
   status     String?
 
   bandSongs BandSong[]
+  bandId    String?
   SetSong   SetSong[]
   lyrics    SongLyrics?
 }

@@ -53,20 +53,42 @@ export async function action({ request, params }: ActionFunctionArgs) {
     readable
       .pipe(parse({ columns: true, trim: true }))
       .on('data', (row: SongData) => {
-        // console.log('\n', `row = `, row, '\n')
-        console.log('\n', `row.artist = `, row.artist, '\n')
-        console.log('\n', `row.title = `, row.title, '\n')
         songs.push(row)
       })
-      .on('end', () => {
+      .on('end', async () => {
         console.log('CSV processing completed.')
+
+        try {
+          const createdSongs = await prisma.$transaction(
+            songs.map(song =>
+              prisma.song.create({
+                data: {
+                  artist: song.artist,
+                  title: song.title,
+                  bandSongs: {
+                    create: [
+                      {
+                        band: {
+                          connect: {
+                            id: bandId,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              }),
+            ),
+          )
+          console.log(`${createdSongs.length} songs successfully added to the database.`)
+        } catch (error) {
+          console.error('Error while adding songs and their associations to the database:', error)
+        }
       })
       .on('error', err => {
         console.error('Error while parsing CSV:', err)
       })
   }
-
-  console.log('\n', `songs = `, songs, '\n')
 
   return redirect(`/bands/${bandId}/songs`)
 }
