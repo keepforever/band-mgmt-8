@@ -1,3 +1,4 @@
+import { type Song } from '@prisma/client'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { type Column, TableGeneric } from '#app/components/table-generic'
@@ -38,12 +39,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ songs: songs.map(song => song.song), songCount })
 }
 
+type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'>
+
 export default function BandIdIndex() {
   const { songs, songCount } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const params = useParams()
 
-  const columns: Column<(typeof songs)[0]>[] = [
+  const columns: Column<MySong>[] = [
     {
       title: 'Title',
       dataIndex: 'title',

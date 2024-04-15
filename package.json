@@ -86,6 +86,7 @@
     "isbot": "^5.1.2",
     "litefs-js": "^1.1.2",
     "lru-cache": "^10.2.0",
+    "mammoth": "^1.7.1",
     "morgan": "^1.10.0",
     "prisma": "^5.11.0",
     "qrcode": "^1.5.3",
