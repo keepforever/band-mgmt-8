@@ -75,9 +75,15 @@ export default function BandIdIndex() {
           </span>
         </h2>
 
-        <Button asChild variant="secondary" size="lg">
-          <Link to="new">Create</Link>
-        </Button>
+        <div className="flex gap-4">
+          <Button asChild variant="secondary" size="lg">
+            <Link to="new">Create</Link>
+          </Button>
+
+          <Button asChild variant="destructive" size="lg">
+            <Link to="bulk-upload">Bulk Upload</Link>
+          </Button>
+        </div>
       </div>
 
       <TableGeneric
