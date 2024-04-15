@@ -2,6 +2,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
+import { cn } from '#app/utils/misc.js'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const bandId = params.bandId
@@ -45,22 +46,29 @@ export default function BandIdIndex() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {venues.map((venue, index) => (
           <div key={index} className="rounded-lg border border-gray-200 bg-background p-4 shadow-md">
-            <h2 className="text-xl font-semibold">{venue.venue.name}</h2>
-            <p className="text-foreground">Location: {venue.venue.location}</p>
-            <p className="text-foreground">Capacity: {venue.venue.capacity}</p>
-            <ul className="mt-2 list-disc pl-5">
-              {venue.venue.events.map(event => (
-                <li key={event.id} className="text-foreground">
-                  {event.name}
-                </li>
-              ))}
-            </ul>
             <Link
               to={`/bands/${venue.bandId}/venues/${venue.venue.id}/view`}
               className="mt-2 text-blue-600 hover:underline"
             >
-              View Details
+              <h2 className="text-xl font-semibold">{venue.venue.name}</h2>
             </Link>
+            <p className="text-foreground">Location: {venue.venue.location}</p>
+            <p className="text-foreground">Capacity: {venue.venue.capacity}</p>
+            <details
+              className={cn({
+                hidden: venue.venue.events.length === 0,
+              })}
+            >
+              <summary>See Events</summary>
+
+              <ul className="mt-2 list-disc pl-5">
+                {venue.venue.events.map(event => (
+                  <li key={event.id} className="text-foreground">
+                    {event.name}
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
         ))}
       </div>

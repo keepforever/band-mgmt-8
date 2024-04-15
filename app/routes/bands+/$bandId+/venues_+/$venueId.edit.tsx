@@ -16,11 +16,46 @@ const VenueSchema = z.object({
   capacity: z.number().optional(),
 })
 
+// export async function action({ request, params }: ActionFunctionArgs) {
+//   const userId = await requireUserId(request)
+
+//   const bandId = params.bandId
+//   invariantResponse(userId, 'You must be logged in to create a venue')
+
+//   const formData = await request.formData()
+//   const submission = await parseWithZod(formData, { schema: VenueSchema })
+//   if (submission.status !== 'success') {
+//     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
+//   }
+//   const { name, location, capacity } = submission.value
+
+//   await prisma.venue.create({
+//     data: {
+//       name,
+//       location,
+//       capacity,
+//       bands: {
+//         create: [
+//           {
+//             band: {
+//               connect: {
+//                 id: bandId,
+//               },
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   })
+
+//   return redirect(`/bands/${bandId}/venues`)
+// }
+
+// In CreateVenueForm.tsx
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
 
-  const bandId = params.bandId
-  invariantResponse(userId, 'You must be logged in to create a venue')
+  invariantResponse(userId, 'You must be logged in to manage a venue')
 
   const formData = await request.formData()
   const submission = await parseWithZod(formData, { schema: VenueSchema })
@@ -29,26 +64,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   const { name, location, capacity } = submission.value
 
-  await prisma.venue.create({
+  await prisma.venue.update({
+    where: {
+      id: params.venueId, // Ensure `venueId` is correctly passed in the route parameters
+    },
     data: {
       name,
       location,
       capacity,
-      bands: {
-        create: [
-          {
-            band: {
-              connect: {
-                id: bandId,
-              },
-            },
-          },
-        ],
-      },
     },
   })
 
-  return redirect(`/bands/${bandId}/venues`)
+  return redirect(`/bands/${params.bandId}/venues`)
 }
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -88,7 +115,7 @@ export default function CreateVenueRoute() {
 
   return (
     <div className="container mx-auto max-w-md">
-      <h1 className="text-center text-2xl font-bold">Submit a New Venue</h1>
+      <h1 className="text-center text-2xl font-bold">Edit Venue</h1>
 
       <Form method="POST" {...getFormProps(form)} className="mt-6">
         <Field
