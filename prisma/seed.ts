@@ -5,6 +5,14 @@ import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
 
+function capitalLorem(): string {
+  return faker.lorem
+    .words(2)
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
 async function seed() {
   console.info('🌱 Seeding...')
   console.time(`🌱 Database has been seeded`)
@@ -29,7 +37,7 @@ async function seed() {
   console.time('🔑 Created bands...')
   await prisma.band.create({
     data: {
-      name: faker.company.name(),
+      name: capitalLorem(),
       members: {
         create: [
           {
@@ -50,7 +58,7 @@ async function seed() {
   console.time('🔑 Created bands...')
   await prisma.band.create({
     data: {
-      name: faker.company.name(),
+      name: capitalLorem(),
       members: {
         create: [
           {
@@ -291,7 +299,7 @@ async function seed() {
   console.time('🎸 Created KODY band...')
   const kodyBand = await prisma.band.create({
     data: {
-      name: faker.company.name(),
+      name: capitalLorem(),
       members: {
         create: [
           {
@@ -337,7 +345,11 @@ async function seed() {
     const tempId = await prisma.venue.create({
       data: {
         location: faker.location.city(),
-        name: faker.company.name(),
+        // name: capitalLorem(),
+        name: capitalLorem()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
         capacity: faker.number.int({ min: 100, max: 1000 }),
         bands: {
           create: [
@@ -366,7 +378,7 @@ async function seed() {
       data: {
         date: datePayload,
         location: faker.location.city(),
-        name: faker.company.name(),
+        name: capitalLorem(),
         venue: {
           connect: {
             // get random venue id
