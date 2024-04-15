@@ -14,6 +14,11 @@ import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn } from '#app/utils/misc'
 
+type SongData = {
+  title: string
+  artist: string
+}
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const bandId = params.bandId
@@ -36,6 +41,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await parseMultipartFormData(request, createMemoryUploadHandler({ maxPartSize: 5 * 1024 * 1024 }))
   const songsCsvFile = formData.get('songsCsv')
 
+  const songs: Array<SongData> = []
+
   if (songsCsvFile && songsCsvFile instanceof File) {
     const csvData = await songsCsvFile.arrayBuffer()
     const readable = new Readable()
@@ -45,8 +52,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     readable
       .pipe(parse({ columns: true, trim: true }))
-      .on('data', row => {
-        console.log(row)
+      .on('data', (row: SongData) => {
+        // console.log('\n', `row = `, row, '\n')
+        console.log('\n', `row.artist = `, row.artist, '\n')
+        console.log('\n', `row.title = `, row.title, '\n')
+        songs.push(row)
       })
       .on('end', () => {
         console.log('CSV processing completed.')
@@ -55,6 +65,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
         console.error('Error while parsing CSV:', err)
       })
   }
+
+  console.log('\n', `songs = `, songs, '\n')
 
   return redirect(`/bands/${bandId}/songs`)
 }
