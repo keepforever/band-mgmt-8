@@ -338,6 +338,7 @@ async function seed() {
       data: {
         location: faker.location.city(),
         name: faker.company.name(),
+        capacity: faker.number.int({ min: 100, max: 1000 }),
         bands: {
           create: [
             {
