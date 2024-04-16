@@ -1,15 +1,25 @@
-// CreateSongForm.tsx
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json, redirect, type ActionFunctionArgs } from '@remix-run/node'
-import { Form, Link, useActionData, useLoaderData, useParams, useRouteError } from '@remix-run/react'
-import { useState, useEffect } from 'react'
+import {
+  Form,
+  Link,
+  useActionData,
+  useFetchers,
+  useLoaderData,
+  useLocation,
+  useParams,
+  useRouteError,
+  useSubmit,
+} from '@remix-run/react'
+import { useState, useEffect, useRef } from 'react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
+import { cn } from '#app/utils/misc.js'
 
 const SongSchema = z.object({
   artist: z.string().min(1, 'Artist name is required'),
@@ -87,6 +97,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function CreateSongRoute() {
   const loaderData = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fetchers = useFetchers()
+  const location = useLocation()
+  const submit = useSubmit()
   const params = useParams()
   const [form, fields] = useForm({
     id: 'create-song-form',
@@ -109,6 +123,8 @@ export default function CreateSongRoute() {
   const [pdfUrl, setPdfUrl] = useState<string>('')
   const [lyricHtml, setLyricHtml] = useState<string>('')
 
+  const isLyricUpdating = fetchers?.find(f => f.key === 'lyric')?.state === 'submitting'
+
   useEffect(() => {
     const fetchPdfUrl = async (id: string) => {
       const response = await fetch(`/resources/song-lyric/${id}`)
@@ -124,8 +140,10 @@ export default function CreateSongRoute() {
       setPdfUrl(response.url)
     }
 
-    if (loaderData?.song?.lyrics?.id) fetchPdfUrl(loaderData?.song?.lyrics?.id)
-  }, [loaderData?.song?.lyrics?.id])
+    if (loaderData?.song?.lyrics?.id || (loaderData?.song?.lyrics?.id && !isLyricUpdating)) {
+      fetchPdfUrl(loaderData?.song?.lyrics?.id)
+    }
+  }, [loaderData?.song?.lyrics?.id, isLyricUpdating])
 
   return (
     <div className="container mx-auto max-w-full">
@@ -190,6 +208,53 @@ export default function CreateSongRoute() {
           inputProps={getInputProps(fields.status, { type: 'text' })}
           errors={fields.status.errors}
         />
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          name="lyricsFile"
+          accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          onChange={async e => {
+            const formData = new FormData()
+            const file = e.target.files?.[0]
+
+            if (file) {
+              formData.append('lyricsFile', file)
+              formData.append('songId', params?.songId || '')
+              formData.append('redirect', location.pathname)
+            }
+
+            submit(formData, {
+              action: `/resources/song-lyric/${loaderData.song?.lyrics?.id || 'new'}`,
+              method: 'POST',
+              encType: 'multipart/form-data',
+              navigate: false,
+              fetcherKey: 'lyric',
+            })
+
+            // const fetchPdfUrl = async (id: string) => {
+            //   const response = await fetch(`/resources/song-lyric/${id}`)
+            //   const contentType = response.headers.get('Content-Type')
+
+            //   if (contentType !== 'application/pdf') {
+            //     const text = await response.text()
+            //     setLyricHtml(text)
+            //     return
+            //   }
+
+            //   setPdfUrl(response.url)
+            // }
+            // await fetchPdfUrl(loaderData.song?.lyrics?.id || '')
+
+            fileInputRef.current!.value = ''
+          }}
+          className={cn(
+            'rounded-md border border-gray-300 p-2',
+            'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
+            'hover:border-blue-500 hover:ring hover:ring-blue-500',
+          )}
+        />
+
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Update Song
         </StatusButton>

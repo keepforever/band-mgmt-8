@@ -1,6 +1,14 @@
 import { invariantResponse } from '@epic-web/invariant'
-import { type LoaderFunctionArgs } from '@remix-run/node'
+import {
+  redirect,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
+  unstable_parseMultipartFormData as parseMultipartFormData,
+  unstable_createMemoryUploadHandler as createMemoryUploadHandler,
+} from '@remix-run/node'
 import mammoth from 'mammoth'
+
+import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 export async function loader({ params }: LoaderFunctionArgs) {
@@ -44,4 +52,46 @@ export async function loader({ params }: LoaderFunctionArgs) {
       },
     })
   }
+}
+
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const userId = await requireUserId(request)
+  invariantResponse(userId, 'You must be logged in to create a song')
+
+  const formData = await parseMultipartFormData(request, createMemoryUploadHandler({ maxPartSize: 5 * 1024 * 1024 }))
+
+  const lyricsFile = formData.get('lyricsFile')
+  invariantResponse(lyricsFile instanceof File, 'Lyrics file is required')
+
+  // const bandId = formData.get('bandId')
+  // invariantResponse(bandId, 'Band is required')
+
+  const songId = formData.get('songId')
+  invariantResponse(typeof songId === 'string', 'Song is required')
+
+  console.log('\n', `params.lyricId = `, params.lyricId, '\n')
+  console.log('\n', `lyricsFile.type = `, lyricsFile.type, '\n')
+
+  const redirectPath = formData.get('redirect')
+  invariantResponse(typeof redirectPath === 'string', 'Redirect is required')
+
+  if (params.lyricId === 'new') {
+    await prisma.songLyrics.create({
+      data: {
+        songId,
+        contentType: lyricsFile.type,
+        blob: Buffer.from(await lyricsFile.arrayBuffer()),
+      },
+    })
+  } else {
+    await prisma.songLyrics.update({
+      where: { id: params.lyricId },
+      data: {
+        contentType: lyricsFile.type,
+        blob: Buffer.from(await lyricsFile.arrayBuffer()),
+      },
+    })
+  }
+
+  return redirect(redirectPath)
 }
