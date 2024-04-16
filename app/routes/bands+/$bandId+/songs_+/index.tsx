@@ -3,6 +3,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { type Column, TableGeneric } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
 import { prisma } from '#app/utils/db.server'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -31,15 +32,20 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
           status: true,
           rating: true,
           youtubeUrl: true,
+          lyrics: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
     },
   })
 
-  return json({ songs: songs.map(song => song.song), songCount })
+  return json({ songs: songs.map(song => ({ ...song.song, lyricId: song.song.lyrics?.id })), songCount })
 }
 
-type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'>
+type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
 
 export default function BandIdIndex() {
   const { songs, songCount } = useLoaderData<typeof loader>()
@@ -50,6 +56,18 @@ export default function BandIdIndex() {
     {
       title: 'Title',
       dataIndex: 'title',
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          <span>{value}</span>
+
+          {!!record.lyricId && (
+            <Link to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`} className="text-blue-500">
+              <Icon name="file-text" className="fill-lime-400" />
+            </Link>
+          )}
+        </div>
+      ),
+      stopPropagation: true,
     },
     {
       title: 'Artist',
@@ -66,6 +84,10 @@ export default function BandIdIndex() {
     {
       title: 'YouTube URL',
       dataIndex: 'youtubeUrl',
+    },
+    {
+      title: 'Lyric ID',
+      dataIndex: 'lyricId',
     },
   ]
 

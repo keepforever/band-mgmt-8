@@ -294,9 +294,3 @@ export function ErrorBoundary() {
     </div>
   )
 }
-// /bands/${params?.bandId}/songs
-// export function ErrorBoundary() {
-//   return <GeneralErrorBoundary />
-// }
-
-// redeploy
