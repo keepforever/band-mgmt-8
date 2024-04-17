@@ -33,31 +33,29 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { id: userId },
-    select: {
-      name: true,
-      blackoutDates: {
-        select: {
-          date: true,
-        },
-      },
-    },
-  })
+  const allBlackoutDates = bandMembers.flatMap(member =>
+    member.user.blackoutDates.map(date => ({
+      date: date.date,
+      isCurrentUser: member.userId === userId,
+    })),
+  )
 
-  return json({ user, events, bandMembers })
+  return json({ events, bandMembers, allBlackoutDates })
 }
 
 export default function AvailabilityIndexRoute() {
   const currentDate = new Date()
-  const { user, events, bandMembers } = useLoaderData<typeof loader>()
+  const { events, bandMembers, allBlackoutDates } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
 
   console.group(
     `%capp/routes/bands+/$bandId+/availability_+/index.tsx`,
     'color: #ffffff; font-size: 13px; font-weight: bold;',
   )
+  // console.log('\n', `user = `, user, '\n')
+  // console.log('\n', `events = `, events, '\n')
   console.log('\n', `bandMembers = `, bandMembers, '\n')
+  console.log('\n', `allBlackoutDates = `, allBlackoutDates, '\n')
   console.groupEnd()
 
   return (
@@ -86,17 +84,35 @@ export default function AvailabilityIndexRoute() {
                   {Array.from(Array(month.offset).keys()).map((el, i) => (
                     <div key={el}></div>
                   ))}
+
                   {month.days.map(day => {
                     const isCurrentDay = currentDate.getDate() === day.day
+
                     const isCurrentDayBlackedOutForUser = isDayInListOfDates({
                       currentDay: day.date,
-                      dates: user.blackoutDates.map(d => d.date),
+                      dates: allBlackoutDates.map(d => d.date),
                     })
 
                     const isCurrentDayAnEvent = isDayInListOfDates({
                       currentDay: day.date,
                       dates: events.map(e => e.date),
                     })
+
+                    const isCurrentDayBlackedOutForAnotherUser = allBlackoutDates.some(d => {
+                      console.log('\n', `d.date = `, d.date, '\n')
+                      console.log('\n', `day.date = `, day.date, '\n')
+                      console.log('\n', `d.isCurrentUser = `, d.isCurrentUser, '\n')
+
+                      return d.date === day.date && !d.isCurrentUser
+                    })
+
+                    isCurrentDayBlackedOutForAnotherUser &&
+                      console.log(
+                        '\n',
+                        `isCurrentDayBlackedOutForAnotherUser = `,
+                        isCurrentDayBlackedOutForAnotherUser,
+                        '\n',
+                      )
 
                     return (
                       <button
