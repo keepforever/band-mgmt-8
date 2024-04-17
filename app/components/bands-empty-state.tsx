@@ -7,17 +7,6 @@ export function BandsEmptyState() {
   return (
     <Card className="mx-auto w-full max-w-lg">
       <CardContent className="flex flex-col items-center gap-4 p-10">
-        {/* <img
-          alt="Placeholder"
-          className="h-20 w-20 rounded-lg bg-gray-100 p-1 dark:bg-gray-800"
-          height="160"
-          src="/placeholder.svg"
-          style={{
-            aspectRatio: '160/160',
-            objectFit: 'cover',
-          }}
-          width="160"
-        /> */}
         <Icon name="pope" className="h-40 w-40 fill-red-400 text-gray-400 dark:text-gray-500" />
         <Icon name="monkey" className="h-40 w-40 fill-red-400 text-gray-400 dark:text-gray-500" />
         <div className="flex flex-col items-center gap-2 text-center">

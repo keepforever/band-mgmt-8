@@ -67,8 +67,24 @@ export async function getEventsByDateAndBandId({ date, bandId }: { date: Date; b
         },
       ],
     },
-    include: {
-      bands: true, // Adjust according to your needs for related band data
+    select: {
+      name: true,
+      location: true,
+      Setlist: {
+        select: {
+          id: true,
+        },
+      },
+      date: true,
+      id: true,
+      venueId: true,
+      venue: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
     },
   })
 
