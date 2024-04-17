@@ -76,6 +76,15 @@ export default function AvailabilityIndexRoute() {
                       d => d.date === dayIsoString && d.isCurrentUser,
                     )
 
+                    if (monthIndex === 10) {
+                      console.log('day', day)
+                      console.log('isToday', isToday)
+                      console.log('isBlackoutForUser', isBlackoutForUser)
+                      console.log('isBlackoutForCurrentUser', isBlackoutForCurrentUser)
+                      console.log('isEventDay', isEventDay)
+                      console.log('\n', `allEventDatesSet = `, allEventDatesSet, '\n')
+                    }
+
                     return (
                       <DayComponent
                         key={day.date}

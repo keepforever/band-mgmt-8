@@ -370,8 +370,11 @@ async function seed() {
   // create events
   console.time('📅 Created events...')
   for (let index = 0; index < 4; index++) {
-    const tempDate = faker.date.future().setHours(0, 0, 0, 0)
-    const datePayload = new Date(tempDate)
+    const tempDate = faker.date.future({
+      refDate: new Date(),
+      years: 0.5,
+    })
+    const datePayload = new Date(Date.UTC(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()))
 
     await prisma.event.create({
       data: {
@@ -380,7 +383,6 @@ async function seed() {
         name: capitalLorem(),
         venue: {
           connect: {
-            // get random venue id
             id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],
           },
         },
