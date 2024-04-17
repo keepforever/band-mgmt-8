@@ -1,37 +1,15 @@
 import { invariantResponse } from '@epic-web/invariant'
-import { type LoaderFunctionArgs } from '@remix-run/node'
-import { json, useLoaderData, useNavigate } from '@remix-run/react'
+import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node'
+import { json, useLoaderData, useSubmit } from '@remix-run/react'
 import { months } from '#app/constants/months'
 import { requireUserId } from '#app/utils/auth.server'
 import { isDayInListOfDates } from '#app/utils/date'
 import { prisma } from '#app/utils/db.server'
-import { getEventsByBandId } from '#app/utils/events.server'
 import { cn } from '#app/utils/misc'
+import { createToastHeaders } from '#app/utils/toast.server'
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
-  const bandId = params.bandId
-  invariantResponse(bandId, 'Band ID is required')
-  const events = await getEventsByBandId(bandId)
-
-  const bandMembers = await prisma.userBand.findMany({
-    where: {
-      bandId,
-    },
-    select: {
-      userId: true,
-      user: {
-        select: {
-          blackoutDates: {
-            select: {
-              id: true,
-              date: true,
-            },
-          },
-        },
-      },
-    },
-  })
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: userId },
@@ -45,20 +23,65 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
-  return json({ user, events, bandMembers })
+  return json({ user })
 }
 
-export default function AvailabilityIndexRoute() {
-  const currentDate = new Date()
-  const { user, events, bandMembers } = useLoaderData<typeof loader>()
-  const navigate = useNavigate()
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const userId = await requireUserId(request)
+  const formData = await request.formData()
+  const date = formData.get('date')
+  const intent = formData.get('intent')
 
-  console.group(
-    `%capp/routes/bands+/$bandId+/availability_+/index.tsx`,
-    'color: #ffffff; font-size: 13px; font-weight: bold;',
-  )
-  console.log('\n', `bandMembers = `, bandMembers, '\n')
-  console.groupEnd()
+  if (intent === 'add') {
+    const toastHeaders = await createToastHeaders({
+      title: 'Added',
+      description: 'Blackout date added',
+      type: 'success',
+    })
+
+    invariantResponse(typeof date === 'string', 'Date is required, and must be a string')
+
+    await prisma.blackoutDate.create({
+      data: {
+        date: new Date(date),
+        userId,
+      },
+    })
+
+    return json({ status: 'success' } as const, { headers: toastHeaders })
+  }
+
+  if (intent === 'delete') {
+    const toastHeaders = await createToastHeaders({
+      title: 'Removed',
+      description: 'Blackout date removed',
+      type: 'success',
+    })
+
+    invariantResponse(typeof date === 'string', 'Date is required, and must be a string')
+
+    await prisma.blackoutDate.deleteMany({
+      where: {
+        date: new Date(date),
+      },
+    })
+
+    return json({ status: 'success' } as const, { headers: toastHeaders })
+  }
+
+  const toastHeaders = await createToastHeaders({
+    title: 'Oops',
+    description: 'Something went wrong',
+    type: 'error',
+  })
+
+  return json({ status: 'success' } as const, { headers: toastHeaders })
+}
+
+export default function Example() {
+  const currentDate = new Date()
+  const { user } = useLoaderData<typeof loader>()
+  const submit = useSubmit()
 
   return (
     <div>
@@ -72,7 +95,6 @@ export default function AvailabilityIndexRoute() {
                 <h2 className="font-semibold text-foreground">
                   {month.name} <small>{month.year}</small>
                 </h2>
-
                 <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-foreground">
                   <div>S</div>
                   <div>M</div>
@@ -93,32 +115,34 @@ export default function AvailabilityIndexRoute() {
                       dates: user.blackoutDates.map(d => d.date),
                     })
 
-                    const isCurrentDayAnEvent = isDayInListOfDates({
-                      currentDay: day.date,
-                      dates: events.map(e => e.date),
-                    })
-
                     return (
                       <button
                         key={day.date}
                         type="button"
-                        onClick={() => navigate(`${day.date}`)}
+                        onClick={() => {
+                          submit(
+                            {
+                              date: day.date,
+                              intent: isCurrentDayBlackedOutForUser ? 'delete' : 'add',
+                            },
+                            {
+                              method: 'post',
+                            },
+                          )
+                        }}
                         className={cn({
-                          'bg-yellow-800 py-1.5 text-white hover:bg-yellow-500 focus:z-10':
+                          'text-text-black bg-yellow-800 py-1.5 hover:bg-yellow-500 focus:z-10':
                             isCurrentDayBlackedOutForUser,
                           'bg-accent py-1.5 text-accent-foreground hover:bg-red-800 focus:z-10':
                             !isCurrentDayBlackedOutForUser,
-                          'bg-green-500': isCurrentDayAnEvent,
                         })}
                       >
                         <time
                           dateTime={day.date}
                           className={cn(
+                            isCurrentDay && isCurrentMonth && 'bg-green-200 font-semibold text-black',
                             'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
                             'border-2 border-blue-100',
-                            {
-                              'bg-green-200 font-semibold text-black': isCurrentDay && isCurrentMonth,
-                            },
                           )}
                         >
                           {day?.date?.split?.('-')?.pop?.()?.replace?.(/^0/, '')}
