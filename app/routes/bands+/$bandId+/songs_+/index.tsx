@@ -91,10 +91,6 @@ export default function SongsIndexRoute() {
     },
   ]
 
-  console.group(`%cindex.tsx`, 'color: yellow; font-size: 13px; font-weight: bold;')
-  console.log('\n', `songs = `, songs, '\n')
-  console.groupEnd()
-
   return (
     <div>
       <div className="flex justify-between">

@@ -6,7 +6,7 @@ import {
   unstable_createMemoryUploadHandler as createMemoryUploadHandler,
   unstable_parseMultipartFormData as parseMultipartFormData,
 } from '@remix-run/node'
-import { Form, Link, useActionData, useParams, useRouteError } from '@remix-run/react'
+import { Form, Link, useParams, useRouteError } from '@remix-run/react'
 import { parse } from 'csv-parse'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { MAX_SONG_COUNT } from '#app/constants/entity-allowances'
@@ -53,13 +53,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     readable
       .pipe(parse({ columns: true, trim: true }))
       .on('data', (row: SongData) => {
+        // TODO:BAC - validate colum names against expected values
         songs.push(row)
       })
       .on('end', async () => {
-        console.log('CSV processing completed.')
-
         try {
-          const createdSongs = await prisma.$transaction(
+          await prisma.$transaction(
             songs.map(song =>
               prisma.song.create({
                 data: {
@@ -80,7 +79,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
               }),
             ),
           )
-          console.log(`${createdSongs.length} songs successfully added to the database.`)
         } catch (error) {
           console.error('Error while adding songs and their associations to the database:', error)
         }
@@ -94,12 +92,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BulkUploadSongs() {
-  const actionData = useActionData<typeof action>()
-
-  console.group(`%cbulk-upload.tsx`, 'color: #ffffff; font-size: 13px; font-weight: bold;')
-  console.log('\n', `actionData = `, actionData, '\n')
-  console.groupEnd()
-
   return (
     <div className="container mx-auto max-w-md">
       <h1 className="text-center text-2xl font-bold">New Song Route</h1>

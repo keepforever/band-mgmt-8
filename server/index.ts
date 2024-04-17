@@ -166,14 +166,14 @@ const strongRateLimit = rateLimit({
 const generalRateLimit = rateLimit(rateLimitDefault)
 app.use((req, res, next) => {
   const strongPaths = [
-    '/login',
+    '/infoin',
     '/signup',
     '/verify',
     '/admin',
     '/onboarding',
     '/reset-password',
     '/settings/profile',
-    '/resources/login',
+    '/resources/infoin',
     '/resources/verify',
   ]
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -227,7 +227,7 @@ const portToUse = await getPort({
 })
 const portAvailable = desiredPort === portToUse
 if (!portAvailable && !IS_DEV) {
-  console.log(`⚠️ Port ${desiredPort} is not available.`)
+  console.info(`⚠️ Port ${desiredPort} is not available.`)
   process.exit(1)
 }
 
@@ -235,7 +235,7 @@ const server = app.listen(portToUse, () => {
   if (!portAvailable) {
     console.warn(chalk.yellow(`⚠️  Port ${desiredPort} is not available, using ${portToUse} instead.`))
   }
-  console.log(`🚀  We have liftoff!`)
+  console.info(`🚀  We have liftoff!`)
   const localUrl = `http://localhost:${portToUse}`
   let lanUrl: string | null = null
   const localIp = ipAddress() ?? 'Unknown'
@@ -246,7 +246,7 @@ const server = app.listen(portToUse, () => {
     lanUrl = `http://${localIp}:${portToUse}`
   }
 
-  console.log(
+  console.info(
     `
 ${chalk.bold('Local:')}            ${chalk.cyan(localUrl)}
 ${lanUrl ? `${chalk.bold('On Your Network:')}  ${chalk.cyan(lanUrl)}` : ''}

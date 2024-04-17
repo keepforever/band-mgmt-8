@@ -69,9 +69,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const songId = formData.get('songId')
   invariantResponse(typeof songId === 'string', 'Song is required')
 
-  console.log('\n', `params.lyricId = `, params.lyricId, '\n')
-  console.log('\n', `lyricsFile.type = `, lyricsFile.type, '\n')
-
   const redirectPath = formData.get('redirect')
   invariantResponse(typeof redirectPath === 'string', 'Redirect is required')
 

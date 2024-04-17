@@ -114,7 +114,6 @@ export function NoteEditor({
               <Label>Images</Label>
               <ul className="flex flex-col gap-4">
                 {imageList.map((image, index) => {
-                  console.log('image.key', image.key)
                   return (
                     <li key={image.key} className="relative border-b-2 border-muted-foreground">
                       <button

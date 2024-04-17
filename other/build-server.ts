@@ -27,12 +27,12 @@ for (const file of allFiles) {
     const dest = file.replace(here('../server'), here('../server-build'))
     fsExtra.ensureDirSync(path.parse(dest).dir)
     fsExtra.copySync(file, dest)
-    console.log(`copied: ${file.replace(`${here('../server')}/`, '')}`)
+    console.info(`copied: ${file.replace(`${here('../server')}/`, '')}`)
   }
 }
 
-console.log()
-console.log('building...')
+console.info()
+console.info('building...')
 
 esbuild
   .build({

@@ -2,7 +2,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button.js'
-import { Card, CardContent } from '#app/components/ui/card.js'
+import { Card, CardContent, CardTitle } from '#app/components/ui/card.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -33,8 +33,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function DateDetailView() {
   const { events, blackoutDates } = useLoaderData<typeof loader>()
-  const { date } = useParams()
-
+  const { date, bandId } = useParams()
   const formattedDate = formatDate(String(date))
 
   if (!events.length && !blackoutDates.length) {
@@ -60,20 +59,37 @@ export default function DateDetailView() {
   }
 
   return (
-    <div className="container mx-auto max-w-lg">
-      <h1 className="text-2xl font-semibold">{formattedDate}</h1>
+    <div className="container mx-auto max-w-lg px-4">
+      <h1 className="mt-5 text-2xl font-semibold">{formattedDate}</h1>
 
       {/* Events */}
-
       {events.length > 0 && (
         <div className="mt-4">
           <h2 className="mb-3 text-lg font-semibold">Events</h2>
           <ul>
             {events.map(event => (
-              <li key={event.id}>
-                <p>
-                  {event.name} - {event.location}
-                </p>
+              <li key={event.id} className="mb-2">
+                <Card>
+                  <CardContent className="p-5">
+                    <CardTitle>
+                      <Link to={`/bands/${bandId}/events/${event.id}/view`} className="hover:text-blue-700">
+                        {event.name}
+                      </Link>
+                    </CardTitle>
+
+                    <p className="text-foreground-destructive">{event.location}</p>
+                    {event.venue && (
+                      <p className="text-gray-500">
+                        Venue: {event.venue.name}, Location: {event.venue.location}
+                      </p>
+                    )}
+                    {event.Setlist && (
+                      <Link to={`/setlist/${event.Setlist.id}`} className="text-blue-600 hover:underline">
+                        View Setlist
+                      </Link>
+                    )}
+                  </CardContent>
+                </Card>
               </li>
             ))}
           </ul>
@@ -81,14 +97,13 @@ export default function DateDetailView() {
       )}
 
       {/* Blackout Dates */}
-
       {blackoutDates.length > 0 && (
         <div className="mt-4">
           <h2 className="mb-3 text-lg font-semibold">Unavailable Members</h2>
           <ul>
             {blackoutDates.map(blackout => (
-              <li key={blackout.date}>
-                <p>{blackout.user.name}</p>
+              <li key={blackout.date} className="mb-2">
+                <p className="text-foreground">{blackout.user?.name ?? 'Unnamed User'}</p>
               </li>
             ))}
           </ul>

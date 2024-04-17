@@ -44,10 +44,6 @@ export default function VenueDetails() {
   const { venue } = useLoaderData<typeof loader>()
   const { bandId } = useParams()
 
-  console.group(`%c$venueId.view.tsx`, 'color: #ffffff; font-size: 13px; font-weight: bold;')
-  console.log('\n', `venue = `, venue, '\n')
-  console.groupEnd()
-
   return (
     <div>
       <div className="flex justify-between px-4 sm:px-0">
