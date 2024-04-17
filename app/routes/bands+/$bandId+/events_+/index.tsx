@@ -56,7 +56,7 @@ export default function EventsRoute() {
     {
       title: 'Date',
       dataIndex: 'date',
-      render: date => formatDate(date), // Assuming formatDate is defined elsewhere
+      render: date => formatDate(date),
     },
     {
       title: 'Location',

@@ -1,9 +1,9 @@
-// VenueDetails.tsx
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Link, useLoaderData } from '@remix-run/react'
+import { Link, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
+import { formatDate } from '#app/utils/misc'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
@@ -18,6 +18,20 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       name: true,
       location: true,
       capacity: true,
+      events: {
+        select: {
+          date: true,
+          location: true,
+          name: true,
+          id: true,
+          Setlist: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   })
 
@@ -28,6 +42,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function VenueDetails() {
   const { venue } = useLoaderData<typeof loader>()
+  const { bandId } = useParams()
 
   console.group(`%c$venueId.view.tsx`, 'color: #ffffff; font-size: 13px; font-weight: bold;')
   console.log('\n', `venue = `, venue, '\n')
@@ -44,21 +59,42 @@ export default function VenueDetails() {
           <Button size="sm">Edit Venue</Button>
         </Link>
       </div>
-      <div className="mt-6 border-t border-white/10">
-        <dl className="divide-y divide-white/10">
+
+      <div className="mt-6 border-t border-border">
+        <dl className="divide-y divide-border">
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Name</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{venue?.name}</dd>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{venue?.name}</dd>
           </div>
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Location</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{venue?.location}</dd>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{venue?.location}</dd>
           </div>
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Capacity</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{venue?.capacity}</dd>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{venue?.capacity}</dd>
+          </div>
+
+          {/* Events */}
+          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Events</dt>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
+              <ul className="divide-y divide-border">
+                {venue?.events.map(event => (
+                  <li key={event.date} className="flex justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium leading-6">{formatDate(event.date)}</p>
+                      <p className="text-sm leading-6 text-accent-foreground">{event.location}</p>
+                    </div>
+                    <Link to={`/bands/${bandId}/events/${event.id}/view`} className="text-blue-500 hover:underline">
+                      View Event
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </dd>
           </div>
         </dl>
       </div>
