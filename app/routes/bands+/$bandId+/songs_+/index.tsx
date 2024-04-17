@@ -47,7 +47,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
 
-export default function BandIdIndex() {
+export default function SongsIndexRoute() {
   const { songs, songCount } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const params = useParams()

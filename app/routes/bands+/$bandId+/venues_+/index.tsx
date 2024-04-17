@@ -31,7 +31,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ venues })
 }
 
-export default function BandIdIndex() {
+export default function VenuesIndexRoute() {
   const { venues } = useLoaderData<typeof loader>()
 
   return (
