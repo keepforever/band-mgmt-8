@@ -10,3 +10,14 @@ export const isDayInListOfDates = ({ currentDay, dates }: Params): boolean => {
     return bingo
   })
 }
+
+interface Params {
+  currentDay: string
+  dates: string[]
+}
+
+export const isDayInListOfDatesNew = ({ currentDay, dates }: Params): boolean => {
+  return dates.some(date => {
+    return date === currentDay
+  })
+}

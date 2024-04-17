@@ -1,7 +1,7 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node'
 import { json, useLoaderData, useSubmit } from '@remix-run/react'
-import { months } from '#app/constants/months'
+import { getMonths } from '#app/constants/months.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { isDayInListOfDates } from '#app/utils/date'
 import { prisma } from '#app/utils/db.server'
@@ -78,10 +78,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ status: 'success' } as const, { headers: toastHeaders })
 }
 
-export default function Example() {
+export default function BlackoutDays() {
   const currentDate = new Date()
   const { user } = useLoaderData<typeof loader>()
   const submit = useSubmit()
+  const months = getMonths(12)
 
   return (
     <div>

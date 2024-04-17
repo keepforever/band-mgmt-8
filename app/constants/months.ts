@@ -9,6 +9,7 @@ export function getMonths(n: number) {
     for (let j = 1; j <= daysInMonth; j++) {
       days.push({
         date: new Date(year, month, j).toISOString().split('T')[0],
+        dateIsoString: new Date(year, month, j).toISOString(),
         name: new Date(year, month, j).toLocaleString('default', {
           weekday: 'short',
         }),
@@ -19,9 +20,9 @@ export function getMonths(n: number) {
     months.push({
       year: year,
       monthIndex: month,
+      offset: days[0].dayIndex,
       name: today.toLocaleString('default', { month: 'long' }),
       days,
-      offset: days[0].dayIndex,
     })
     today.setMonth(month + 1)
   }

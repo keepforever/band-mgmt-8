@@ -289,12 +289,12 @@ export function LayoutAuthenticated({
         </div>
       </div>
 
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-background px-4 py-4 shadow-sm sm:px-6 lg:hidden">
         <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
           <span className="sr-only">Open sidebar</span>
           <Icon name="sun" className="h-6 w-6" aria-hidden="true" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">Dashboard</div>
+        <div className="flex-1 text-sm font-semibold leading-6 text-foreground">Dashboard</div>
         <a href="https://tailwindui.com" className="flex items-center gap-x-4">
           <span className="sr-only">Your profile</span>
           <img className="h-8 w-8 rounded-full bg-gray-500" src="/img/user.png" alt="" />
