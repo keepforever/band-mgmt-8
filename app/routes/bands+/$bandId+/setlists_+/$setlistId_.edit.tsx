@@ -12,7 +12,7 @@ import { Icon } from '#app/components/ui/icon'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc'
+import { cn, formatDate } from '#app/utils/misc'
 
 export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist'>>
 
@@ -45,6 +45,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     select: {
       id: true,
       name: true,
+      date: true,
     },
   })
 
@@ -63,6 +64,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
     select: {
       name: true,
+      event: {
+        select: {
+          id: true,
+        },
+      },
       sets: {
         select: {
           name: true,
@@ -176,7 +182,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function EditSetlistRoute() {
-  const { songs, events, bandId, setlist } = useLoaderData<typeof loader>()
+  const { events, bandId, setlist } = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
   const addSongColumnOrder = searchParams.get('addSongColumnOrder')
 
@@ -216,25 +222,6 @@ export default function EditSetlistRoute() {
     setColumns(prevColumns =>
       prevColumns.filter(column => column.order !== order).map((col, index) => ({ ...col, order: index })),
     )
-  }
-
-  const seedSets = (setCount: number, allSongs: Song[]) => {
-    const newColumns: MySetlistType = []
-    for (let i = 0; i < setCount; i++) {
-      newColumns.push({
-        order: i,
-        list: [],
-      })
-    }
-
-    // Evenly distribute songs across sets
-    allSongs.forEach((song, index) => {
-      const columnIndex = index % setCount
-      newColumns[columnIndex].list.push(song)
-    })
-
-    // Update the columns state with the new distribution
-    setColumns(newColumns)
   }
 
   const onDragEnd = (result: DropResult) => {
@@ -326,9 +313,17 @@ export default function EditSetlistRoute() {
 
   return (
     <Form method="POST">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex justify-end gap-2">
+        <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
+          Submit
+        </Button>
+        <Button type="button" size="xs" onClick={addColumn} variant="secondary">
+          Add Set
+        </Button>
+      </div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <Field
-          className="max-w-xl flex-1"
+          className="w-full max-w-xl"
           labelProps={{ children: 'Setlist Name' }}
           inputProps={{
             type: 'text',
@@ -338,17 +333,21 @@ export default function EditSetlistRoute() {
             defaultValue: setlist?.name,
           }}
         />
-        <div className="flex gap-2">
-          <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
-            Submit
-          </Button>
-          <Button size="xs" type="button" onClick={() => seedSets(3, songs)}>
-            Seed Sets
-          </Button>
-          <Button type="button" size="xs" onClick={addColumn} variant="secondary">
-            Add Set
-          </Button>
-        </div>
+
+        <select
+          name="event"
+          defaultValue={setlist?.event?.id}
+          className={cn(
+            'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
+          )}
+        >
+          <option value="">Select a Venue</option>
+          {events.map(event => (
+            <option key={event.id} value={event.id}>
+              {event.name}: {formatDate(event.date)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
