@@ -42,7 +42,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     },
   })
 
-  return json({ songs: songs.map(song => ({ ...song.song, lyricId: song.song.lyrics?.id })), songCount })
+  return json({ songs: songs.map(song => ({ ...song.song, lyricId: song?.song?.lyrics?.id || '' })), songCount })
 }
 
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
@@ -56,18 +56,21 @@ export default function SongsIndexRoute() {
     {
       title: 'Title',
       dataIndex: 'title',
+      stopPropagation: true,
       render: (value, record) => (
         <div className="flex items-center gap-2">
           <span>{value}</span>
 
           {!!record.lyricId && (
-            <Link to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`} className="text-blue-500">
+            <Link
+              to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`}
+              className="flex items-center text-muted-foreground"
+            >
               <Icon name="file-text" className="fill-lime-400" />
             </Link>
           )}
         </div>
       ),
-      stopPropagation: true,
     },
     {
       title: 'Artist',
@@ -85,15 +88,16 @@ export default function SongsIndexRoute() {
       title: 'YouTube URL',
       dataIndex: 'youtubeUrl',
     },
-    {
-      title: 'Lyric ID',
-      dataIndex: 'lyricId',
-    },
+    // {
+    //   title: 'Lyric ID',
+    //   dataIndex: 'lyricId',
+    //   render: value => <span>{value || 'null'}</span>,
+    // },
   ]
 
   return (
     <div>
-      <div className="flex justify-between">
+      <div className="flex flex-wrap justify-between">
         <h2 className="my-4 text-3xl font-bold">
           Songs
           <span className="ml-1 text-base font-normal text-foreground-destructive" aria-label="Total songs">
@@ -102,11 +106,11 @@ export default function SongsIndexRoute() {
         </h2>
 
         <div className="flex gap-4">
-          <Button asChild variant="secondary" size="lg">
+          <Button asChild variant="secondary" size="sm">
             <Link to="new">Create</Link>
           </Button>
 
-          <Button asChild variant="destructive" size="lg">
+          <Button asChild variant="destructive" size="sm">
             <Link to="bulk-upload">Bulk Upload</Link>
           </Button>
         </div>

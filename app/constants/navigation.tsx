@@ -8,15 +8,7 @@ export const TempIcon = ({ className }: { className?: string }) => {
   )
 }
 
-export const navigation = [{ iconName: 'sun', name: 'Bands', to: '/bands' }]
-
-export const navigation_OldDeleteMe = [
-  { iconName: 'sun', name: 'Team', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Projects', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Calendar', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Documents', href: '#', icon: <Icon name="sun" />, current: false },
-  { iconName: 'sun', name: 'Reports', href: '#', icon: <Icon name="sun" />, current: false },
-]
+export const navigation = [{ iconName: 'sun', name: 'Your Bands', to: '/bands' }]
 
 export const bandSubNavigation = [
   {
