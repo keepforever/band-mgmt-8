@@ -36,6 +36,10 @@ export const extendedTheme = {
       DEFAULT: 'hsl(var(--accent))',
       foreground: 'hsl(var(--accent-foreground))',
     },
+    'accent-two': {
+      DEFAULT: 'hsl(var(--accent-two))',
+      foreground: 'hsl(var(--accent-two-foreground))',
+    },
     popover: {
       DEFAULT: 'hsl(var(--popover))',
       foreground: 'hsl(var(--popover-foreground))',

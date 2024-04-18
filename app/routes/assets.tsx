@@ -106,7 +106,7 @@ const ColorSwatches: React.FC = () => {
         <div className="h-20 w-full bg-accent"></div>
       </div>
       <div className="flex flex-col gap-2 p-1">
-        <p className="text-foreground">Accent Foreground</p>
+        <p className="text-accent-foreground">Accent Foreground</p>
         <div className="h-20 w-full bg-accent-foreground"></div>
       </div>
       <div className="flex flex-col gap-2 p-1">
