@@ -1,6 +1,7 @@
 import { type Setlist as SetlistModel } from '@prisma/client'
 import { type SerializeFrom, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
+import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
@@ -71,7 +72,17 @@ export default function SetlistsRoute() {
         </Button>
       </div>
 
-      <TableGeneric columns={columns} data={setlists} onRowClick={setlist => navigate(`${setlist.id}/view`)} />
+      {setlists.length === 0 ? (
+        <EmptyStateGeneric
+          title="No Setlists"
+          messages={['Create a new setlist by clicking the "Create" button above.']}
+          iconNames={['pope']}
+          linkTo="new"
+          buttonTitle="Create Setlist"
+        />
+      ) : (
+        <TableGeneric columns={columns} data={setlists} onRowClick={setlist => navigate(`${setlist.id}/view`)} />
+      )}
     </>
   )
 }

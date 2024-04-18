@@ -12,7 +12,7 @@ import { Icon } from '#app/components/ui/icon'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc'
+import { cn, formatDate } from '#app/utils/misc'
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
@@ -98,6 +98,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     select: {
       id: true,
       name: true,
+      date: true,
     },
   })
 
@@ -254,9 +255,20 @@ export default function CreateSetlistRoute() {
 
   return (
     <Form method="POST">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex justify-end gap-2">
+        <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
+          Submit
+        </Button>
+        <Button size="xs" type="button" onClick={() => seedSets(3, songs)}>
+          Seed Sets
+        </Button>
+        <Button type="button" size="xs" onClick={addColumn} variant="secondary">
+          Add Set
+        </Button>
+      </div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <Field
-          className="max-w-xl flex-1"
+          className="w-full max-w-xl"
           labelProps={{ children: 'Setlist Name' }}
           inputProps={{
             type: 'text',
@@ -265,17 +277,20 @@ export default function CreateSetlistRoute() {
             required: true,
           }}
         />
-        <div className="flex gap-2">
-          <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
-            Submit
-          </Button>
-          <Button size="xs" type="button" onClick={() => seedSets(3, songs)}>
-            Seed Sets
-          </Button>
-          <Button type="button" size="xs" onClick={addColumn} variant="secondary">
-            Add Set
-          </Button>
-        </div>
+
+        <select
+          name="event"
+          className={cn(
+            'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
+          )}
+        >
+          <option value="">Select a Venue</option>
+          {events.map(event => (
+            <option key={event.id} value={event.id}>
+              {event.name}: {formatDate(event.date)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -407,8 +422,6 @@ export default function CreateSetlistRoute() {
           })}
         </div>
       </DragDropContext>
-
-      <input type="hidden" name="event" value={events[Math.floor(Math.random() * events.length)]?.id} />
     </Form>
   )
 }
