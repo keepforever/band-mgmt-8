@@ -133,18 +133,20 @@ export default function CreateSetlistRoute() {
 
           {/* Event */}
 
-          <div className="flex flex-col border-2 border-foreground px-2 py-1">
-            <span className="text-accent-two text-xl font-bold">{setlist.event?.name}</span>
-            <Link
-              to={`/bands/${params.bandId}/venues/${setlist.event?.venue?.id}/view`}
-              className="hover:text-accent-two flex items-center gap-1 hover:underline"
-            >
-              <div className="flex gap-1">
-                <span>{setlist?.event?.venue?.name}</span>, <span>{setlist?.event?.location}</span>
-              </div>
-            </Link>
-            <span className="text-foreground">{formatDate(setlist?.event?.date || '')}</span>
-          </div>
+          {setlist?.event?.date && (
+            <div className="flex flex-col border-2 border-foreground px-2 py-1">
+              <span className="text-accent-two text-xl font-bold">{setlist.event?.name}</span>
+              <Link
+                to={`/bands/${params.bandId}/venues/${setlist.event?.venue?.id}/view`}
+                className="hover:text-accent-two flex items-center gap-1 hover:underline"
+              >
+                <div className="flex gap-1">
+                  <span>{setlist?.event?.venue?.name}</span>, <span>{setlist?.event?.location}</span>
+                </div>
+              </Link>
+              <span className="text-foreground">{formatDate(setlist?.event?.date || '')}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-end gap-3 sm:items-start">

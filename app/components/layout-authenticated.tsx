@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { NavLink, useNavigation, useParams, useRouteLoaderData } from '@remix-run/react'
+import { Link, NavLink, useNavigation, useParams, useRouteLoaderData } from '@remix-run/react'
 import { Fragment, useEffect, useState } from 'react'
 import { Icon } from '#app/components/ui/icon.js'
 import { bandSubNavigation, settingsNavigation } from '#app/constants/navigation.js'
@@ -281,7 +281,12 @@ export function LayoutAuthenticated({
           <span className="sr-only">Open sidebar</span>
           <Icon name="hamburger-menu" className="h-6 w-6 stroke-foreground" aria-hidden="true" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-foreground">Dashboard</div>
+        <Link
+          to="/bands"
+          className="hover:text-hyperlink-hover flex-1 text-sm font-semibold leading-6 text-foreground hover:underline"
+        >
+          Dashboard
+        </Link>
 
         <NavLink
           to="/assets"

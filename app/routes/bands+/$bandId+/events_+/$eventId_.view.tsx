@@ -15,6 +15,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     include: {
       venue: true,
       bands: true,
+      Setlist: true,
     },
   })
   return json({ event })
@@ -54,24 +55,24 @@ export default function EventDetailView() {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Event Name</dt>
 
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{event?.name}</dd>
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{event?.name}</dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Date & Location</dt>
 
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{`${formatDate(String(event?.date))}, ${event?.location}`}</dd>
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${formatDate(String(event?.date))}, ${event?.location}`}</dd>
           </div>
           {event?.venue && (
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6">Venue</dt>
 
-              <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
+              <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
             </div>
           )}
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Bands</dt>
 
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
               <ul>{event?.bands.map(band => <li key={band.bandId}>{band.bandId}</li>)}</ul>
             </dd>
           </div>
@@ -79,10 +80,27 @@ export default function EventDetailView() {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Address</dt>
 
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
               <AddressLink address="Pacifica California" />
             </dd>
           </div>
+
+          {event?.Setlist && (
+            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt className="text-sm font-medium leading-6">Setlist</dt>
+
+              <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
+                {/* Button link to setlist by id */}
+
+                <Link
+                  to={`/bands/${event?.bands[0].bandId}/setlists/${event?.Setlist?.id}/view`}
+                  className="text-hyperlink hover:text-hyperlink-hover hover:underline"
+                >
+                  View Setlist
+                </Link>
+              </dd>
+            </div>
+          )}
         </dl>
       </div>
     </div>

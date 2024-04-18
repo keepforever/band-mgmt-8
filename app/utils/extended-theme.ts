@@ -40,6 +40,10 @@ export const extendedTheme = {
       DEFAULT: 'hsl(var(--accent-two))',
       foreground: 'hsl(var(--accent-two-foreground))',
     },
+    hyperlink: {
+      DEFAULT: 'hsl(var(--hyperlink))',
+      hover: 'hsl(var(--hyperlink-hover))',
+    },
     popover: {
       DEFAULT: 'hsl(var(--popover))',
       foreground: 'hsl(var(--popover-foreground))',

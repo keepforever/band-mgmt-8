@@ -10,19 +10,16 @@ type BandSummaryProps = {
 
 export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
   const navigate = useNavigate()
+
   return (
     <>
       {user?.bands?.map(bandIterator => {
         const { band, isAdmin } = bandIterator
-        // Assuming the first band in the array is the one to display
 
         return (
           <div className="overflow-hidden bg-accent shadow sm:rounded-lg" key={band.id}>
             <div className="px-4 py-6 sm:px-6">
-              <h3 className="text-base font-semibold leading-7">{band?.name}</h3>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-                Details and upcoming events for your band.
-              </p>
+              <h3 className="text-xl font-semibold leading-7">{band?.name}</h3>
             </div>
             <div className="border-t border-border">
               <dl className="divide-y divide-border">
@@ -56,7 +53,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                       <div
                         key={event.event.id}
                         className="cursor-pointer text-foreground hover:text-destructive-foreground"
-                        onClick={() => navigate(`/events/${event.event.id}`)}
+                        onClick={() => navigate(`${band.id}/events/${event.event.id}/view`)}
                       >
                         {`Date: ${new Date(event.event.date).toLocaleDateString()}, Location: ${
                           event.event.venue?.name || 'TBD'

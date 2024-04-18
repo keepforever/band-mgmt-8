@@ -57,11 +57,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
       sets: {
         create: createSetsData,
       },
-      event: {
-        connect: {
-          id: eventId,
+      ...(eventId && {
+        event: {
+          connect: {
+            id: eventId,
+          },
         },
-      },
+      }),
     },
   }
 

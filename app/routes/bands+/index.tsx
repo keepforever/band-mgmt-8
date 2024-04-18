@@ -4,6 +4,7 @@ import { BandSummary } from '#app/components/band-summary.js'
 import { BandsEmptyState } from '#app/components/bands-empty-state.js'
 import { Button } from '#app/components/ui/button'
 import { requireUserId } from '#app/utils/auth.server'
+import { cn } from '#app/utils/misc.js'
 import { useOptionalUser } from '#app/utils/user'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -13,16 +14,22 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function BandsIndex() {
   const user = useOptionalUser()
+  const userHasBand = (user?.bands?.length || 0) > 0
 
-  if (!user?.bands.length) {
-    return <BandsEmptyState />
-  }
+  if (!userHasBand) return <BandsEmptyState />
 
   return (
     <div>
       <div className="mb-4 flex justify-between">
         <h1 className="text-3xl font-bold">Your Bands</h1>
-        <Button asChild variant="default" size="lg">
+        <Button
+          asChild
+          variant="default"
+          size="lg"
+          className={cn({
+            hidden: userHasBand,
+          })}
+        >
           <Link to="new">Create</Link>
         </Button>
       </div>
