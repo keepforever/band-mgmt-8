@@ -93,7 +93,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const lyricsFile = formData.get('lyricsFile')
 
-  if (lyricsFile instanceof File) {
+  console.log('\n', `lyricsFile = `, lyricsFile, '\n')
+
+  if (lyricsFile instanceof File && lyricsFile.size > 0) {
+    console.log('\n', `hello create songLyrics `, '\n')
     await prisma.songLyrics.create({
       data: {
         songId: createdSong.id,
