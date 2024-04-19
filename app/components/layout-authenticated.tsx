@@ -134,7 +134,7 @@ export function LayoutAuthenticated({
 
                       <li>
                         <div className="text-xs font-semibold leading-6 text-foreground">Your Settings</div>
-                        <ul className="-mx-2 mt-2 space-y-1">
+                        <ul className="ml-2 mt-2 space-y-1">
                           {settingsNavigation.map(item => (
                             <li key={item.name}>
                               <NavLink
@@ -142,21 +142,18 @@ export function LayoutAuthenticated({
                                 className={({ isActive }) =>
                                   cn('flex gap-3', {
                                     'bg-primary text-primary-foreground': isActive,
-                                    'bg-background text-foreground': !isActive,
+                                    'bg-background text-foreground hover:text-accent-two hover:underline': !isActive,
                                   })
                                 }
                               >
-                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-background text-[0.625rem] font-medium text-foreground group-hover:text-foreground">
-                                  {item.name[0]}
-                                </span>
                                 <span className="truncate">{item.name}</span>
                               </NavLink>
                             </li>
                           ))}
+                          <li>
+                            <LogoutButton />
+                          </li>
                         </ul>
-                      </li>
-                      <li>
-                        <LogoutButton />
                       </li>
                     </ul>
                   </nav>
@@ -250,7 +247,7 @@ export function LayoutAuthenticated({
 
               <li>
                 <div className="text-xs font-semibold leading-6 text-foreground">Your Settings</div>
-                <ul className="-mx-2 mt-2 space-y-1">
+                <ul className="ml-2 mt-2 space-y-1">
                   {settingsNavigation.map(item => (
                     <li key={item.name}>
                       <NavLink
@@ -258,7 +255,7 @@ export function LayoutAuthenticated({
                         className={({ isActive }) =>
                           cn({
                             'bg-primary text-primary-foreground': isActive,
-                            'bg-background text-foreground': !isActive,
+                            'bg-background text-foreground hover:text-accent-two hover:underline': !isActive,
                           })
                         }
                       >
@@ -266,10 +263,10 @@ export function LayoutAuthenticated({
                       </NavLink>
                     </li>
                   ))}
+                  <li>
+                    <LogoutButton />
+                  </li>
                 </ul>
-              </li>
-              <li>
-                <LogoutButton />
               </li>
             </ul>
           </nav>
@@ -283,7 +280,7 @@ export function LayoutAuthenticated({
         </button>
         <Link
           to="/bands"
-          className="hover:text-hyperlink-hover flex-1 text-sm font-semibold leading-6 text-foreground hover:underline"
+          className="flex-1 text-sm font-semibold leading-6 text-foreground hover:text-hyperlink-hover hover:underline"
         >
           Dashboard
         </Link>
