@@ -300,3 +300,7 @@ export function logObjectDetails(objects: Record<string, any>, filename: string,
 
   console.groupEnd()
 }
+
+export function removeLeadingSlash(str: string): string {
+  return str.startsWith('/') ? str.slice(1) : str
+}

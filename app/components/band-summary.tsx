@@ -1,5 +1,7 @@
-import { useNavigate } from '@remix-run/react'
+import { Link, useNavigate } from '@remix-run/react'
 import React from 'react'
+import { bandSubNavigation } from '#app/constants/navigation.js'
+import { cn, removeLeadingSlash } from '#app/utils/misc.js'
 import { type useOptionalUser } from '#app/utils/user.js'
 
 type RootLoaderUserSummary = ReturnType<typeof useOptionalUser>
@@ -19,7 +21,9 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
         return (
           <div className="overflow-hidden bg-accent shadow sm:rounded-lg" key={band.id}>
             <div className="px-4 py-6 sm:px-6">
-              <h3 className="text-xl font-semibold leading-7">{band?.name}</h3>
+              <Link to={`${band.id}`} className="block text-foreground hover:text-destructive-foreground">
+                <h3 className="text-xl font-semibold leading-7">{band?.name}</h3>
+              </Link>
             </div>
             <div className="border-t border-border">
               <dl className="divide-y divide-border">
@@ -61,6 +65,31 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                         {index < band.events.length - 1 ? <br /> : null}
                       </div>
                     ))}
+                  </dd>
+                </div>
+
+                {/* Quick Links */}
+
+                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium">Quick Links</dt>
+                  <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
+                    <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {bandSubNavigation.map(item => {
+                        return (
+                          <li
+                            key={item.name}
+                            className="group cursor-pointer rounded-md bg-accent-two/30 p-4 text-foreground hover:bg-destructive/30"
+                          >
+                            <Link
+                              to={`${band.id}/${removeLeadingSlash(item.to)}`}
+                              className={cn('flex items-center gap-1 group-hover:text-blue-500 group-hover:underline')}
+                            >
+                              {item.name}
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
                   </dd>
                 </div>
               </dl>

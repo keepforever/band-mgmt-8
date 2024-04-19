@@ -81,7 +81,10 @@ export default function EventDetailView() {
             <dt className="text-sm font-medium leading-6">Address</dt>
 
             <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
-              <AddressLink address="Pacifica California" />
+              <AddressLink address={`${event?.venue?.name} in ${event?.venue?.location}`} />
+
+              {/* For testing */}
+              {/* <AddressLink address={`House of Blue in Cleveland`} /> */}
             </dd>
           </div>
 

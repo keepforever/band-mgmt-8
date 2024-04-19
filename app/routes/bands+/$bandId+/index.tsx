@@ -2,7 +2,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData } from '@remix-run/react'
 import { bandSubNavigation } from '#app/constants/navigation.js'
 import { prisma } from '#app/utils/db.server'
-import { cn } from '#app/utils/misc'
+import { cn, removeLeadingSlash } from '#app/utils/misc'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const bandId = params.bandId
@@ -46,10 +46,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 export default function BandIdIndex() {
   const { band } = useLoaderData<typeof loader>()
 
-  function removeLeadingSlash(str: string): string {
-    return str.startsWith('/') ? str.slice(1) : str
-  }
-
   return (
     <div>
       <h1 className="mb-4 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
@@ -81,7 +77,7 @@ export default function BandIdIndex() {
           return (
             <li
               key={item.name}
-              className="bg-accent-two/30 group cursor-pointer rounded-md p-4 text-foreground hover:bg-destructive/30"
+              className="group cursor-pointer rounded-md bg-accent-two/30 p-4 text-foreground hover:bg-destructive/30"
             >
               <Link
                 to={`${removeLeadingSlash(item.to)}`}
