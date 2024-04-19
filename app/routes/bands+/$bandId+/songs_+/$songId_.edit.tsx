@@ -209,58 +209,44 @@ export default function CreateSongRoute() {
           errors={fields.status.errors}
         />
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          name="lyricsFile"
-          accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          onChange={async e => {
-            const formData = new FormData()
-            const file = e.target.files?.[0]
-
-            if (file) {
-              formData.append('lyricsFile', file)
-              formData.append('songId', params?.songId || '')
-              formData.append('redirect', location.pathname)
-            }
-
-            submit(formData, {
-              action: `/resources/song-lyric/${loaderData.song?.lyrics?.id || 'new'}`,
-              method: 'POST',
-              encType: 'multipart/form-data',
-              navigate: false,
-              fetcherKey: 'lyric',
-            })
-
-            // const fetchPdfUrl = async (id: string) => {
-            //   const response = await fetch(`/resources/song-lyric/${id}`)
-            //   const contentType = response.headers.get('Content-Type')
-
-            //   if (contentType !== 'application/pdf') {
-            //     const text = await response.text()
-            //     setLyricHtml(text)
-            //     return
-            //   }
-
-            //   setPdfUrl(response.url)
-            // }
-            // await fetchPdfUrl(loaderData.song?.lyrics?.id || '')
-
-            fileInputRef.current!.value = ''
-          }}
-          className={cn(
-            'rounded-md border border-gray-300 p-2',
-            'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
-            'hover:border-blue-500 hover:ring hover:ring-blue-500',
-          )}
-        />
-
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Update Song
         </StatusButton>
         <br />
         <ErrorList errors={form.errors} id={form.errorId} />
       </Form>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        name="lyricsFile"
+        accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        onChange={async e => {
+          const formData = new FormData()
+          const file = e.target.files?.[0]
+
+          if (file) {
+            formData.append('lyricsFile', file)
+            formData.append('songId', params?.songId || '')
+            formData.append('redirect', location.pathname)
+          }
+
+          submit(formData, {
+            action: `/resources/song-lyric/${loaderData.song?.lyrics?.id || 'new'}`,
+            method: 'POST',
+            encType: 'multipart/form-data',
+            navigate: false,
+            fetcherKey: 'lyric',
+          })
+
+          fileInputRef.current!.value = ''
+        }}
+        className={cn(
+          'rounded-md border border-gray-300 p-2',
+          'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
+          'hover:border-blue-500 hover:ring hover:ring-blue-500',
+        )}
+      />
 
       {pdfUrl && <iframe title="pdf-viewer" src={pdfUrl} className="h-[600px] w-full border-none" />}
 
