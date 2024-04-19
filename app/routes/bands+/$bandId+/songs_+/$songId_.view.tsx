@@ -42,10 +42,7 @@ export default function SongDetails() {
   const submit = useSubmit()
   const params = useParams()
   const { song } = useLoaderData<typeof loader>()
-
   const { lyricHtml, pdfUrl } = useLyrics(song?.lyrics?.id)
-
-  console.log('\n', `song.status = `, song.status, '\n')
 
   return (
     <div>

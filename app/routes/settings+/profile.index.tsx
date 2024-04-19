@@ -3,7 +3,7 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
 import { type SEOHandle } from '@nasa-gcn/remix-seo'
 import { json, type LoaderFunctionArgs, type ActionFunctionArgs } from '@remix-run/node'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
+import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
@@ -13,7 +13,7 @@ import { requireUserId, sessionKey } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc, useDoubleCheck } from '#app/utils/misc.tsx'
 import { authSessionStorage } from '#app/utils/session.server.ts'
-import { redirectWithToast } from '#app/utils/toast.server.ts'
+import { createToastHeaders, redirectWithToast } from '#app/utils/toast.server.ts'
 import { NameSchema, UsernameSchema } from '#app/utils/user-validation.ts'
 import { twoFAVerificationType } from './profile.two-factor.tsx'
 
@@ -75,11 +75,13 @@ type ProfileActionArgs = {
 const profileUpdateActionIntent = 'update-profile'
 const signOutOfSessionsActionIntent = 'sign-out-of-sessions'
 const deleteDataActionIntent = 'delete-data'
+const copyUserId = 'copy-user-id'
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const formData = await request.formData()
   const intent = formData.get('intent')
+
   switch (intent) {
     case profileUpdateActionIntent: {
       return profileUpdateAction({ request, userId, formData })
@@ -89,6 +91,15 @@ export async function action({ request }: ActionFunctionArgs) {
     }
     case deleteDataActionIntent: {
       return deleteDataAction({ request, userId, formData })
+    }
+    case copyUserId: {
+      const toastHeaders = await createToastHeaders({
+        title: 'Copied',
+        description: 'User ID copied to clipboard',
+        type: 'success',
+      })
+
+      return json({ status: 'success' } as const, { headers: toastHeaders })
     }
     default: {
       throw new Response(`Invalid intent "${intent}"`, { status: 400 })
@@ -151,9 +162,6 @@ export default function EditUserProfile() {
             <Icon name="dots-horizontal">{data.hasPassword ? 'Change Password' : 'Create a Password'}</Icon>
           </Link>
         </div>
-        <div>
-          <Button onClick={() => copyToClipboard(String(data.user?.id))}>Copy User ID</Button>
-        </div>
         {/* <div>
           <Link to="connections">
             <Icon name="link-2">Manage connections</Icon>
@@ -165,7 +173,20 @@ export default function EditUserProfile() {
           </Link>
         </div>
         <SignOutOfSessions />
-        <DeleteData />
+        <div className="flex items-center gap-3">
+          <Form method="POST" navigate={false}>
+            <Button
+              name="intent"
+              value={copyUserId}
+              type="submit"
+              size="sm"
+              onClick={() => copyToClipboard(String(data.user?.id))}
+            >
+              Copy User ID
+            </Button>
+          </Form>
+          <DeleteData />
+        </div>
       </div>
     </div>
   )
@@ -248,10 +269,10 @@ function UpdateProfile() {
 
       <ErrorList errors={form.errors} id={form.errorId} />
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-start">
         <StatusButton
           type="submit"
-          size="wide"
+          size="sm"
           name="intent"
           value={profileUpdateActionIntent}
           status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'}
@@ -329,7 +350,7 @@ function DeleteData() {
             name: 'intent',
             value: deleteDataActionIntent,
           })}
-          variant={dc.doubleCheck ? 'destructive' : 'default'}
+          variant={dc.doubleCheck ? 'destructive' : 'secondary'}
           status={fetcher.state !== 'idle' ? 'pending' : 'idle'}
         >
           <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete all your data`}</Icon>
