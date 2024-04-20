@@ -5,6 +5,7 @@ import { Icon } from '#app/components/ui/icon.js'
 import { bandSubNavigation, settingsNavigation } from '#app/constants/navigation.js'
 import { type loader as rootLoader } from '#app/root.tsx'
 import { cn } from '#app/utils/misc.js'
+import { Breadcrumbs } from './breadcrumbs'
 import { LogoutButton } from './logout-button'
 
 export function LayoutAuthenticated({
@@ -165,7 +166,8 @@ export function LayoutAuthenticated({
         </a>
       </div>
 
-      <main className="py-10 lg:pl-60">
+      <main className="py-3 lg:pl-60">
+        <Breadcrumbs />
         <div className="px-4 sm:px-6 lg:px-8">{children}</div>
       </main>
     </div>
