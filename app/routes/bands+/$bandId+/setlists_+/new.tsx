@@ -9,6 +9,7 @@ import { Fragment, useState } from 'react'
 import { Field } from '#app/components/forms'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
+import { MAX_SONGS_PER_SET } from '#app/constants/setlists.js'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -161,7 +162,10 @@ export default function CreateSetlistRoute() {
     // Evenly distribute songs across sets
     allSongs.forEach((song, index) => {
       const columnIndex = index % setCount
-      newColumns[columnIndex].list.push(song)
+      // Check if the set already has 15 songs
+      if (newColumns[columnIndex].list.length < MAX_SONGS_PER_SET) {
+        newColumns[columnIndex].list.push(song)
+      }
     })
 
     // Update the columns state with the new distribution
@@ -286,7 +290,7 @@ export default function CreateSetlistRoute() {
             'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
           )}
         >
-          <option value="">Select a Venue</option>
+          <option value="">Associate a setlist with an event</option>
           {events.map(event => (
             <option key={event.id} value={event.id}>
               {event.name}: {formatDate(event.date)}
