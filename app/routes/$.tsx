@@ -30,7 +30,7 @@ export function ErrorBoundary() {
               <h1>We can't find this page:</h1>
               <pre className="whitespace-pre-wrap break-all text-body-lg">{location.pathname}</pre>
             </div>
-            <Link to="/" className="text-body-md underline">
+            <Link to="/" className="text-body-sm underline">
               <Icon name="arrow-left">Back to home</Icon>
             </Link>
           </div>

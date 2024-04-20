@@ -1,10 +1,14 @@
 // EventDetailView.tsx
-import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { Link, useLoaderData } from '@remix-run/react'
+import { invariantResponse } from '@epic-web/invariant'
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
+import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { type FC } from 'react'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
+import { StatusButton } from '#app/components/ui/status-button.js'
 import { prisma } from '#app/utils/db.server.ts'
-import { formatDate } from '#app/utils/misc'
+import { formatDate, useDoubleCheck } from '#app/utils/misc'
+import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const eventId = params.eventId
@@ -41,14 +45,20 @@ const AddressLink: FC<AddressLinkProps> = ({ address }) => {
 export default function EventDetailView() {
   const { event } = useLoaderData<typeof loader>()
 
+  console.log('\n', `event = `, event, '\n')
+
   return (
     <div>
       <div className="flex justify-between px-4 sm:px-0">
         <h3 className="text-lg font-semibold leading-7">{event?.name}</h3>
 
-        <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
-          <Button size="sm">Edit</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
+            <Button size="sm">Edit</Button>
+          </Link>
+
+          <DeleteEvent />
+        </div>
       </div>
       <div className="mt-6 border-t border-white/10">
         <dl className="divide-y divide-white/10">
@@ -107,5 +117,45 @@ export default function EventDetailView() {
         </dl>
       </div>
     </div>
+  )
+}
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData()
+  const eventId = formData.get('eventId') as string
+
+  invariantResponse(eventId, 'Event ID is required')
+
+  await prisma.event.delete({
+    where: { id: eventId },
+  })
+
+  return redirectWithToast('/events', {
+    type: 'success',
+    title: 'Event Deleted',
+    description: 'The event has been deleted successfully.',
+  })
+}
+
+function DeleteEvent() {
+  const data = useLoaderData<typeof loader>()
+  const dc = useDoubleCheck()
+  const fetcher = useFetcher<typeof action>()
+
+  return (
+    <fetcher.Form method="POST">
+      <StatusButton
+        {...dc.getButtonProps({
+          type: 'submit',
+          name: 'eventId',
+          value: data?.event?.id,
+        })}
+        variant={dc.doubleCheck ? 'destructive' : 'destructive'}
+        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        size="sm"
+      >
+        <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Event`}</Icon>
+      </StatusButton>
+    </fetcher.Form>
   )
 }

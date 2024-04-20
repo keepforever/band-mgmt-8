@@ -39,14 +39,14 @@ export function UserDropdown() {
         <DropdownMenuContent sideOffset={8} align="start">
           <DropdownMenuItem asChild>
             <Link prefetch="intent" to={`/users/${user.username}`}>
-              <Icon className="text-body-md" name="avatar">
+              <Icon className="text-body-sm" name="avatar">
                 Profile
               </Icon>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link prefetch="intent" to={`/users/${user.username}/notes`}>
-              <Icon className="text-body-md" name="pencil-2">
+              <Icon className="text-body-sm" name="pencil-2">
                 Notes
               </Icon>
             </Link>
@@ -60,7 +60,7 @@ export function UserDropdown() {
             }}
           >
             <Form action="/logout" method="POST" ref={formRef}>
-              <Icon className="text-body-md" name="exit">
+              <Icon className="text-body-sm" name="exit">
                 <button type="submit">Logout</button>
               </Icon>
             </Form>

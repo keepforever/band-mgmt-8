@@ -42,8 +42,8 @@ export default function VerifyRoute() {
 
   const checkEmail = (
     <>
-      <h1 className="text-h1">Check your email</h1>
-      <p className="mt-3 text-body-md text-muted-foreground">We've sent you a code to verify your email address.</p>
+      <h1 className="text-h3">Check your email</h1>
+      <p className="mt-3 text-body-sm text-muted-foreground">We've sent you a code to verify your email address.</p>
     </>
   )
 
@@ -53,8 +53,8 @@ export default function VerifyRoute() {
     'change-email': checkEmail,
     '2fa': (
       <>
-        <h1 className="text-h1">Check your 2FA app</h1>
-        <p className="mt-3 text-body-md text-muted-foreground">Please enter your 2FA code to verify your identity.</p>
+        <h1 className="text-h3">Check your 2FA app</h1>
+        <p className="mt-3 text-body-sm text-muted-foreground">Please enter your 2FA code to verify your identity.</p>
       </>
     ),
   }
@@ -75,10 +75,10 @@ export default function VerifyRoute() {
   })
 
   return (
-    <main className="container flex flex-col justify-center pb-32 pt-20">
+    <main className="container flex flex-col justify-center pb-32 pt-8">
       <div className="text-center">{type ? headings[type] : 'Invalid Verification Type'}</div>
 
-      <Spacer size="xs" />
+      <Spacer size="3xs" />
 
       <div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
         <div>

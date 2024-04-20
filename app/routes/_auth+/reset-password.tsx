@@ -69,10 +69,10 @@ export default function ResetPasswordPage() {
   })
 
   return (
-    <div className="container flex flex-col justify-center pb-32 pt-20">
+    <div className="container flex flex-col justify-center pb-32 pt-8">
       <div className="text-center">
-        <h1 className="text-h1">Password Reset</h1>
-        <p className="mt-3 text-body-md text-muted-foreground">
+        <h1 className="text-h3">Password Reset</h1>
+        <p className="mt-3 text-body-sm text-muted-foreground">
           Hi, {data.resetPasswordUsername}. No worries. It happens all the time.
         </p>
       </div>

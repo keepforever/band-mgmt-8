@@ -151,13 +151,13 @@ export default function SignupRoute() {
   })
 
   return (
-    <div className="container flex min-h-full flex-col justify-center pb-32 pt-20">
+    <div className="container flex min-h-full flex-col justify-center pb-32 pt-8">
       <div className="mx-auto w-full max-w-lg">
         <div className="flex flex-col gap-3 text-center">
-          <h1 className="text-h1">Welcome aboard {data.email}!</h1>
-          <p className="text-body-md text-muted-foreground">Please enter your details.</p>
+          <h1 className="text-h3">Welcome aboard {data.email}!</h1>
+          <p className="text-body-sm text-muted-foreground">Please enter your details.</p>
         </div>
-        <Spacer size="xs" />
+        <Spacer size="3xs" />
         <Form method="POST" className="mx-auto min-w-full max-w-sm sm:min-w-[368px]" {...getFormProps(form)}>
           {fields.imageUrl.initialValue ? (
             <div className="mb-4 flex flex-col items-center justify-center gap-4">
