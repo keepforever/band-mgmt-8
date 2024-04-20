@@ -5,6 +5,15 @@ import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
 
+function getFutureDate() {
+  const tempDate = faker.date.future({
+    refDate: new Date(),
+    years: 0.5,
+  })
+  const datePayload = new Date(Date.UTC(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()))
+  return datePayload
+}
+
 function capitalLorem(): string {
   return faker.lorem
     .words(2)
@@ -289,6 +298,46 @@ async function seed() {
             images: {
               create: [kodyImages.koalaSoccer],
             },
+          },
+        ],
+      },
+      blackoutDates: {
+        create: [
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
+          },
+          {
+            date: getFutureDate(),
           },
         ],
       },
