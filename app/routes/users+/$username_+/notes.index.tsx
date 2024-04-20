@@ -18,10 +18,10 @@ export const meta: MetaFunction<null, { 'routes/users+/$username_+/notes': typeo
   const noteCount = notesMatch?.data?.owner.notes.length ?? 0
   const notesText = noteCount === 1 ? 'note' : 'notes'
   return [
-    { title: `${displayName}'s Notes | Epic Notes` },
+    { title: `${displayName}'s Notes | Band MGMT` },
     {
       name: 'description',
-      content: `Checkout ${displayName}'s ${noteCount} ${notesText} on Epic Notes`,
+      content: `Checkout ${displayName}'s ${noteCount} ${notesText} on Band MGMT`,
     },
   ]
 }

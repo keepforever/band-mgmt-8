@@ -2,13 +2,13 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import * as E from '@react-email/components'
 import { json, redirect, type ActionFunctionArgs, type MetaFunction } from '@remix-run/node'
-import { Form, useActionData, useSearchParams } from '@remix-run/react'
+import { Form, useActionData } from '@remix-run/react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { ProviderConnectionForm, providerNames } from '#app/utils/connections.tsx'
+// import { ProviderConnectionForm, providerNames } from '#app/utils/connections.tsx'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
 import { checkHoneypot } from '#app/utils/honeypot.server.ts'
@@ -78,7 +78,7 @@ export function SignupEmail({ onboardingUrl, otp }: { onboardingUrl: string; otp
     <E.Html lang="en" dir="ltr">
       <E.Container>
         <h1>
-          <E.Text>Welcome to Epic Notes!</E.Text>
+          <E.Text>Welcome to Band MGMT!</E.Text>
         </h1>
         <p>
           <E.Text>
@@ -95,14 +95,14 @@ export function SignupEmail({ onboardingUrl, otp }: { onboardingUrl: string; otp
 }
 
 export const meta: MetaFunction = () => {
-  return [{ title: 'Sign Up | Epic Notes' }]
+  return [{ title: 'Sign Up | Band MGMT' }]
 }
 
 export default function SignupRoute() {
   const actionData = useActionData<typeof action>()
   const isPending = useIsPending()
-  const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo')
+  // const [searchParams] = useSearchParams()
+  // const redirectTo = searchParams.get('redirectTo')
 
   const [form, fields] = useForm({
     id: 'signup-form',
@@ -118,7 +118,7 @@ export default function SignupRoute() {
   return (
     <div className="container flex flex-col justify-center pb-32 pt-8">
       <div className="text-center">
-        <h1 className="text-h3">Let's start your journey!</h1>
+        <h1 className="text-h3">Get ready to rock!</h1>
         <p className="mt-3 text-body-sm text-muted-foreground">Please enter your email.</p>
       </div>
       <div className="mx-auto mt-16 min-w-full max-w-sm sm:min-w-[368px]">
@@ -146,13 +146,13 @@ export default function SignupRoute() {
             Submit
           </StatusButton>
         </Form>
-        <ul className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
+        {/* <ul className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
           {providerNames.map(providerName => (
             <li key={providerName}>
               <ProviderConnectionForm type="Signup" providerName={providerName} redirectTo={redirectTo} />
             </li>
           ))}
-        </ul>
+        </ul> */}
       </div>
     </div>
   )

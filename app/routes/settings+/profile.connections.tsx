@@ -15,11 +15,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#app/c
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { resolveConnectionData } from '#app/utils/connections.server.ts'
 import {
-  ProviderConnectionForm,
+  // ProviderConnectionForm,
   type ProviderName,
   ProviderNameSchema,
   providerIcons,
-  providerNames,
+  // providerNames,
 } from '#app/utils/connections.tsx'
 import { prisma } from '#app/utils/db.server.ts'
 import { makeTimings } from '#app/utils/timing.server.ts'
@@ -130,11 +130,11 @@ export default function Connections() {
       ) : (
         <p>You don't have any connections yet.</p>
       )}
-      <div className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
+      {/* <div className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
         {providerNames.map(providerName => (
           <ProviderConnectionForm key={providerName} type="Connect" providerName={providerName} />
         ))}
-      </div>
+      </div> */}
     </div>
   )
 }

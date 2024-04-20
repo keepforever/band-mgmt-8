@@ -172,7 +172,7 @@ export const meta: MetaFunction<typeof loader, { 'routes/users+/$username_+/note
   const noteContentsSummary =
     data && data.note.content.length > 100 ? data?.note.content.slice(0, 97) + '...' : 'No content'
   return [
-    { title: `${noteTitle} | ${displayName}'s Notes | Epic Notes` },
+    { title: `${noteTitle} | ${displayName}'s Notes | Band MGMT` },
     {
       name: 'description',
       content: noteContentsSummary,
