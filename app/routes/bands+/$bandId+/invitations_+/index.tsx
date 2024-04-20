@@ -1,5 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { InvitationsEmptyState } from '#app/components/invitations-empty-state.js'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
@@ -37,13 +38,12 @@ export default function BandIdIndex() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between">
-        <h2 className="my-4 text-3xl font-bold">Sent Invitations</h2>
+    <>
+      <HeaderWithActions title="Invitations">
         <Button asChild variant="secondary" size="lg">
           <Link to="new">Send Invitation</Link>
         </Button>
-      </div>
+      </HeaderWithActions>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {invitations.map((invitation, index) => (
@@ -60,6 +60,6 @@ export default function BandIdIndex() {
           </div>
         ))}
       </div>
-    </div>
+    </>
   )
 }

@@ -1,6 +1,7 @@
 import { type Song } from '@prisma/client'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { type Column, TableGeneric } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
@@ -48,7 +49,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
 
 export default function SongsIndexRoute() {
-  const { songs, songCount } = useLoaderData<typeof loader>()
+  const { songs } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const params = useParams()
 
@@ -85,7 +86,7 @@ export default function SongsIndexRoute() {
       dataIndex: 'rating',
     },
     {
-      title: 'YouTube URL',
+      title: 'YouTube',
       dataIndex: 'youtubeUrl',
     },
     // {
@@ -97,14 +98,7 @@ export default function SongsIndexRoute() {
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between">
-        <h2 className="my-4 text-3xl font-bold">
-          Songs
-          <span className="ml-1 text-base font-normal text-foreground-destructive" aria-label="Total songs">
-            ({songCount})
-          </span>
-        </h2>
-
+      <HeaderWithActions title="Songs">
         <div className="flex gap-4">
           <Button asChild variant="secondary" size="sm">
             <Link to="new">Create</Link>
@@ -114,7 +108,7 @@ export default function SongsIndexRoute() {
             <Link to="bulk-upload">Bulk Upload</Link>
           </Button>
         </div>
-      </div>
+      </HeaderWithActions>
 
       <TableGeneric
         columns={columns}

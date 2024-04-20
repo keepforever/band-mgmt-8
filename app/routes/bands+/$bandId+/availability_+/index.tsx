@@ -1,6 +1,7 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { json, useLoaderData, useNavigate } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { getMonths } from '#app/constants/months'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
@@ -51,47 +52,47 @@ export default function AvailabilityIndexRoute() {
 
   return (
     <div>
-      <div className="bg-background">
-        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
-          {months.map((month, monthIndex) => {
-            return (
-              <section key={`${month.name}_${month.year}}`} className="text-center">
-                <h2 className="font-semibold text-foreground">
-                  {month.name} <small>{month.year}</small>
-                </h2>
+      <HeaderWithActions title="Availability" />
 
-                <Weekdays />
+      <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
+        {months.map((month, monthIndex) => {
+          return (
+            <section key={`${month.name}_${month.year}}`} className="text-center">
+              <h2 className="font-semibold text-foreground">
+                {month.name} <small>{month.year}</small>
+              </h2>
 
-                <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-slate-700 text-sm shadow ring-1 ring-green-200">
-                  {Array.from(Array(month.offset).keys()).map(el => (
-                    <div key={el}></div>
-                  ))}
+              <Weekdays />
 
-                  {month.days.map((day, dayIndex) => {
-                    const dayIsoString = new Date(day.date).toISOString()
-                    const isEventDay = allEventDatesSet.has(dayIsoString)
-                    const isToday = dayIsoString === currentDateIsoString
-                    const isBlackoutForUser = allBlackoutDates.some(d => d.date === dayIsoString)
-                    const isBlackoutForCurrentUser = allBlackoutDates.some(
-                      d => d.date === dayIsoString && d.isCurrentUser,
-                    )
+              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-slate-700 text-sm shadow ring-1 ring-green-200">
+                {Array.from(Array(month.offset).keys()).map(el => (
+                  <div key={el}></div>
+                ))}
 
-                    return (
-                      <DayComponent
-                        key={day.date}
-                        day={day}
-                        isToday={isToday}
-                        isBlackoutForUser={isBlackoutForUser}
-                        isBlackoutForCurrentUser={isBlackoutForCurrentUser}
-                        isEventDay={isEventDay}
-                      />
-                    )
-                  })}
-                </div>
-              </section>
-            )
-          })}
-        </div>
+                {month.days.map((day, dayIndex) => {
+                  const dayIsoString = new Date(day.date).toISOString()
+                  const isEventDay = allEventDatesSet.has(dayIsoString)
+                  const isToday = dayIsoString === currentDateIsoString
+                  const isBlackoutForUser = allBlackoutDates.some(d => d.date === dayIsoString)
+                  const isBlackoutForCurrentUser = allBlackoutDates.some(
+                    d => d.date === dayIsoString && d.isCurrentUser,
+                  )
+
+                  return (
+                    <DayComponent
+                      key={day.date}
+                      day={day}
+                      isToday={isToday}
+                      isBlackoutForUser={isBlackoutForUser}
+                      isBlackoutForCurrentUser={isBlackoutForCurrentUser}
+                      isEventDay={isEventDay}
+                    />
+                  )
+                })}
+              </div>
+            </section>
+          )
+        })}
       </div>
     </div>
   )

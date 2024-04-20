@@ -1,5 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
@@ -84,31 +85,16 @@ export default function EventsRoute() {
   ]
 
   return (
-    <>
-      <div className="mx-auto max-w-7xl">
-        <div className="bg-background py-10">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex sm:items-center">
-              <div className="sm:flex-auto">
-                <h1 className="text-base font-semibold leading-6 text-foreground">Events</h1>
-                <p className="mt-2 text-sm text-accent-foreground">Showing all events for the band</p>
-              </div>
-              <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <Link to="new">
-                  <Button
-                    type="button"
-                    className="block rounded-md bg-indigo-500 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                  >
-                    Add Event
-                  </Button>
-                </Link>
-              </div>
-            </div>
+    <div className="mx-auto max-w-7xl">
+      <HeaderWithActions title="Events">
+        <Link to="new">
+          <Button type="button" variant="outline">
+            Add Event
+          </Button>
+        </Link>
+      </HeaderWithActions>
 
-            <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
-          </div>
-        </div>
-      </div>
-    </>
+      <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
+    </div>
   )
 }

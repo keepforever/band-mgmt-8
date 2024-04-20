@@ -1,5 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
@@ -78,12 +79,13 @@ export default function VenuesIndexRoute() {
 
   return (
     <div>
-      <div className="flex justify-between">
-        <h1 className="text-3xl font-bold">Venues</h1>
-        <Button asChild variant="secondary" size="lg">
-          <Link to="new">Add New Venue</Link>
-        </Button>
-      </div>
+      <HeaderWithActions title="Venues">
+        <Link to="new">
+          <Button variant="secondary" size="sm">
+            Add New Venue
+          </Button>
+        </Link>
+      </HeaderWithActions>
 
       <TableGeneric
         columns={columns}

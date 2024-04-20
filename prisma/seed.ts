@@ -8,7 +8,7 @@ import { insertGitHubUser } from '#tests/mocks/github.ts'
 function getFutureDate() {
   const tempDate = faker.date.future({
     refDate: new Date(),
-    years: 0.5,
+    years: 0.9,
   })
   const datePayload = new Date(Date.UTC(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()))
   return datePayload
@@ -429,7 +429,7 @@ async function seed() {
       data: {
         date: datePayload,
         location: faker.location.city(),
-        name: capitalLorem(),
+        name: faker.person.lastName() + ' Concert',
         venue: {
           connect: {
             id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],

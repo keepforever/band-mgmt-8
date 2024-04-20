@@ -2,6 +2,7 @@ import { type Setlist as SetlistModel } from '@prisma/client'
 import { type SerializeFrom, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
@@ -65,12 +66,11 @@ export default function SetlistsRoute() {
 
   return (
     <>
-      <div className="my-4 flex justify-between">
-        <h2 className="text-3xl font-bold">Setlists</h2>
+      <HeaderWithActions title="Setlists">
         <Button asChild variant="secondary" size="lg">
           <Link to="new">Create</Link>
         </Button>
-      </div>
+      </HeaderWithActions>
 
       {setlists.length === 0 ? (
         <EmptyStateGeneric
