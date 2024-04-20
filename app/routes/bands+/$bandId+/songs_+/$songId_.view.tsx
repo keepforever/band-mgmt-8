@@ -193,6 +193,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   invariantResponse(songId, 'Song ID is required')
 
   await prisma.bandSong.deleteMany({ where: { songId } })
+  await prisma.song.deleteMany({ where: { id: songId } })
 
   return redirectWithToast('/bands', {
     type: 'success',
