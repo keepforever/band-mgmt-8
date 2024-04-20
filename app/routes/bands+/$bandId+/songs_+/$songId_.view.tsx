@@ -1,13 +1,15 @@
-// SongDetails.tsx
-import { type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Form, Link, useLoaderData, useParams, useSubmit } from '@remix-run/react'
+import { invariantResponse } from '@epic-web/invariant'
+import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
+import { Form, Link, useFetcher, useLoaderData, useParams, useSubmit } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
+import { StatusButton } from '#app/components/ui/status-button.js'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '#app/components/ui/tabs.js'
 import { useLyrics } from '#app/hooks/useLyrics.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc.js'
+import { cn, useDoubleCheck } from '#app/utils/misc.js'
+import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
@@ -51,9 +53,12 @@ export default function SongDetails() {
           {song?.title} by {song?.artist}
         </h3>
 
-        <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
-          <Button size="sm">Edit</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
+            <Button size="sm">Edit</Button>
+          </Link>
+          <DeleteSong />
+        </div>
       </div>
       <div className="my-6 border-t border-white/10">
         <dl className="divide-y divide-white/10">
@@ -178,5 +183,43 @@ export default function SongDetails() {
         </>
       )}
     </div>
+  )
+}
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData()
+  const songId = formData.get('songId') as string
+
+  invariantResponse(songId, 'Song ID is required')
+
+  await prisma.bandSong.deleteMany({ where: { songId } })
+
+  return redirectWithToast('/bands', {
+    type: 'success',
+    title: 'Song Deleted',
+    description: 'Song has been deleted successfully.',
+  })
+}
+
+function DeleteSong() {
+  const data = useLoaderData<typeof loader>()
+  const dc = useDoubleCheck()
+  const fetcher = useFetcher<typeof action>()
+
+  return (
+    <fetcher.Form method="POST">
+      <StatusButton
+        {...dc.getButtonProps({
+          type: 'submit',
+          name: 'songId',
+          value: data.song.id,
+        })}
+        variant={dc.doubleCheck ? 'destructive' : 'destructive'}
+        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        size="sm"
+      >
+        <Icon name="avatar">{dc.doubleCheck ? `Are you sure?` : `Delete ${data.song.title}`}</Icon>
+      </StatusButton>
+    </fetcher.Form>
   )
 }

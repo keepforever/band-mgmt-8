@@ -339,8 +339,8 @@ async function deleteDataAction({ userId }: ProfileActionArgs) {
 
 function DeleteData() {
   const dc = useDoubleCheck()
-
   const fetcher = useFetcher<typeof deleteDataAction>()
+
   return (
     <div>
       <fetcher.Form method="POST">
