@@ -136,21 +136,41 @@ export default function CreateSetlistRoute() {
       order: 0,
       list: [],
     },
+    // Bucket column
+    {
+      order: 1,
+      list: songs,
+    },
   ])
 
-  // To add a column
+  // To add a column before the last 'bucket' column
   const addColumn = () => {
-    setColumns(prevColumns => [...prevColumns, { order: prevColumns.length, list: [] as Song[] }])
+    setColumns(prevColumns => {
+      const newColumns = [...prevColumns]
+      // Insert new column before the last one (which is the bucket)
+      newColumns.splice(prevColumns.length - 1, 0, { order: prevColumns.length - 1, list: [] as Song[] })
+      // Update order for all columns, ensuring bucket remains the last
+      return newColumns.map((col, index) => ({ ...col, order: index }))
+    })
   }
 
-  // To remove a column by order
+  // To remove a column by order, ensuring the last 'bucket' column stays intact
   const removeColumn = (order: number) => {
-    setColumns(prevColumns =>
-      prevColumns.filter(column => column.order !== order).map((col, index) => ({ ...col, order: index })),
-    )
+    setColumns(prevColumns => {
+      if (order === prevColumns.length - 1) {
+        // Prevent removing the last column which is the bucket
+        console.error('Cannot remove the bucket column.')
+        return prevColumns
+      } else {
+        const filteredColumns = prevColumns.filter(column => column.order !== order)
+        // Reassign order to maintain continuity except the last bucket
+        return filteredColumns.map((col, index) => ({ ...col, order: index }))
+      }
+    })
   }
 
   const seedSets = (setCount: number, allSongs: Song[]) => {
+    // Initialize new columns for the sets
     const newColumns: MySetlistType = []
     for (let i = 0; i < setCount; i++) {
       newColumns.push({
@@ -159,28 +179,49 @@ export default function CreateSetlistRoute() {
       })
     }
 
-    // Evenly distribute songs across sets
+    // Evenly distribute songs across the new sets up to the maximum allowed per set
+    let usedSongs = 0
     allSongs.forEach((song, index) => {
       const columnIndex = index % setCount
-      // Check if the set already has 15 songs
       if (newColumns[columnIndex].list.length < MAX_SONGS_PER_SET) {
         newColumns[columnIndex].list.push(song)
+        usedSongs++
       }
     })
 
-    // Update the columns state with the new distribution
-    setColumns(newColumns)
+    // Retrieve the original bucket column
+    const bucketColumn = columns[columns.length - 1]
+    bucketColumn.order = setCount
+    // Update the bucket column with any leftover songs
+    bucketColumn.list = allSongs.slice(usedSongs)
+
+    // Recalculate orders for new columns only
+    const orderedNewColumns = newColumns.map((col, index) => ({
+      ...col,
+      order: index,
+    }))
+
+    // Concatenate the new columns with the updated bucket column to form the final columns array
+    setColumns([...orderedNewColumns, bucketColumn])
   }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result
+
     // Do nothing if dropped outside a droppable area
-    if (!destination) return
+    if (!destination) {
+      console.error('\n', ` bail due to no destination`, '\n')
+      return
+    }
     // Unpack some variables to make the next steps clearer
     const sourceColumnIndex = columns.findIndex(col => String(col.order) === source.droppableId)
     const destinationColumnIndex = columns.findIndex(col => String(col.order) === destination.droppableId)
+
     // Protect against invalid indices
-    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) return
+    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) {
+      console.error('\n', ` bail due to invalid indices`, '\n')
+      return
+    }
 
     const sourceColumn = columns[sourceColumnIndex]
     const destinationColumn = columns[destinationColumnIndex]
@@ -204,7 +245,6 @@ export default function CreateSetlistRoute() {
         return payload
       })
     } else {
-      // Moving from one list to another
       const [removed] = sourceItems.splice(source.index, 1)
       destinationItems.splice(destination.index, 0, removed)
       // Update state
@@ -221,6 +261,7 @@ export default function CreateSetlistRoute() {
         return payload
       })
     }
+    console.groupEnd()
   }
 
   const addSongToColumn = (song: Song, columnOrder: number) => {
@@ -304,6 +345,44 @@ export default function CreateSetlistRoute() {
           {/* Set Columns */}
 
           {columns.map(col => {
+            const isLastColumn = col.order === columns.length - 1
+
+            if (isLastColumn) {
+              return (
+                <Droppable droppableId={String(col.order)} key={String(col.order)}>
+                  {provided => (
+                    <div className="max-w-md flex-[1] border p-4 md:max-w-sm">
+                      <h2 className="mb-3 text-xl underline">Bucket</h2>
+
+                      <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-col gap-2">
+                        {/* Song List */}
+
+                        {col.list.map((song: Song, index) => (
+                          <Draggable draggableId={song?.id} index={index} key={song?.id}>
+                            {provided => {
+                              return (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <h2 className="font-bold">{song.title}</h2>
+                                  </div>
+                                </div>
+                              )
+                            }}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    </div>
+                  )}
+                </Droppable>
+              )
+            }
+
             return (
               <Droppable droppableId={String(col.order)} key={String(col.order)}>
                 {provided => (
