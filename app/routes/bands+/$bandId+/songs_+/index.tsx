@@ -49,7 +49,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
 
 export default function SongsIndexRoute() {
-  const { songs } = useLoaderData<typeof loader>()
+  const { songs, songCount } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const params = useParams()
 
@@ -98,7 +98,7 @@ export default function SongsIndexRoute() {
 
   return (
     <div>
-      <HeaderWithActions title="Songs">
+      <HeaderWithActions title={`Songs (${songCount})`}>
         <div className="flex gap-4">
           <Button asChild variant="secondary" size="sm">
             <Link to="new">Create</Link>
