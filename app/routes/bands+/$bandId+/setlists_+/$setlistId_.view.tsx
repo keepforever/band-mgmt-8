@@ -10,10 +10,10 @@ import { cn, formatDate } from '#app/utils/misc.js'
 
 const prepareCSVData = (setlist: any): string[][] => {
   const eventDetails = [
-    [`eventname`, setlist.event.name],
-    [`venueName`, setlist.event.venue.name],
-    [`location`, setlist.event.location],
-    [`date`, formatDate(setlist.event.date)],
+    ...(setlist?.event?.name ? [[`eventname`, setlist.event.name]] : []),
+    ...(setlist?.event?.venue?.name ? [[`venueName`, setlist.event.venue.name]] : []),
+    ...(setlist?.event?.location ? [[`location`, setlist.event.location]] : []),
+    ...(setlist?.event?.date ? [[`date`, formatDate(setlist.event.date)]] : []),
   ]
 
   const setNames: string[] = setlist.sets.map((_: any, index: number) => `Set ${index + 1}`)
