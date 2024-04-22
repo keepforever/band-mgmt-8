@@ -1,15 +1,17 @@
 import { invariantResponse } from '@epic-web/invariant'
-import { Combobox } from '@headlessui/react'
 import { type DropResult, DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { type Song } from '@prisma/client'
 import { json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from '@remix-run/node'
-import { Form, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react'
+import { Form, useFetcher, useLoaderData } from '@remix-run/react'
 import debounce from 'lodash/debounce'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
+import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { Field } from '#app/components/forms'
+import { SongSelector } from '#app/components/song-selector.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
 import { MAX_SONGS_PER_SET } from '#app/constants/setlists.js'
+import { type SongSelectorItem } from '#app/interfaces/song.js'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -118,19 +120,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 }
 
 export default function CreateSetlistRoute() {
-  // const actionData = useActionData<typeof action>()
+  const songsFetcher = useFetcher<typeof songSearchLoader>({ key: 'songSearch' })
   const { songs, events, bandId } = useLoaderData<typeof loader>()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const addSongColumnOrder = searchParams.get('addSongColumnOrder')
-
-  type Song = (typeof songs)[0]
-
-  type MySetlistType = {
-    order: number
-    list: Song[]
-  }[]
-
-  /* drag and drop stuff */
   const [columns, setColumns] = useState<MySetlistType>([
     {
       order: 0,
@@ -142,6 +133,17 @@ export default function CreateSetlistRoute() {
       list: songs,
     },
   ])
+
+  type Song = (typeof songs)[0]
+
+  type MySetlistType = {
+    order: number
+    list: Song[]
+  }[]
+
+  const debouncedLoad = debounce((value: string) => {
+    songsFetcher.load(`/resources/song-search?q=${value}&bandId=${bandId}`)
+  }, 500)
 
   // To add a column before the last 'bucket' column
   const addColumn = () => {
@@ -266,19 +268,20 @@ export default function CreateSetlistRoute() {
 
   const addSongToColumn = (song: Song, columnOrder: number) => {
     setColumns(currentColumns => {
-      return currentColumns.map(column => {
+      return currentColumns.map((column, index) => {
+        // if column order matches, add song to column
         if (column.order === columnOrder) {
-          // Clone the column's list and add the new song
           const newList = [...column.list, song]
+          return { ...column, list: newList }
+        }
+        // if last column, remove song from bucket
+        if (index === currentColumns.length - 1) {
+          const newList = column.list.filter(s => s.id !== song.id)
           return { ...column, list: newList }
         }
         return column
       })
     })
-  }
-
-  const songIsInAnySetlist = (songId?: string) => {
-    return columns.some(column => column.list.some(song => song?.id === songId))
   }
 
   const removeSongFromColumn = (songId: string, columnOrder: number) => {
@@ -289,16 +292,22 @@ export default function CreateSetlistRoute() {
           const newList = column.list.filter(song => song?.id !== songId)
           return { ...column, list: newList }
         }
+        // if last column, add song back to bucket
+        if (column.order === currentColumns.length - 1) {
+          const song = songs.find(s => s.id === songId)
+          if (song) {
+            const newList = [...column.list, song]
+            return { ...column, list: newList }
+          }
+        }
         return column
       })
     })
   }
 
-  const songsFetcher = useFetcher<typeof songSearchLoader>()
-
-  const debouncedLoad = debounce((value: string) => {
-    songsFetcher.load(`/resources/song-search?q=${value}&bandId=${bandId}`)
-  }, 500)
+  // const songIsInAnySetlist = (songId?: string) => {
+  //   return columns.some(column => column.list.some(song => song?.id === songId))
+  // }
 
   return (
     <Form method="POST">
@@ -434,70 +443,12 @@ export default function CreateSetlistRoute() {
                       {provided.placeholder}
                     </div>
 
-                    {addSongColumnOrder === String(col.order) && (
-                      <Combobox
-                        value={null}
-                        onChange={value => {
-                          const targetSong = songsFetcher?.data?.songs.find(song => song?.id === value)
-                          addSongToColumn(targetSong as Song, col.order)
-                          const params = new URLSearchParams()
-                          // clear the search
-                          setSearchParams(params, {
-                            preventScrollReset: true,
-                          })
-                        }}
-                      >
-                        <Combobox.Input
-                          autoFocus
-                          placeholder="Search for a song..."
-                          onChange={event => debouncedLoad(event.target.value)}
-                          className={cn(
-                            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
-                            'mt-4',
-                          )}
-                          onBlur={() => setSearchParams({})}
-                        />
-                        <Combobox.Options className="h-96">
-                          {songsFetcher?.data?.songs.map(song => {
-                            if (songIsInAnySetlist(song?.id || '')) return null
-
-                            return (
-                              /* Use the `active` state to conditionally style the active option. */
-                              /* Use the `selected` state to conditionally style the selected option. */
-                              <Combobox.Option key={song?.id} value={song?.id} as={Fragment}>
-                                {({ active, selected }) => (
-                                  <li
-                                    className={cn('px-4 py-2', {
-                                      'bg-blue-500 text-white': active,
-                                      'bg-background text-foreground': !active,
-                                    })}
-                                  >
-                                    {selected && <span>✓</span>}
-                                    {song?.title}
-                                  </li>
-                                )}
-                              </Combobox.Option>
-                            )
-                          })}
-                        </Combobox.Options>
-                      </Combobox>
-                    )}
-
-                    {/* Button to set query param to col.order */}
-                    <Button
-                      className={cn('mt-3 w-full', {
-                        hidden: addSongColumnOrder === String(col.order),
-                      })}
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        setSearchParams({
-                          addSongColumnOrder: String(col.order),
-                        })
-                      }}
-                    >
-                      Add Song
-                    </Button>
+                    <SongSelector
+                      hideLabel
+                      placeholder="Search for a song..."
+                      onSongSelect={(song: SongSelectorItem) => addSongToColumn(song as Song, col.order)}
+                      onInputValueChange={inputValue => debouncedLoad(inputValue)}
+                    />
 
                     <input type="hidden" name={`set${col.order}`} value={JSON.stringify(col.list)} />
                   </div>
@@ -509,4 +460,8 @@ export default function CreateSetlistRoute() {
       </DragDropContext>
     </Form>
   )
+}
+
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />
 }

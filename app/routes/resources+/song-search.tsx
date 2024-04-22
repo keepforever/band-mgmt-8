@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
           },
         },
       },
-      select: { title: true, id: true, artist: true, bandSongs: true },
+      select: { title: true, id: true, artist: true },
     })) || []
 
   return json({ songs } as const)
