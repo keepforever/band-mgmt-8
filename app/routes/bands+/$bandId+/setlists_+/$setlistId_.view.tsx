@@ -1,11 +1,35 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Form, Link, redirect, useLoaderData, useParams } from '@remix-run/react'
+import { DownloadCSVButton } from '#app/components/download-csv-button.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { cn, formatDate } from '#app/utils/misc.js'
+
+const prepareCSVData = (setlist: any): string[][] => {
+  const eventDetails = [
+    [`eventname`, setlist.event.name],
+    [`venueName`, setlist.event.venue.name],
+    [`location`, setlist.event.location],
+    [`date`, formatDate(setlist.event.date)],
+  ]
+
+  const setNames: string[] = setlist.sets.map((_: any, index: number) => `Set ${index + 1}`)
+  const songsInSets: string[][] = setlist.sets.map((set: any) => set.setSongs.map((song: any) => song.song.title))
+
+  const maxLength = Math.max(...songsInSets.map(set => set.length))
+  const songsRows: string[][] = Array.from({ length: maxLength }, () => Array(setlist.sets.length).fill(''))
+
+  songsInSets.forEach((set, i) => {
+    set.forEach((song, j) => {
+      songsRows[j][i] = song
+    })
+  })
+
+  return [...eventDetails, setNames, ...songsRows]
+}
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
@@ -122,6 +146,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function CreateSetlistRoute() {
   const { setlist } = useLoaderData<typeof loader>()
   const params = useParams()
+  const csvData = prepareCSVData(setlist)
 
   return (
     <div className="flex flex-col">
@@ -135,10 +160,10 @@ export default function CreateSetlistRoute() {
 
           {setlist?.event?.date && (
             <div className="flex flex-col border-2 border-foreground px-2 py-1">
-              <span className="text-accent-two text-xl font-bold">{setlist.event?.name}</span>
+              <span className="text-xl font-bold text-accent-two">{setlist.event?.name}</span>
               <Link
                 to={`/bands/${params.bandId}/venues/${setlist.event?.venue?.id}/view`}
-                className="hover:text-accent-two flex items-center gap-1 hover:underline"
+                className="flex items-center gap-1 hover:text-accent-two hover:underline"
               >
                 <div className="flex gap-1">
                   <span>{setlist?.event?.venue?.name}</span>, <span>{setlist?.event?.location}</span>
@@ -154,6 +179,8 @@ export default function CreateSetlistRoute() {
             <Button size="sm">Edit</Button>
           </Link>
 
+          <DownloadCSVButton data={csvData} filename={`${setlist?.event?.name} - ${setlist?.event?.date}`} />
+
           <Form method="post">
             <Button size="sm" variant="destructive">
               Delete
@@ -164,7 +191,7 @@ export default function CreateSetlistRoute() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {setlist.sets.map((set, setIndex) => (
           <div key={set.id} className="rounded border border-foreground p-4 shadow">
-            <h2 className="outline-accent-two text-accent-two mb-4 text-center text-xl font-bold outline">
+            <h2 className="mb-4 text-center text-xl font-bold text-accent-two outline outline-accent-two">
               Set {setIndex + 1}
             </h2>
             <ul>
@@ -187,9 +214,9 @@ export default function CreateSetlistRoute() {
                         </Link>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-accent-two text-xs">{setSong.song.artist}</span>
+                        <span className="text-xs text-accent-two">{setSong.song.artist}</span>
                         {setSong.song.rating && (
-                          <div className="text-accent-two inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs">
+                          <div className="inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs text-accent-two">
                             {setSong.song.rating}
                           </div>
                         )}
