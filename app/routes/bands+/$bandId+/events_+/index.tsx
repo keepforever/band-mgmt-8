@@ -1,5 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
@@ -83,6 +84,20 @@ export default function EventsRoute() {
       stopPropagation: true,
     },
   ]
+
+  if (events.length === 0) {
+    return (
+      <div className="mx-auto max-w-7xl">
+        <EmptyStateGeneric
+          iconNames={['pope']}
+          title="No Events Found"
+          messages={['Add a new event to get started.']}
+          linkTo="new"
+          buttonTitle="Add Event"
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-7xl">
