@@ -130,7 +130,7 @@ export default function CreateSetlistRoute() {
     // Bucket column
     {
       order: 1,
-      list: songs,
+      list: songs.sort((a, b) => a.title.localeCompare(b.title)),
     },
   ])
 

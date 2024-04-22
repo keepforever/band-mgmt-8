@@ -1,14 +1,16 @@
 import { invariantResponse } from '@epic-web/invariant'
-import { Combobox } from '@headlessui/react'
 import { type DropResult, DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { type Song as SongModel } from '@prisma/client'
 import { type SerializeFrom, json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from '@remix-run/node'
-import { Form, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react'
+import { Form, useFetcher, useLoaderData } from '@remix-run/react'
 import debounce from 'lodash/debounce'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
+import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { Field } from '#app/components/forms'
+import { SongSelector } from '#app/components/song-selector.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
+import { type SongSelectorItem } from '#app/interfaces/song.js'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -168,12 +170,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
       where: { id: setlistId },
       data: {
         name: setlistName,
-        event: {
-          connect: { id: eventId },
-        },
         sets: {
           create: createSetsData,
         },
+        ...(eventId && {
+          event: {
+            connect: {
+              id: eventId,
+            },
+          },
+        }),
       },
     })
   })
@@ -182,19 +188,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function EditSetlistRoute() {
-  const { events, bandId, setlist } = useLoaderData<typeof loader>()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const addSongColumnOrder = searchParams.get('addSongColumnOrder')
-
-  type MySetlistType = {
-    order: number
-    list: Song[]
-  }[]
+  const songsFetcher = useFetcher<typeof songSearchLoader>({ key: 'songSearch' })
+  const { songs, events, bandId, setlist } = useLoaderData<typeof loader>()
 
   const [columns, setColumns] = useState<MySetlistType>(() => {
     if (!setlist) return []
 
-    return setlist.sets
+    const setlistPayload = setlist.sets
       .map(set => {
         // console.log('\n', `set = `, set, '\n')
         return {
@@ -210,29 +210,75 @@ export default function EditSetlistRoute() {
         }
       })
       .sort((a, b) => a.order - b.order)
+
+    const bucketColumn = {
+      order: setlistPayload.length,
+      // filter out any songs that are already in a set, sort songs alphabetically
+      list: songs
+        .filter(song => !setlistPayload.some(set => set.list.some(setSong => setSong.id === song.id)))
+        .sort((a, b) => a.title.localeCompare(b.title)),
+    }
+
+    return [
+      ...setlistPayload, //   // Bucket column
+      bucketColumn,
+    ]
   })
 
-  // To add a column
+  type Song = (typeof songs)[0]
+
+  type MySetlistType = {
+    order: number
+    list: Song[]
+  }[]
+
+  const debouncedLoad = debounce((value: string) => {
+    songsFetcher.load(`/resources/song-search?q=${value}&bandId=${bandId}`)
+  }, 500)
+
+  // To add a column before the last 'bucket' column
   const addColumn = () => {
-    setColumns(prevColumns => [...prevColumns, { order: prevColumns.length, list: [] as Song[] }])
+    setColumns(prevColumns => {
+      const newColumns = [...prevColumns]
+      // Insert new column before the last one (which is the bucket)
+      newColumns.splice(prevColumns.length - 1, 0, { order: prevColumns.length - 1, list: [] as Song[] })
+      // Update order for all columns, ensuring bucket remains the last
+      return newColumns.map((col, index) => ({ ...col, order: index }))
+    })
   }
 
-  // To remove a column by order
+  // To remove a column by order, ensuring the last 'bucket' column stays intact
   const removeColumn = (order: number) => {
-    setColumns(prevColumns =>
-      prevColumns.filter(column => column.order !== order).map((col, index) => ({ ...col, order: index })),
-    )
+    setColumns(prevColumns => {
+      if (order === prevColumns.length - 1) {
+        // Prevent removing the last column which is the bucket
+        console.error('Cannot remove the bucket column.')
+        return prevColumns
+      } else {
+        const filteredColumns = prevColumns.filter(column => column.order !== order)
+        // Reassign order to maintain continuity except the last bucket
+        return filteredColumns.map((col, index) => ({ ...col, order: index }))
+      }
+    })
   }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result
+
     // Do nothing if dropped outside a droppable area
-    if (!destination) return
+    if (!destination) {
+      console.error('\n', ` bail due to no destination`, '\n')
+      return
+    }
     // Unpack some variables to make the next steps clearer
     const sourceColumnIndex = columns.findIndex(col => String(col.order) === source.droppableId)
     const destinationColumnIndex = columns.findIndex(col => String(col.order) === destination.droppableId)
+
     // Protect against invalid indices
-    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) return
+    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) {
+      console.error('\n', ` bail due to invalid indices`, '\n')
+      return
+    }
 
     const sourceColumn = columns[sourceColumnIndex]
     const destinationColumn = columns[destinationColumnIndex]
@@ -256,7 +302,6 @@ export default function EditSetlistRoute() {
         return payload
       })
     } else {
-      // Moving from one list to another
       const [removed] = sourceItems.splice(source.index, 1)
       destinationItems.splice(destination.index, 0, removed)
       // Update state
@@ -273,23 +318,25 @@ export default function EditSetlistRoute() {
         return payload
       })
     }
+    console.groupEnd()
   }
 
   const addSongToColumn = (song: Song, columnOrder: number) => {
     setColumns(currentColumns => {
-      return currentColumns.map(column => {
+      return currentColumns.map((column, index) => {
+        // if column order matches, add song to column
         if (column.order === columnOrder) {
-          // Clone the column's list and add the new song
           const newList = [...column.list, song]
+          return { ...column, list: newList }
+        }
+        // if last column, remove song from bucket
+        if (index === currentColumns.length - 1) {
+          const newList = column.list.filter(s => s.id !== song.id)
           return { ...column, list: newList }
         }
         return column
       })
     })
-  }
-
-  const songIsInAnySetlist = (songId?: string) => {
-    return columns.some(column => column.list.some(song => song?.id === songId))
   }
 
   const removeSongFromColumn = (songId: string, columnOrder: number) => {
@@ -300,16 +347,18 @@ export default function EditSetlistRoute() {
           const newList = column.list.filter(song => song?.id !== songId)
           return { ...column, list: newList }
         }
+        // if last column, add song back to bucket
+        if (column.order === currentColumns.length - 1) {
+          const song = songs.find(s => s.id === songId)
+          if (song) {
+            const newList = [...column.list, song]
+            return { ...column, list: newList }
+          }
+        }
         return column
       })
     })
   }
-
-  const songsFetcher = useFetcher<typeof songSearchLoader>()
-
-  const debouncedLoad = debounce((value: string) => {
-    songsFetcher.load(`/resources/song-search?q=${value}&bandId=${bandId}`)
-  }, 500)
 
   return (
     <Form method="POST">
@@ -317,6 +366,7 @@ export default function EditSetlistRoute() {
         <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
           Submit
         </Button>
+
         <Button type="button" size="xs" onClick={addColumn} variant="secondary">
           Add Set
         </Button>
@@ -336,12 +386,11 @@ export default function EditSetlistRoute() {
 
         <select
           name="event"
-          defaultValue={setlist?.event?.id}
           className={cn(
             'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
           )}
         >
-          <option value="">Associate setlist with an event</option>
+          <option value="">Associate a setlist with an event</option>
           {events.map(event => (
             <option key={event.id} value={event.id}>
               {event.name}: {formatDate(event.date)}
@@ -355,6 +404,44 @@ export default function EditSetlistRoute() {
           {/* Set Columns */}
 
           {columns.map(col => {
+            const isLastColumn = col.order === columns.length - 1
+
+            if (isLastColumn) {
+              return (
+                <Droppable droppableId={String(col.order)} key={String(col.order)}>
+                  {provided => (
+                    <div className="max-w-md flex-[1] border p-4 md:max-w-sm">
+                      <h2 className="mb-3 text-xl underline">Bucket</h2>
+
+                      <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-col gap-2">
+                        {/* Song List */}
+
+                        {col.list.map((song: Song, index) => (
+                          <Draggable draggableId={song?.id} index={index} key={song?.id}>
+                            {provided => {
+                              return (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <h2 className="font-bold">{song.title}</h2>
+                                  </div>
+                                </div>
+                              )
+                            }}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    </div>
+                  )}
+                </Droppable>
+              )
+            }
+
             return (
               <Droppable droppableId={String(col.order)} key={String(col.order)}>
                 {provided => (
@@ -406,69 +493,12 @@ export default function EditSetlistRoute() {
                       {provided.placeholder}
                     </div>
 
-                    {addSongColumnOrder === String(col.order) && (
-                      <Combobox
-                        value={null}
-                        onChange={value => {
-                          const targetSong = songsFetcher?.data?.songs.find(song => song?.id === value)
-                          addSongToColumn(targetSong as Song, col.order)
-                          const params = new URLSearchParams()
-                          setSearchParams(params, {
-                            preventScrollReset: true,
-                          })
-                        }}
-                      >
-                        <Combobox.Input
-                          autoFocus
-                          placeholder="Search for a song..."
-                          onChange={event => debouncedLoad(event.target.value)}
-                          className={cn(
-                            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
-                            'mt-4',
-                          )}
-                          onBlur={() => setSearchParams({})}
-                        />
-                        <Combobox.Options className="h-96">
-                          {songsFetcher?.data?.songs.map(song => {
-                            if (songIsInAnySetlist(song?.id || '')) return null
-
-                            return (
-                              /* Use the `active` state to conditionally style the active option. */
-                              /* Use the `selected` state to conditionally style the selected option. */
-                              <Combobox.Option key={song?.id} value={song?.id} as={Fragment}>
-                                {({ active, selected }) => (
-                                  <li
-                                    className={cn('px-4 py-2', {
-                                      'bg-blue-500 text-white': active,
-                                      'bg-background text-foreground': !active,
-                                    })}
-                                  >
-                                    {selected && <span>✓</span>}
-                                    {song?.title}
-                                  </li>
-                                )}
-                              </Combobox.Option>
-                            )
-                          })}
-                        </Combobox.Options>
-                      </Combobox>
-                    )}
-
-                    {/* Button to set query param to col.order */}
-                    <Button
-                      className={cn('mt-3 w-full', {
-                        hidden: addSongColumnOrder === String(col.order),
-                      })}
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        setSearchParams({
-                          addSongColumnOrder: String(col.order),
-                        })
-                      }}
-                    >
-                      Add Song
-                    </Button>
+                    <SongSelector
+                      hideLabel
+                      placeholder="Search for a song..."
+                      onSongSelect={(song: SongSelectorItem) => addSongToColumn(song as Song, col.order)}
+                      onInputValueChange={inputValue => debouncedLoad(inputValue)}
+                    />
 
                     <input type="hidden" name={`set${col.order}`} value={JSON.stringify(col.list)} />
                   </div>
@@ -478,43 +508,10 @@ export default function EditSetlistRoute() {
           })}
         </div>
       </DragDropContext>
-
-      <input type="hidden" name="event" value={events[Math.floor(Math.random() * events.length)]?.id} />
     </Form>
   )
 }
 
-/* 
-Sequences of operations to delete a setlist:
-1. setsong
-2. set
-3. bandsetlist
-4. setlist
-    
-  await prisma.setSong.deleteMany({
-    where: {
-      setId: {
-        in: setIdArray,
-      },
-    },
-  })
-
-  await prisma.set.deleteMany({
-    where: {
-      setlistId: setlistId,
-    },
-  })
-
-  await prisma.bandSetlist.deleteMany({
-    where: {
-      setlistId: setlistId,
-    },
-  })
-
-  await prisma.setlist.delete({
-    where: {
-      id: setlistId,
-    },
-  })
-
-*/
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />
+}
