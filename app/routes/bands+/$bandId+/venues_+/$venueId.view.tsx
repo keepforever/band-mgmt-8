@@ -18,6 +18,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       name: true,
       location: true,
       capacity: true,
+      primaryContact: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
       events: {
         select: {
           date: true,
@@ -71,6 +78,21 @@ export default function VenueDetails() {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Capacity</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{venue?.capacity}</dd>
+          </div>
+
+          {/* Contact */}
+
+          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Contacts</dt>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
+              {venue?.primaryContact?.map(contact => (
+                <div key={contact.email}>
+                  <p>{contact.name}</p>
+                  <p>{contact.email}</p>
+                  <p>{contact.phone}</p>
+                </div>
+              ))}
+            </dd>
           </div>
 
           {/* Events */}
