@@ -78,7 +78,7 @@ export default function EventsRoute() {
 
         return (
           // http://localhost:3000/bands/cltg3ec8f0027ig7vxbhxxfab/setlists/cltg3o36q00024ey44moes965
-          <Link to={`/bands/${bandId}/setlists/${setlistId}`}>View Setlist</Link>
+          <Link to={`/bands/${bandId}/setlists/${setlistId}/view`}>View Setlist</Link>
         )
       },
       stopPropagation: true,

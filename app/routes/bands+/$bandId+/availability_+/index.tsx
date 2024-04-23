@@ -147,7 +147,7 @@ export const DayComponent: React.FC<DayComponentProps> = ({
   )
 }
 
-const Weekdays = () => (
+export const Weekdays = () => (
   <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-foreground">
     <div>S</div>
     <div>M</div>
