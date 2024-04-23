@@ -92,8 +92,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
-  // console.log('\n', `setlist = `, setlist, '\n')
-
   return json({ songs, events, bandId: params.bandId, setlist } as const)
 }
 
@@ -196,7 +194,6 @@ export default function EditSetlistRoute() {
 
     const setlistPayload = setlist.sets
       .map(set => {
-        // console.log('\n', `set = `, set, '\n')
         return {
           order: set.order - 1,
           list: set.setSongs

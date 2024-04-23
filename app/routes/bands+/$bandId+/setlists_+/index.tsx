@@ -66,8 +66,6 @@ export default function SetlistsRoute() {
     },
   ]
 
-  console.log('\n', `setlists = `, setlists, '\n')
-
   return (
     <>
       <HeaderWithActions title="Setlists">

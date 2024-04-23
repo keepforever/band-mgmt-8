@@ -45,8 +45,6 @@ const AddressLink: FC<AddressLinkProps> = ({ address }) => {
 export default function EventDetailView() {
   const { event } = useLoaderData<typeof loader>()
 
-  console.log('\n', `event = `, event, '\n')
-
   return (
     <div>
       <div className="flex justify-between px-4 sm:px-0">
