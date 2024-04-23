@@ -1,4 +1,4 @@
-import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
+import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, Outlet, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { requireUserId } from '#app/utils/auth.server'
@@ -46,11 +46,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!venue) throw new Error('Venue not found')
 
   return json({ venue })
-}
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-  console.log('\n', `hello action `, '\n')
-  return null
 }
 
 export default function VenueDetails() {
