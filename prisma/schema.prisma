@@ -68,13 +68,30 @@ model BandVenue {
   @@id([bandId, venueId])
 }
 
+model VenueContact {
+  id String @id @default(cuid())
+
+  phone String?
+  email String?
+  name  String
+
+  isPrimary Boolean?
+  status    String?
+
+  venueId String @unique
+  venue   Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId])
+}
+
 model Venue {
-  id       String      @id @default(cuid())
+  id       String         @id @default(cuid())
   name     String
   location String
   capacity Int?
   bands    BandVenue[]
   events   Event[]
+  contacts VenueContact[]
 
   @@index([id])
 }
