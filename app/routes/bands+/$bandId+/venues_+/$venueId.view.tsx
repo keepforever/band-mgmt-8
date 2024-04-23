@@ -20,6 +20,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       capacity: true,
       contacts: {
         select: {
+          id: true,
           name: true,
           email: true,
           phone: true,
@@ -94,7 +95,7 @@ export default function VenueDetails() {
               {venue?.contacts &&
                 venue.contacts.length > 0 &&
                 venue.contacts.map(contact => (
-                  <div key={contact.email}>
+                  <div key={contact.id}>
                     <p>{contact.name}</p>
                     <p>{contact.email}</p>
                     <p>{contact.phone}</p>
