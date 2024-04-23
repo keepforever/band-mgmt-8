@@ -11,7 +11,7 @@ CREATE TABLE "VenueContact" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VenueContact_venueId_key" ON "VenueContact"("venueId");
+CREATE INDEX "VenueContact_venueId_key" ON "VenueContact"("venueId");
 
 -- CreateIndex
 CREATE INDEX "VenueContact_venueId_idx" ON "VenueContact"("venueId");

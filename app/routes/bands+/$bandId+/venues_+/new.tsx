@@ -14,6 +14,9 @@ const VenueSchema = z.object({
   name: z.string().min(1, 'Venue name is required'),
   location: z.string().min(1, 'Location is required'),
   capacity: z.number().optional(),
+  contactName: z.string().min(1, 'Contact name is required'),
+  contactEmail: z.string().email('Invalid email address'),
+  contactPhone: z.string().min(1, 'Contact phone is required'),
 })
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -27,13 +30,23 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (submission.status !== 'success') {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
-  const { name, location, capacity } = submission.value
+  const { name, location, capacity, contactEmail, contactName, contactPhone } = submission.value
 
   await prisma.venue.create({
     data: {
       name,
       location,
       capacity,
+      contacts: {
+        create: [
+          {
+            name: contactName,
+            email: contactEmail,
+            phone: contactPhone,
+            status: 'active',
+          },
+        ],
+      },
       bands: {
         create: [
           {
@@ -103,6 +116,34 @@ export default function CreateVenueRoute() {
           inputProps={getInputProps(fields.capacity, { type: 'number' })}
           errors={fields.capacity.errors}
         />
+
+        <Field
+          labelProps={{
+            htmlFor: fields.contactName.id,
+            children: 'Contact Name',
+          }}
+          inputProps={getInputProps(fields.contactName, { type: 'text' })}
+          errors={fields.contactName.errors}
+        />
+
+        <Field
+          labelProps={{
+            htmlFor: fields.contactEmail.id,
+            children: 'Contact Email',
+          }}
+          inputProps={getInputProps(fields.contactEmail, { type: 'email' })}
+          errors={fields.contactEmail.errors}
+        />
+
+        <Field
+          labelProps={{
+            htmlFor: fields.contactPhone.id,
+            children: 'Contact Phone',
+          }}
+          inputProps={getInputProps(fields.contactPhone, { type: 'text' })}
+          errors={fields.contactPhone.errors}
+        />
+
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Submit Venue
         </StatusButton>

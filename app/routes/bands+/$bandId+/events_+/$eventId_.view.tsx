@@ -73,8 +73,13 @@ export default function EventDetailView() {
           {event?.venue && (
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6">Venue</dt>
-
-              <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
+              <Link
+                relative="path"
+                to={`../../../venues/${event?.venue.id}/view`}
+                className="mt-1 text-sm leading-6 text-blue-500 hover:underline sm:col-span-2 sm:mt-0"
+              >
+                <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
+              </Link>
             </div>
           )}
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

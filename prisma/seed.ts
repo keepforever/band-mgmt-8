@@ -198,7 +198,7 @@ async function seed() {
       username: 'kody',
       name: 'Kody',
       image: { create: kodyImages.kodyUser },
-      password: { create: createPassword('kodylovesyou') },
+      password: { create: createPassword('tacobell') },
       connections: {
         create: { providerName: 'github', providerId: githubUser.profile.id },
       },
@@ -389,7 +389,7 @@ async function seed() {
 
   console.time('🏟️ Created venues...')
   const venueIds = []
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 5; index++) {
     const tempId = await prisma.venue.create({
       data: {
         location: faker.location.city(),

@@ -78,7 +78,7 @@ model VenueContact {
   isPrimary Boolean?
   status    String?
 
-  venueId String @unique
+  venueId String
   venue   Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
 
   @@index([venueId])
