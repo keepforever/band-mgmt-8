@@ -149,32 +149,9 @@ export default function CreateSetlistRoute() {
   const csvData = prepareCSVData(setlist)
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       <div className="mb-4 flex flex-wrap-reverse sm:flex-wrap sm:justify-between">
-        <div className="flex flex-col">
-          {/* Setlist Title */}
-
-          <h1 className="mb-4 text-2xl font-bold">{setlist.name}</h1>
-
-          {/* Event */}
-
-          {setlist?.events?.map(event => {
-            return (
-              <div className="flex flex-col border-2 border-foreground px-2 py-1" key={event.name}>
-                <span className="text-xl font-bold text-accent-two">{event?.name}</span>
-                <Link
-                  to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
-                  className="flex items-center gap-1 hover:text-accent-two hover:underline"
-                >
-                  <div className="flex gap-1">
-                    <span>{event?.venue?.name}</span>, <span>{event?.location}</span>
-                  </div>
-                </Link>
-                <span className="text-foreground">{formatDate(event?.date || '')}</span>
-              </div>
-            )
-          })}
-        </div>
+        <h1 className="mb-4 text-2xl font-bold">{setlist.name}</h1>
 
         <div className="flex items-end gap-3 sm:items-start">
           <Link relative="path" to="../edit">
@@ -233,6 +210,33 @@ export default function CreateSetlistRoute() {
           </div>
         ))}
       </div>
+
+      {/* Events */}
+
+      {setlist.events.length > 0 && (
+        <>
+          <h2 className="text-h5">Events</h2>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {setlist?.events?.map(event => {
+              return (
+                <div className="flex flex-col border-2 border-foreground px-2 py-1" key={event.name}>
+                  <span className="text-xl font-bold text-accent-two">{event?.name}</span>
+                  <Link
+                    to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
+                    className="flex items-center gap-1 hover:text-accent-two hover:underline"
+                  >
+                    <div className="flex gap-1">
+                      <span>{event?.venue?.name}</span>, <span>{event?.location}</span>
+                    </div>
+                  </Link>
+                  <span className="text-foreground">{formatDate(event?.date || '')}</span>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }
