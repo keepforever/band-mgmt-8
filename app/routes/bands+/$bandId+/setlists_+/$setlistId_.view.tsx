@@ -46,6 +46,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       createdAt: true,
       events: {
         select: {
+          id: true,
           name: true,
           location: true,
           date: true,
@@ -82,9 +83,45 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
+  const assignedEventIds = setlist?.events.map(event => event?.id)
+
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [
+        {
+          bands: {
+            some: {
+              bandId: params.bandId,
+            },
+          },
+        },
+        {
+          NOT: {
+            id: {
+              in: assignedEventIds, // Filter out these IDs
+            },
+          },
+          // we don't want to associate the setlist with an event that already has a setlist so filter out those events
+          setlistId: null,
+        },
+      ],
+    },
+    select: {
+      id: true,
+      name: true,
+      date: true,
+      setlistId: true,
+      setlist: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
   invariantResponse(setlist, 'Setlist not found')
 
-  return json({ setlist } as const)
+  return json({ setlist, events } as const)
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -144,7 +181,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function CreateSetlistRoute() {
-  const { setlist } = useLoaderData<typeof loader>()
+  const { setlist, events } = useLoaderData<typeof loader>()
   const params = useParams()
   const csvData = prepareCSVData(setlist)
 
@@ -211,6 +248,10 @@ export default function CreateSetlistRoute() {
         ))}
       </div>
 
+      {/* Associate Setlist to Event */}
+
+      {!!events.length && <AssociateSetlistToEvent setlistId={setlist.id} events={events} />}
+
       {/* Events */}
 
       {setlist.events.length > 0 && (
@@ -238,5 +279,36 @@ export default function CreateSetlistRoute() {
         </>
       )}
     </div>
+  )
+}
+
+const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; events?: any[] }) => {
+  return (
+    <Form
+      method="post"
+      className="flex flex-col gap-4"
+      action={`/resources/setlist/${setlistId}/associate-event`}
+      navigate={false}
+    >
+      <div className="flex gap-4">
+        <div className="flex flex-col gap-2">
+          <select
+            name="eventId"
+            className={cn(
+              'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
+            )}
+          >
+            <option value="">Associate a setlist with an event</option>
+            {events?.map(event => (
+              <option key={event.id} value={event.id}>
+                {event.name}: {formatDate(event.date)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Button type="submit">Add</Button>
+      </div>
+    </Form>
   )
 }
