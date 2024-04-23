@@ -5,19 +5,21 @@ import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '#app/components/ui/tabs.js'
-import { useLyrics } from '#app/hooks/useLyrics.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, useDoubleCheck } from '#app/utils/misc.js'
+import { getSongLyric } from '#app/utils/song.server.js'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   const songId = params.songId
 
-  // Ensure user is logged in and songId is provided
-  if (!userId || !songId) throw new Error('Unauthorized access or missing song ID')
+  // If either userId or songId is missing, terminate the request with an error.
+  invariantResponse(userId, 'Unauthorized access')
+  invariantResponse(songId, 'Missing song ID')
 
+  // Fetch song details using the provided songId.
   const song = await prisma.song.findUnique({
     where: { id: songId },
     select: {
@@ -35,16 +37,34 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
+  // Ensure song was found; otherwise, terminate the request with an error.
   if (!song) throw new Error('Song not found')
 
-  return json({ song })
+  // Initialize variables to hold lyrics or PDF URL based on content type.
+  let pdfUrl = ''
+  let lyricHtml = ''
+
+  // Fetch lyrics using the lyric ID from the song details.
+  const songLyricResp = await getSongLyric(song?.lyrics?.id || '')
+  const contentType = songLyricResp?.headers?.get('Content-Type')
+
+  // Check the content type of the lyrics and assign values accordingly.
+  if (contentType !== 'application/pdf') {
+    const text = await songLyricResp?.text()
+    lyricHtml = String(text)
+  } else {
+    pdfUrl = String(songLyricResp?.url)
+  }
+
+  const payload = { song, lyricHtml, pdfUrl }
+
+  return json(payload)
 }
 
 export default function SongDetails() {
   const submit = useSubmit()
   const params = useParams()
-  const { song } = useLoaderData<typeof loader>()
-  const { lyricHtml, pdfUrl } = useLyrics(song?.lyrics?.id)
+  const { song, lyricHtml, pdfUrl } = useLoaderData<typeof loader>()
 
   return (
     <div>
