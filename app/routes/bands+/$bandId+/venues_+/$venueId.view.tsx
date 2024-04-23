@@ -1,12 +1,15 @@
-import { type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Link, Outlet, useLoaderData, useParams } from '@remix-run/react'
+import { invariantResponse } from '@epic-web/invariant'
+import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
+import { Form, Link, Outlet, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { formatDate } from '#app/utils/misc'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  invariantResponse(userId, 'Unauthorized access')
   const venueId = params.venueId
 
   if (!userId || !venueId) throw new Error('Unauthorized access or missing venue ID')
@@ -46,6 +49,29 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!venue) throw new Error('Venue not found')
 
   return json({ venue })
+}
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const userId = await requireUserId(request)
+  invariantResponse(userId, 'Unauthorized access')
+
+  const formData = await request.formData()
+  const contactId = formData.get('contactId') as string
+  invariantResponse(contactId, 'Missing contact ID')
+
+  try {
+    await prisma.venueContact.delete({
+      where: {
+        id: contactId,
+      },
+    })
+    console.log('Venue contact deleted successfully')
+  } catch (error) {
+    console.error('Error deleting venue contact:', error)
+    throw error
+  }
+
+  return json({ success: true })
 }
 
 export default function VenueDetails() {
@@ -90,7 +116,18 @@ export default function VenueDetails() {
               {venue?.contacts &&
                 venue.contacts.length > 0 &&
                 venue.contacts.map(contact => (
-                  <div key={contact.id}>
+                  <div key={contact.id} className="relative">
+                    <Form method="post" navigate={false}>
+                      <Button
+                        size="sm"
+                        type="submit"
+                        className="absolute right-1 top-1 h-3 cursor-pointer bg-transparent p-1"
+                      >
+                        <Icon className="h-3 w-3 stroke-destructive/75 hover:stroke-destructive" name="cross-1" />
+                      </Button>
+                      <input type="hidden" name="contactId" value={contact.id} />
+                    </Form>
+
                     <p>{contact.name}</p>
                     <p>{contact.email}</p>
                     <p>{contact.phone}</p>
