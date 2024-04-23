@@ -80,14 +80,15 @@ model Venue {
 }
 
 model Event {
-  id       String      @id @default(cuid())
-  name     String
-  date     DateTime
-  location String
-  bands    BandEvent[]
-  venueId  String?
-  venue    Venue?      @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  Setlist  Setlist?
+  id        String      @id @default(cuid())
+  name      String
+  date      DateTime
+  location  String
+  bands     BandEvent[]
+  venueId   String?
+  venue     Venue?      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  setlistId String?
+  setlist   Setlist?    @relation(fields: [setlistId], references: [id], onDelete: SetNull)
 
   @@index([id])
 }
@@ -177,15 +178,13 @@ model BandSetlist {
 }
 
 model Setlist {
-  id      String  @id @default(cuid())
-  name    String
-  eventId String? @unique
-  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  sets    Set[]
-
+  id          String        @id @default(cuid())
+  name        String
+  sets        Set[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   BandSetlist BandSetlist[]
+  events      Event[]
 }
 
 model Set {

@@ -7,7 +7,12 @@ import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { prisma } from '#app/utils/db.server'
 
-export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'eventId' | 'id' | 'updatedAt'>>
+export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'id' | 'updatedAt'>> & {
+  events: {
+    name: string
+    date: string
+  }[]
+}
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const bandId = params.bandId
@@ -24,8 +29,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       name: true,
       createdAt: true,
       updatedAt: true,
-      eventId: true,
-      event: {
+      events: {
         select: {
           name: true,
           date: true,
@@ -47,14 +51,12 @@ export default function SetlistsRoute() {
     },
     {
       title: 'Event',
-      dataIndex: 'event' as any,
-      render: event =>
-        !event ? (
-          <span className="flex items-center text-xs text-gray-500">No Event</span>
+      dataIndex: 'events',
+      render: (events: Setlist['events']) =>
+        !events.length ? (
+          <span className="flex items-center text-xs text-gray-500">No Events</span>
         ) : (
-          <div className="flex items-center text-xs">
-            {event?.name} ({new Date(event?.date).toLocaleDateString()})
-          </div>
+          <div className="flex items-center text-xs">{`${events.length} Events`}</div>
         ),
     },
     {
@@ -63,6 +65,8 @@ export default function SetlistsRoute() {
       render: updatedAt => new Date(updatedAt).toLocaleDateString(),
     },
   ]
+
+  console.log('\n', `setlists = `, setlists, '\n')
 
   return (
     <>

@@ -14,7 +14,7 @@ export async function getEventsByBandId(bandId: string) {
       name: true,
       date: true,
       location: true,
-      Setlist: {
+      setlist: {
         include: {
           BandSetlist: {
             select: {
@@ -70,7 +70,7 @@ export async function getEventsByDateAndBandId({ date, bandId }: { date: Date; b
     select: {
       name: true,
       location: true,
-      Setlist: {
+      setlist: {
         select: {
           id: true,
         },

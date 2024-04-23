@@ -22,7 +22,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       name: true,
       date: true,
       location: true,
-      Setlist: {
+      setlist: {
         include: {
           BandSetlist: {
             select: {
@@ -71,7 +71,7 @@ export default function EventsRoute() {
     },
     {
       title: 'Setlist',
-      dataIndex: 'Setlist',
+      dataIndex: 'setlist',
       render: (setlist, record) => {
         const setlistId = setlist?.BandSetlist?.[0]?.setlistId
         if (!setlistId) return 'No Setlist Found'

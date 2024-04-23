@@ -44,7 +44,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       id: true,
       name: true,
       createdAt: true,
-      event: {
+      events: {
         select: {
           name: true,
           location: true,
@@ -158,20 +158,22 @@ export default function CreateSetlistRoute() {
 
           {/* Event */}
 
-          {setlist?.event?.date && (
-            <div className="flex flex-col border-2 border-foreground px-2 py-1">
-              <span className="text-xl font-bold text-accent-two">{setlist.event?.name}</span>
-              <Link
-                to={`/bands/${params.bandId}/venues/${setlist.event?.venue?.id}/view`}
-                className="flex items-center gap-1 hover:text-accent-two hover:underline"
-              >
-                <div className="flex gap-1">
-                  <span>{setlist?.event?.venue?.name}</span>, <span>{setlist?.event?.location}</span>
-                </div>
-              </Link>
-              <span className="text-foreground">{formatDate(setlist?.event?.date || '')}</span>
-            </div>
-          )}
+          {setlist?.events?.map(event => {
+            return (
+              <div className="flex flex-col border-2 border-foreground px-2 py-1" key={event.name}>
+                <span className="text-xl font-bold text-accent-two">{event?.name}</span>
+                <Link
+                  to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
+                  className="flex items-center gap-1 hover:text-accent-two hover:underline"
+                >
+                  <div className="flex gap-1">
+                    <span>{event?.venue?.name}</span>, <span>{event?.location}</span>
+                  </div>
+                </Link>
+                <span className="text-foreground">{formatDate(event?.date || '')}</span>
+              </div>
+            )
+          })}
         </div>
 
         <div className="flex items-end gap-3 sm:items-start">
@@ -179,7 +181,10 @@ export default function CreateSetlistRoute() {
             <Button size="sm">Edit</Button>
           </Link>
 
-          <DownloadCSVButton data={csvData} filename={`${setlist?.event?.name} - ${setlist?.event?.date}`} />
+          <DownloadCSVButton
+            data={csvData}
+            filename={`${setlist?.events?.[0]?.name} - ${setlist?.events?.[0]?.date}`}
+          />
 
           <Form method="post">
             <Button size="sm" variant="destructive">

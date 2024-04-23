@@ -19,7 +19,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     include: {
       venue: true,
       bands: true,
-      Setlist: true,
+      setlist: true,
     },
   })
   return json({ event })
@@ -98,7 +98,7 @@ export default function EventDetailView() {
             </dd>
           </div>
 
-          {event?.Setlist && (
+          {event?.setlist && (
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6">Setlist</dt>
 
@@ -106,7 +106,7 @@ export default function EventDetailView() {
                 {/* Button link to setlist by id */}
 
                 <Link
-                  to={`/bands/${event?.bands[0].bandId}/setlists/${event?.Setlist?.id}/view`}
+                  to={`/bands/${event?.bands[0].bandId}/setlists/${event?.setlist?.id}/view`}
                   className="text-hyperlink hover:text-hyperlink-hover hover:underline"
                 >
                   View Setlist

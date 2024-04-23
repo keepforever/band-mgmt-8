@@ -66,7 +66,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
     select: {
       name: true,
-      event: {
+      events: {
         select: {
           id: true,
         },
@@ -174,7 +174,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           create: createSetsData,
         },
         ...(eventId && {
-          event: {
+          events: {
             connect: {
               id: eventId,
             },

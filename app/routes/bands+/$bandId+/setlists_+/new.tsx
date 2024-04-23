@@ -61,7 +61,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         create: createSetsData,
       },
       ...(eventId && {
-        event: {
+        events: {
           connect: {
             id: eventId,
           },

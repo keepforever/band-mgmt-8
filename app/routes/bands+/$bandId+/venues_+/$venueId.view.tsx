@@ -24,7 +24,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           location: true,
           name: true,
           id: true,
-          Setlist: {
+          setlist: {
             select: {
               id: true,
               name: true,

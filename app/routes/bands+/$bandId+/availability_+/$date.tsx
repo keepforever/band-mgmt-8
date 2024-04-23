@@ -83,8 +83,8 @@ export default function DateDetailView() {
                         Venue: {event.venue.name}, Location: {event.venue.location}
                       </p>
                     )}
-                    {event.Setlist && (
-                      <Link to={`/setlist/${event.Setlist.id}`} className="text-blue-600 hover:underline">
+                    {event.setlist && (
+                      <Link to={`/setlist/${event.setlist.id}`} className="text-blue-600 hover:underline">
                         View Setlist
                       </Link>
                     )}
