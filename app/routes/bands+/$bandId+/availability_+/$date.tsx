@@ -4,6 +4,7 @@ import { Link, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button.js'
 import { Card, CardContent, CardTitle } from '#app/components/ui/card.js'
 import { Icon } from '#app/components/ui/icon.js'
+import { UserCard } from '#app/components/user-card.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { getEventsByDateAndBandId } from '#app/utils/events.server'
@@ -23,7 +24,21 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const blackoutDates = await prisma.blackoutDate.findMany({
     where: { date: searchDate },
-    select: { date: true, user: { select: { name: true } } },
+    select: {
+      date: true,
+      user: {
+        select: {
+          name: true,
+          id: true,
+          image: true,
+          bands: {
+            where: { bandId },
+            select: { instrument: true },
+            take: 1,
+          },
+        },
+      },
+    },
   })
 
   const events = await getEventsByDateAndBandId({ date: searchDate, bandId })
@@ -84,7 +99,10 @@ export default function DateDetailView() {
                       </p>
                     )}
                     {event.setlist && (
-                      <Link to={`/setlist/${event.setlist.id}`} className="text-blue-600 hover:underline">
+                      <Link
+                        to={`/bands/${bandId}/setlists/${event.setlist.id}/view`}
+                        className="text-hyperlink hover:text-hyperlink-hover"
+                      >
                         View Setlist
                       </Link>
                     )}
@@ -105,6 +123,16 @@ export default function DateDetailView() {
               <li key={blackout.date} className="mb-2">
                 <p className="text-foreground">{blackout.user?.name ?? 'Unnamed User'}</p>
               </li>
+            ))}
+
+            {blackoutDates.map(blackout => (
+              <UserCard
+                instrument={blackout.user.bands[0].instrument || 'Unknown'}
+                key={blackout.user.id}
+                imageId={String(blackout.user.image?.id)}
+                name={blackout.user.name}
+                isPending={false}
+              />
             ))}
           </ul>
         </div>

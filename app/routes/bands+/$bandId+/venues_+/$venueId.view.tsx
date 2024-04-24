@@ -112,25 +112,31 @@ export default function VenueDetails() {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Contacts</dt>
 
-            <dd className="mt-1 flex flex-wrap items-center gap-3 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
+            <dd className="mt-1 flex flex-wrap items-center gap-5 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
               {venue?.contacts &&
                 venue.contacts.length > 0 &&
                 venue.contacts.map(contact => (
-                  <div key={contact.id} className="relative">
+                  <div key={contact.id} className="relative rounded-sm px-3 py-1 outline outline-border">
                     <Form method="post" navigate={false}>
                       <Button
                         size="sm"
                         type="submit"
-                        className="absolute right-1 top-1 h-3 cursor-pointer bg-transparent p-1"
+                        className="absolute -right-3 -top-3 h-5 cursor-pointer rounded-full bg-destructive stroke-white/75 p-1 hover:bg-destructive/65 hover:stroke-yellow-400"
                       >
-                        <Icon className="h-3 w-3 stroke-destructive/75 hover:stroke-destructive" name="cross-1" />
+                        <Icon className="h-3 w-3" name="cross-1" />
                       </Button>
                       <input type="hidden" name="contactId" value={contact.id} />
                     </Form>
 
-                    <p>{contact.name}</p>
-                    <p>{contact.email}</p>
-                    <p>{contact.phone}</p>
+                    <p className="text-body-sm">{contact.name}</p>
+                    {/*  eslint-disable-next-line remix-react-routes/use-link-for-routes */}
+                    <a className="text-hyperlink hover:text-hyperlink-hover" href={`mailto:${contact.email}`}>
+                      {contact.email}
+                    </a>
+                    {/*  eslint-disable-next-line remix-react-routes/use-link-for-routes */}
+                    <a href={`tel:${contact.phone}`} className="block font-mono">
+                      {contact.phone}
+                    </a>
                   </div>
                 ))}
               <Link to="add-contact">

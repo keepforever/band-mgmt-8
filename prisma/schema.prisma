@@ -100,12 +100,13 @@ model Event {
   id        String      @id @default(cuid())
   name      String
   date      DateTime
-  location  String
+  location  String?
   bands     BandEvent[]
   venueId   String?
   venue     Venue?      @relation(fields: [venueId], references: [id], onDelete: Cascade)
   setlistId String?
   setlist   Setlist?    @relation(fields: [setlistId], references: [id], onDelete: SetNull)
+  payment   Int?
 
   @@index([id])
 }
@@ -152,6 +153,7 @@ model Song {
   youtubeUrl String?
   rating     Int?
   status     String?
+  key        String?
 
   bandSongs BandSong[]
   bandId    String?
@@ -174,9 +176,10 @@ model SongLyrics {
 }
 
 model UserBand {
-  userId  String
-  bandId  String
-  isAdmin Boolean @default(false)
+  userId     String
+  bandId     String
+  isAdmin    Boolean @default(false)
+  instrument String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   band Band @relation(fields: [bandId], references: [id], onDelete: Cascade)
