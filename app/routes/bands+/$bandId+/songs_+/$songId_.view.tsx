@@ -68,12 +68,13 @@ export default function SongDetails() {
 
   return (
     <div>
-      <div className="flex justify-between px-4 sm:px-0">
-        <h3 className="text-lg font-semibold leading-7">
-          {song?.title} by {song?.artist}
-        </h3>
+      <div className="flex flex-wrap justify-between gap-2 px-4 sm:px-0">
+        <div className="flex flex-col">
+          <h3 className="text-lg font-semibold leading-7">{song?.title}</h3>
+          <p className="text-sm leading-6 text-muted-foreground">{song?.artist}</p>
+        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
           <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
             <Button size="sm">Edit</Button>
           </Link>
@@ -126,10 +127,7 @@ export default function SongDetails() {
         <>
           <div className="mb-6 flex items-center gap-3">
             <h2 className="text-lg font-semibold leading-7">Lyrics</h2>
-            {/* 
-        
-        
-        */}
+
             <Form action={`/resources/song-lyric/${song?.lyrics?.id || ''}/delete`} method="POST" navigate={false}>
               <Button type="submit" variant="destructive" size="sm">
                 <Icon name="trash">Delete</Icon>
@@ -168,8 +166,8 @@ export default function SongDetails() {
         </>
       ) : (
         <>
-          <div className="mb-6 flex items-center gap-3">
-            <h2 className="text-lg font-semibold leading-7">Add Lyrics</h2>
+          <div className="fl mb-6 flex flex-wrap items-center gap-3">
+            <h2 className="text-body-sm">Add Lyrics</h2>
 
             <input
               type="file"
@@ -193,11 +191,7 @@ export default function SongDetails() {
                   fetcherKey: 'lyric',
                 })
               }}
-              className={cn(
-                'rounded-md border border-gray-300 p-2',
-                'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
-                'hover:border-blue-500 hover:ring hover:ring-blue-500',
-              )}
+              className={cn('rounded-md border border-border bg-background p-2 text-body-sm')}
             />
           </div>
         </>
@@ -239,7 +233,7 @@ function DeleteSong() {
         status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
         size="sm"
       >
-        <Icon name="avatar">{dc.doubleCheck ? `Are you sure?` : `Delete ${data.song.title}`}</Icon>
+        <Icon name="avatar">{dc.doubleCheck ? `Are you sure?` : `Delete`}</Icon>
       </StatusButton>
     </fetcher.Form>
   )

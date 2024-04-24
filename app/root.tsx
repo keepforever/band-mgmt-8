@@ -121,6 +121,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         },
                       },
                       events: {
+                        where: { event: { date: { gte: new Date() } } },
+                        orderBy: { event: { date: 'asc' } },
                         select: {
                           event: {
                             select: {

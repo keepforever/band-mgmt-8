@@ -33,8 +33,11 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                   <dt className="text-sm font-medium">Members</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                     {band?.members.map((member, index) => (
-                      <div key={member.user.id}>
-                        {`Name: ${member.user.name}`}
+                      <div
+                        key={member.user.id}
+                        className="mb-2 mr-2 inline-block rounded-full bg-accent-two px-3 py-1 text-sm font-semibold text-muted"
+                      >
+                        {`${member.user.name}`}
                         {index < band.members.length - 1 ? <br /> : null}
                       </div>
                     ))}
@@ -52,19 +55,35 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Upcoming Events</dt>
+
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
-                    {band?.events.map((event, index) => (
-                      <div
-                        key={event.event.id}
-                        className="cursor-pointer text-foreground hover:text-destructive-foreground"
-                        onClick={() => navigate(`${band.id}/events/${event.event.id}/view`)}
-                      >
-                        {`Date: ${new Date(event.event.date).toLocaleDateString()}, Location: ${
-                          event.event.venue?.name || 'TBD'
-                        }`}
-                        {index < band.events.length - 1 ? <br /> : null}
-                      </div>
-                    ))}
+                    {band?.events.map((event, index) => {
+                      if (index === 3)
+                        return (
+                          <Link
+                            to={`${band.id}/events`}
+                            key={event.event.id}
+                            className="cursor-pointer text-foreground hover:text-destructive"
+                          >
+                            More...
+                          </Link>
+                        )
+
+                      if (index > 3) return null
+
+                      return (
+                        <div
+                          key={event.event.id}
+                          className="cursor-pointer text-foreground hover:text-destructive"
+                          onClick={() => navigate(`${band.id}/events/${event.event.id}/view`)}
+                        >
+                          {`Date: ${new Date(event.event.date).toLocaleDateString()}, Location: ${
+                            event.event.venue?.name || 'TBD'
+                          }`}
+                          {index < band.events.length - 1 ? <br /> : null}
+                        </div>
+                      )
+                    })}
                   </dd>
                 </div>
 
@@ -79,6 +98,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                           <li
                             key={item.name}
                             className="group cursor-pointer rounded-md bg-accent-two/30 p-4 text-foreground hover:bg-destructive/30"
+                            onClick={() => navigate(`${band.id}/${removeLeadingSlash(item.to)}`)}
                           >
                             <Link
                               to={`${band.id}/${removeLeadingSlash(item.to)}`}
