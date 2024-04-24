@@ -125,11 +125,10 @@ export const DayComponent: React.FC<DayComponentProps> = ({
     <button
       type="button"
       onClick={handleDayClick}
-      className={cn({
-        'bg-yellow-800 py-1.5 text-white hover:bg-yellow-500 focus:z-10':
-          isBlackoutForUser && !isBlackoutForCurrentUser,
-        'bg-blue-800 py-1.5 text-white hover:bg-blue-500 focus:z-10': isBlackoutForUser,
-        'bg-red-800 py-1.5 text-white hover:bg-red-500 focus:z-10': isBlackoutForCurrentUser,
+      className={cn('py-1', {
+        'bg-yellow-800 text-white hover:bg-yellow-500 focus:z-10': isBlackoutForUser && !isBlackoutForCurrentUser,
+        'bg-blue-800 text-white hover:bg-blue-500 focus:z-10': isBlackoutForUser,
+        'bg-red-800 text-white hover:bg-red-500 focus:z-10': isBlackoutForCurrentUser,
         'bg-green-500': isEventDay,
         'hover:bg-destructive-foreground hover:text-foreground-destructive':
           !isEventDay && !isBlackoutForUser && !isBlackoutForCurrentUser,
