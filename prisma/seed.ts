@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
 import { promiseHash } from 'remix-utils/promise'
-// import { songs } from '#app/constants/songs'
 import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
@@ -65,7 +64,7 @@ async function seed() {
   })
 
   console.time('🔑 Created bands...')
-  await prisma.band.create({
+  const createdBand = await prisma.band.create({
     data: {
       name: capitalLorem(),
       members: {
@@ -84,10 +83,7 @@ async function seed() {
       },
     },
   })
-  console.timeEnd('🎸 Created bands...')
-
-  console.time('🔑 Created songs...')
-  console.timeEnd('🔑 Created songs...')
+  console.timeEnd(`🎸 Created ${createdBand.name}  band...`)
 
   console.time('👑 Created roles...')
   await prisma.role.create({
@@ -365,27 +361,29 @@ async function seed() {
   })
   console.timeEnd('🎸 Created KODY band...')
 
-  // console.time('🎸 Created songs...')
-  // for (const song of songs) {
-  //   await prisma.song.create({
-  //     data: {
-  //       title: song.title,
-  //       artist: song.artist,
-  //       bandSongs: {
-  //         create: [
-  //           {
-  //             band: {
-  //               connect: {
-  //                 id: kodyBand.id,
-  //               },
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   })
-  // }
-  // console.timeEnd('🎸 Created songs...')
+  // Create 5 songs associated with the created band
+  for (let i = 0; i < 5; i++) {
+    await prisma.song.create({
+      data: {
+        artist: faker.music.genre(), // Random artist name
+        title: faker.music.songName(), // Random song title
+        youtubeUrl: faker.internet.url(), // Random URL, assuming songs might have a video link
+        rating: faker.number.int({ min: 0, max: 5 }), // Random rating
+        status: 'active', // Assuming a default status for the song
+        bandSongs: {
+          create: [
+            {
+              band: {
+                connect: {
+                  id: kodyBand.id,
+                },
+              },
+            },
+          ],
+        },
+      },
+    })
+  }
 
   console.time('🏟️ Created venues...')
   const venueIds = []

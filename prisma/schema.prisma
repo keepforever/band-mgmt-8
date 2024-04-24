@@ -108,6 +108,10 @@ model Event {
   setlist   Setlist?    @relation(fields: [setlistId], references: [id], onDelete: SetNull)
   payment   Int?
 
+  startEndTime     String?
+  requiresPASystem Boolean?
+  notes            String?
+
   @@index([id])
 }
 
@@ -150,10 +154,11 @@ model Song {
   artist String
   title  String
 
-  youtubeUrl String?
-  rating     Int?
-  status     String?
-  key        String?
+  youtubeUrl   String?
+  rating       Int?
+  status       String?
+  key          String?
+  capoPosition Int?
 
   bandSongs BandSong[]
   bandId    String?

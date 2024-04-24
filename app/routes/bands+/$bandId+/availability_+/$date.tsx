@@ -53,7 +53,7 @@ export default function DateDetailView() {
 
   if (!events.length && !blackoutDates.length) {
     return (
-      <div className="container mx-auto max-w-lg">
+      <div className="container mx-auto">
         <Card className="mx-auto w-full max-w-lg">
           <CardContent className="flex flex-col items-center gap-4 p-10">
             <Icon name="pope" className="h-40 w-40 fill-red-400 text-gray-400 dark:text-gray-500" />
@@ -74,8 +74,8 @@ export default function DateDetailView() {
   }
 
   return (
-    <div className="container mx-auto max-w-lg px-4">
-      <h1 className="mt-5 text-2xl font-semibold">{formattedDate}</h1>
+    <div className="container mx-auto">
+      <h1 className="mt-5 text-body-lg underline">{formattedDate}</h1>
 
       {/* Events */}
       {events.length > 0 && (
@@ -117,14 +117,8 @@ export default function DateDetailView() {
       {/* Blackout Dates */}
       {blackoutDates.length > 0 && (
         <div className="mt-4">
-          <h2 className="mb-3 text-lg font-semibold">Unavailable Members</h2>
-          <ul>
-            {blackoutDates.map(blackout => (
-              <li key={blackout.date} className="mb-2">
-                <p className="text-foreground">{blackout.user?.name ?? 'Unnamed User'}</p>
-              </li>
-            ))}
-
+          <h2 className="mb-3 text-body-md">Unavailable Members</h2>
+          <ul className="flex flex-wrap gap-4">
             {blackoutDates.map(blackout => (
               <UserCard
                 instrument={blackout.user.bands[0].instrument || 'Unknown'}

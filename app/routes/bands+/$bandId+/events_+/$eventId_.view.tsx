@@ -7,7 +7,7 @@ import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { prisma } from '#app/utils/db.server.ts'
-import { formatDate, useDoubleCheck } from '#app/utils/misc'
+import { cn, formatDate, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -48,7 +48,19 @@ export default function EventDetailView() {
   return (
     <div>
       <div className="flex justify-between px-4 sm:px-0">
-        <h3 className="text-lg font-semibold leading-7">{event?.name}</h3>
+        <div className="flex flex-col">
+          <h3 className="text-lg font-semibold leading-7">{event?.name}</h3>
+
+          <div className="flex items-center gap-2">
+            <div className="text-body-xs font-semibold text-accent-two">${event?.payment}</div>
+
+            {event?.requiresPASystem && (
+              <span className="inline-block rounded-full bg-blue-500 px-2 text-xs font-semibold uppercase tracking-wider text-white">
+                PA System
+              </span>
+            )}
+          </div>
+        </div>
 
         <div className="flex items-center gap-2">
           <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
@@ -60,11 +72,6 @@ export default function EventDetailView() {
       </div>
       <div className="mt-6 border-t border-white/10">
         <dl className="divide-y divide-white/10">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6">Event Name</dt>
-
-            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{event?.name}</dd>
-          </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Date & Location</dt>
 
@@ -98,6 +105,18 @@ export default function EventDetailView() {
 
               {/* For testing */}
               {/* <AddressLink address={`House of Blue in Cleveland`} /> */}
+            </dd>
+          </div>
+
+          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Notes</dt>
+
+            <dd
+              className={cn('mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0', {
+                'text-foreground/60': !event?.notes,
+              })}
+            >
+              {event?.notes ?? 'N/A'}
             </dd>
           </div>
 
