@@ -1,4 +1,3 @@
-// CreateInvitationForm.tsx
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
@@ -36,6 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     })
   } catch (error) {
+    console.error('\n', `error = `, error, '\n')
     return json(
       {
         result: submission.reply({
@@ -65,7 +65,6 @@ export default function CreateInvitationRoute() {
     },
     shouldRevalidate: 'onBlur',
     defaultValue: {
-      // clt9pbqp0001g666xqzljz6cf
       inviteeId: '',
       bandId: params.bandId,
     },
@@ -86,11 +85,15 @@ export default function CreateInvitationRoute() {
           }}
           errors={fields.inviteeId.errors}
         />
+
         <input className="hidden" {...getInputProps(fields.bandId, { type: 'text' })} />
+
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Send Invitation
         </StatusButton>
+
         <br />
+
         <ErrorList errors={form.errors} id={form.errorId} />
       </Form>
     </div>

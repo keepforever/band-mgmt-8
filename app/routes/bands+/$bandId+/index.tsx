@@ -38,6 +38,15 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
           },
         },
       },
+      events: {
+        select: {
+          event: {
+            select: {
+              payment: true,
+            },
+          },
+        },
+      },
     },
   })
   return json({ band })
@@ -49,6 +58,20 @@ export default function BandIdIndex() {
   return (
     <div>
       <h1 className="mb-4 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
+
+      {/* Current Year Revenue */}
+
+      <div className="mb-4 flex items-center gap-2">
+        <h1 className="text-body-sm text-foreground">Projected {new Date().getFullYear()} revenue:</h1>
+
+        <span className="text-sm text-accent-two">
+          {band?.events
+            .reduce((total, event) => total + (event?.event?.payment || 0), 0)
+            .toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        </span>
+      </div>
+
+      {/* Members */}
 
       <h2 className="mb-4 text-xl font-bold">Members</h2>
 
@@ -69,6 +92,8 @@ export default function BandIdIndex() {
           </div>
         ))}
       </div>
+
+      {/* Quick Links */}
 
       <h2 className="mb-4 text-xl font-bold">Quick Links</h2>
 

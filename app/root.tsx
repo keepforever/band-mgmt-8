@@ -121,11 +121,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         },
                       },
                       events: {
-                        where: { event: { date: { gte: new Date() } } },
+                        // where: { event: { date: { gte: new Date() } } }, // only get upcoming events
+                        where: {
+                          event: {
+                            date: {
+                              gte: new Date(new Date().getFullYear(), 0, 1), // start of the current year
+                              lte: new Date(new Date().getFullYear(), 11, 31), // end of the current year
+                            },
+                          },
+                        },
                         orderBy: { event: { date: 'asc' } },
                         select: {
                           event: {
                             select: {
+                              payment: true,
                               id: true,
                               date: true,
                               venue: {

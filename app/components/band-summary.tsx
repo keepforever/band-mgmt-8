@@ -31,6 +31,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Members</dt>
+
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                     {band?.members.map((member, index) => (
                       <div
@@ -41,6 +42,15 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                         {index < band.members.length - 1 ? <br /> : null}
                       </div>
                     ))}
+                  </dd>
+                </div>
+
+                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium">Current Year Revenue</dt>
+                  <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
+                    {band?.events
+                      .reduce((total, event) => total + (event?.event?.payment || 0), 0)
+                      .toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                   </dd>
                 </div>
 

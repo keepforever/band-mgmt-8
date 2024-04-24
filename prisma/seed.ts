@@ -416,7 +416,7 @@ async function seed() {
 
   // create events
   console.time('📅 Created events...')
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 2; index++) {
     const tempDate = faker.date.future({
       refDate: new Date(),
       years: 0.5,
@@ -426,8 +426,10 @@ async function seed() {
     await prisma.event.create({
       data: {
         date: datePayload,
-        location: faker.location.city(),
-        name: faker.person.lastName() + ' Concert',
+        // location: faker.location.city(),
+        requiresPASystem: faker.datatype.boolean(),
+        payment: faker.number.int({ min: 750, max: 1300 }),
+        name: faker.person.lastName(),
         venue: {
           connect: {
             id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],
