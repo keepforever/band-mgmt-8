@@ -4,7 +4,7 @@ export type Column<T> = {
   title: string
   dataIndex: keyof T
   render?: (value: any, record: T) => React.ReactNode
-  stopPropagation?: boolean
+  stopPropagation?: (value: any, record: T) => boolean
 }
 
 export type TableProps<T> = {
@@ -38,15 +38,19 @@ export function TableGeneric<T>({ columns, data, onRowClick }: TableProps<T>) {
                 <tr
                   key={rowIndex}
                   className="cursor-pointer hover:bg-red-400/30"
-                  tabIndex={0} // Make the row focusable
+                  tabIndex={0}
                   onClick={() => onRowClick?.(record)}
-                  onKeyDown={e => handleKeyDown(e, record)} // Handle the Enter key press
+                  onKeyDown={e => handleKeyDown(e, record)}
                 >
                   {columns.map(({ dataIndex, render, stopPropagation }, columnIndex) => (
                     <td
                       key={columnIndex}
                       className="whitespace-nowrap px-3 py-4 text-sm"
-                      onClick={e => (stopPropagation ? e.stopPropagation() : null)}
+                      onClick={e => {
+                        if (stopPropagation?.(record[dataIndex], record)) {
+                          e.stopPropagation()
+                        }
+                      }}
                     >
                       {render ? render(record[dataIndex], record) : String(record[dataIndex])}
                     </td>

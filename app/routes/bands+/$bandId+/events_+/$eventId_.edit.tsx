@@ -112,7 +112,7 @@ export default function EditEventRoute() {
   })
 
   return (
-    <div className="container mx-auto max-w-md">
+    <div className="mx-auto max-w-md">
       <h1 className="text-center text-2xl font-bold">Edit Event</h1>
       <Form method="POST" {...getFormProps(form)} className="mt-6">
         <CheckboxField

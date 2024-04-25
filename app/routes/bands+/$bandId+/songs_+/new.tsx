@@ -127,8 +127,9 @@ export default function CreateSongRoute() {
   })
 
   return (
-    <div className="container mx-auto max-w-md">
-      <h1 className="text-center text-2xl font-bold">New Song Route</h1>
+    <div className="mx-auto max-w-md">
+      <h1 className="text-center text-h5">Add a Song</h1>
+
       <Form method="POST" encType="multipart/form-data" {...getFormProps(form)} className="mt-6 flex flex-col gap-2">
         <Field
           labelProps={{

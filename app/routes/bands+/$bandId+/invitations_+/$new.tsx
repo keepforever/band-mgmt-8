@@ -71,7 +71,7 @@ export default function CreateInvitationRoute() {
   })
 
   return (
-    <div className="container mx-auto max-w-md">
+    <div className="mx-auto max-w-md">
       <h1 className="text-center text-2xl font-bold">Create an Invitation</h1>
 
       <Form method="POST" {...getFormProps(form)} className="mt-6">

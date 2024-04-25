@@ -134,7 +134,7 @@ export function LayoutAuthenticated({
         </div>
       </div>
 
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-muted/70 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-muted/95 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
         <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
           <span className="sr-only">Open sidebar</span>
 
@@ -206,20 +206,29 @@ const UserBands = () => {
             <ul className="ml-4 mt-2 space-y-1">
               {bandSubNavigation.map(item => {
                 return (
-                  <li key={item.name}>
+                  <li key={item.name} className="flex gap-1.5">
                     <NavLink
+                      title={`Navigate to ${item.name} list`}
                       to={`${band.to}${item.to}`}
                       className={({ isActive }) => {
-                        return cn('flex items-center gap-1 hover:underline', {
+                        return cn('flex items-center hover:underline', {
                           'tracking-widest underline': isActive,
                           '': !isActive,
                         })
                       }}
                     >
-                      <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-
                       {item.name}
                     </NavLink>
+
+                    {item.toCreate && (
+                      <Link
+                        title={`Create new ${item.name}`}
+                        to={`${band.to}${item.to}/new`}
+                        className={cn('flex transform items-center transition-transform hover:scale-110')}
+                      >
+                        (<item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />)
+                      </Link>
+                    )}
                   </li>
                 )
               })}

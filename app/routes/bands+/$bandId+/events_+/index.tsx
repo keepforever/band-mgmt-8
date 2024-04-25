@@ -78,10 +78,15 @@ export default function EventsRoute() {
 
         return (
           // http://localhost:3000/bands/cltg3ec8f0027ig7vxbhxxfab/setlists/cltg3o36q00024ey44moes965
-          <Link to={`/bands/${bandId}/setlists/${setlistId}/view`}>View Setlist</Link>
+          <Link className="hover:text-hyperlink hover:underline" to={`/bands/${bandId}/setlists/${setlistId}/view`}>
+            View Setlist
+          </Link>
         )
       },
-      stopPropagation: true,
+      stopPropagation: (setlist, record) => {
+        const setlistId = setlist?.BandSetlist?.[0]?.setlistId
+        return !!setlistId
+      },
     },
   ]
 

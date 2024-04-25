@@ -14,20 +14,22 @@ export const bandSubNavigation = [
   {
     name: 'Events',
     to: '/events',
+    toCreate: true,
     icon: TempIcon,
     current: false,
   },
-  // songs
   {
     name: 'Songs',
     to: '/songs',
+    toCreate: true,
     icon: TempIcon,
     current: false,
   },
-  // venues
+
   {
     name: 'Venues',
     to: '/venues',
+    toCreate: true,
     icon: TempIcon,
     current: false,
   },
@@ -35,6 +37,7 @@ export const bandSubNavigation = [
   {
     name: 'Setlists',
     to: '/setlists',
+    toCreate: true,
     icon: TempIcon,
     current: false,
   },
@@ -42,6 +45,7 @@ export const bandSubNavigation = [
   {
     name: 'Invitations',
     to: '/invitations',
+    toCreate: true,
     icon: TempIcon,
     current: false,
   },
@@ -49,6 +53,7 @@ export const bandSubNavigation = [
   {
     name: 'Availability',
     to: '/availability',
+    toCreate: false,
     icon: TempIcon,
     current: false,
   },

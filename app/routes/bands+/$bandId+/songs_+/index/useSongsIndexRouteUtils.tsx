@@ -15,7 +15,9 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Title',
       dataIndex: 'title',
-      stopPropagation: true,
+      stopPropagation: (value, record) => {
+        return !!record.lyricId
+      },
       render: (value, record) => (
         <div className="flex items-center gap-2">
           <span>{value}</span>
