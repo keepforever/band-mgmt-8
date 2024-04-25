@@ -117,7 +117,6 @@ export default function DateDetailView() {
       {/* Blackout Dates */}
       {blackoutDates.length > 0 && (
         <div className="mt-4">
-          <h2 className="mb-3 text-body-md">Unavailable Members</h2>
           <ul className="flex flex-wrap gap-4">
             {blackoutDates.map(blackout => (
               <UserCard

@@ -1,6 +1,6 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Form, Link, Outlet, useLoaderData, useParams } from '@remix-run/react'
+import { Form, Link, Outlet, redirect, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server'
@@ -51,27 +51,44 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return json({ venue })
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const bandId = params.bandId
   const userId = await requireUserId(request)
   invariantResponse(userId, 'Unauthorized access')
 
   const formData = await request.formData()
-  const contactId = formData.get('contactId') as string
-  invariantResponse(contactId, 'Missing contact ID')
+  const intent = formData.get('intent')
 
-  try {
-    await prisma.venueContact.delete({
-      where: {
-        id: contactId,
-      },
-    })
-    console.log('Venue contact deleted successfully')
-  } catch (error) {
-    console.error('Error deleting venue contact:', error)
-    throw error
+  switch (intent) {
+    case 'deleteVenue':
+      const venueId = formData.get('venueId') as string
+      invariantResponse(venueId, 'Venue ID is required')
+      try {
+        await prisma.venue.delete({
+          where: { id: venueId },
+        })
+        return redirect(`/bands/${bandId}/venues`)
+      } catch (error) {
+        console.error('Error deleting venue:', error)
+        return json({ success: false, message: 'Failed to delete venue.' }, { status: 500 })
+      }
+
+    case 'deleteContact':
+      const contactId = formData.get('contactId') as string
+      invariantResponse(contactId, 'Contact ID is required')
+      try {
+        await prisma.venueContact.delete({
+          where: { id: contactId },
+        })
+        return json({ success: true, message: 'Contact deleted successfully.' })
+      } catch (error) {
+        console.error('Error deleting contact:', error)
+        return json({ success: false, message: 'Failed to delete contact.' }, { status: 500 })
+      }
+
+    default:
+      return json({ success: false, message: 'Invalid intent.' }, { status: 400 })
   }
-
-  return json({ success: true })
 }
 
 export default function VenueDetails() {
@@ -84,10 +101,13 @@ export default function VenueDetails() {
         <h3 className="text-lg font-semibold leading-7">
           {venue?.name}, located at {venue?.location}
         </h3>
+        <div className="flex items-center gap-2">
+          <Link relative="path" to={`../edit`} className="text-hyperlink hover:underline">
+            <Button size="sm">Edit Venue</Button>
+          </Link>
 
-        <Link relative="path" to={`../edit`} className="text-hyperlink hover:underline">
-          <Button size="sm">Edit Venue</Button>
-        </Link>
+          <DeleteVenue />
+        </div>
       </div>
 
       <div className="mt-6 border-t border-border">
@@ -126,6 +146,7 @@ export default function VenueDetails() {
                         <Icon className="h-3 w-3" name="cross-1" />
                       </Button>
                       <input type="hidden" name="contactId" value={contact.id} />
+                      <input type="hidden" name="intent" value="deleteContact" />
                     </Form>
 
                     <p className="text-body-sm">{contact.name}</p>
@@ -171,5 +192,18 @@ export default function VenueDetails() {
 
       <Outlet />
     </div>
+  )
+}
+
+function DeleteVenue() {
+  const params = useParams()
+  return (
+    <Form method="POST">
+      <Button type="submit" variant="destructive">
+        <Icon name="trash">Delete Venue</Icon>
+      </Button>
+      <input type="hidden" name="intent" value="deleteVenue" />
+      <input type="hidden" name="venueId" value={params?.venueId} />
+    </Form>
   )
 }
