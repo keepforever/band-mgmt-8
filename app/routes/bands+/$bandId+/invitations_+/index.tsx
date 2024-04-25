@@ -45,18 +45,17 @@ export default function BandIdIndex() {
         </Button>
       </HeaderWithActions>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {invitations.map((invitation, index) => (
-          <div key={index} className="rounded border p-4 shadow">
-            <h2 className="text-xl font-bold">Invitation to {invitation.band.name}</h2>
-            <p className="mb-2 text-gray-500">ID: {invitation.id}</p>
+          <div key={index} className="col-span-1 flex flex-col gap-1.5 rounded border bg-muted p-4 shadow">
+            <h2 className="text-body-md font-bold">Invitation to {invitation.band.name}</h2>
 
             {invitation.invitee && (
-              <p className="mb-2 text-gray-500">
+              <p className="">
                 Invitee: {invitation.invitee.name} - {invitation.invitee.email}
               </p>
             )}
-            <p className="mb-2 text-gray-500">Sent: {new Date(invitation.createdAt).toLocaleDateString()}</p>
+            <p className=" text-muted-foreground">Sent: {new Date(invitation.createdAt).toLocaleDateString()}</p>
           </div>
         ))}
       </div>

@@ -75,7 +75,7 @@ export default function SongDetails() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
+          <Link relative="path" to="../edit" className="text-hyperlink hover:underline">
             <Button size="sm">Edit</Button>
           </Link>
           <DeleteSong />
@@ -100,7 +100,7 @@ export default function SongDetails() {
                 href={String(song?.youtubeUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-hyperlink hover:underline"
               >
                 {song?.youtubeUrl}
               </a>

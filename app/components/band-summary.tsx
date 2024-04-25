@@ -112,7 +112,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                           >
                             <Link
                               to={`${band.id}/${removeLeadingSlash(item.to)}`}
-                              className={cn('flex items-center gap-1 group-hover:text-blue-500 group-hover:underline')}
+                              className={cn('flex items-center gap-1 group-hover:text-hyperlink group-hover:underline')}
                             >
                               {item.name}
                             </Link>

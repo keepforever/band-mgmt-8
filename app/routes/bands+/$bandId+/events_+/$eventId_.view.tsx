@@ -36,7 +36,7 @@ const AddressLink: FC<AddressLinkProps> = ({ address }) => {
   const href = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-hyperlink hover:underline">
       {address}
     </a>
   )
@@ -63,7 +63,7 @@ export default function EventDetailView() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link relative="path" to="../edit" className="text-blue-500 hover:underline">
+          <Link relative="path" to="../edit" className="text-hyperlink hover:underline">
             <Button size="sm">Edit</Button>
           </Link>
 
@@ -83,28 +83,18 @@ export default function EventDetailView() {
               <Link
                 relative="path"
                 to={`../../../venues/${event?.venue.id}/view`}
-                className="mt-1 text-sm leading-6 text-blue-500 hover:underline sm:col-span-2 sm:mt-0"
+                className="mt-1 text-sm leading-6 text-hyperlink hover:underline sm:col-span-2 sm:mt-0"
               >
                 <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
               </Link>
             </div>
           )}
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6">Bands</dt>
-
-            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
-              <ul>{event?.bands.map(band => <li key={band.bandId}>{band.bandId}</li>)}</ul>
-            </dd>
-          </div>
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Address</dt>
 
             <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
               <AddressLink address={`${event?.venue?.name} in ${event?.venue?.location}`} />
-
-              {/* For testing */}
-              {/* <AddressLink address={`House of Blue in Cleveland`} /> */}
             </dd>
           </div>
 

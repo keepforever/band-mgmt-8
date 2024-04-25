@@ -85,7 +85,7 @@ export default function VenueDetails() {
           {venue?.name}, located at {venue?.location}
         </h3>
 
-        <Link relative="path" to={`../edit`} className="text-blue-500 hover:underline">
+        <Link relative="path" to={`../edit`} className="text-hyperlink hover:underline">
           <Button size="sm">Edit Venue</Button>
         </Link>
       </div>
@@ -157,7 +157,7 @@ export default function VenueDetails() {
                         <p className="text-sm font-medium leading-6">{formatDate(event.date)}</p>
                         <p className="text-sm leading-6 text-accent-foreground">{event.location}</p>
                       </div>
-                      <Link to={`/bands/${bandId}/events/${event.id}/view`} className="text-blue-500 hover:underline">
+                      <Link to={`/bands/${bandId}/events/${event.id}/view`} className="text-hyperlink hover:underline">
                         View Event
                       </Link>
                     </li>
