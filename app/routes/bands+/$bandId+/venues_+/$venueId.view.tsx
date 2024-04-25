@@ -1,11 +1,12 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Form, Link, Outlet, redirect, useLoaderData, useParams } from '@remix-run/react'
+import { Form, Link, Outlet, redirect, useFetcher, useLoaderData, useParams } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
+import { StatusButton } from '#app/components/ui/status-button.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
-import { formatDate } from '#app/utils/misc'
+import { formatDate, useDoubleCheck } from '#app/utils/misc'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
@@ -197,13 +198,24 @@ export default function VenueDetails() {
 
 function DeleteVenue() {
   const params = useParams()
+  const dc = useDoubleCheck()
+  const fetcher = useFetcher<typeof action>()
+
   return (
-    <Form method="POST">
-      <Button type="submit" variant="destructive">
-        <Icon name="trash">Delete Venue</Icon>
-      </Button>
+    <fetcher.Form method="POST">
+      <StatusButton
+        {...dc.getButtonProps({
+          type: 'submit',
+          name: 'venueId',
+          value: params?.venueId,
+        })}
+        variant={dc.doubleCheck ? 'destructive' : 'destructive'}
+        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        size="sm"
+      >
+        <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Venue`}</Icon>
+      </StatusButton>
       <input type="hidden" name="intent" value="deleteVenue" />
-      <input type="hidden" name="venueId" value={params?.venueId} />
-    </Form>
+    </fetcher.Form>
   )
 }
