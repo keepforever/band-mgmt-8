@@ -63,50 +63,36 @@ export default function ProfileRoute() {
 
         <Spacer size="sm" />
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <h1 className="text-center text-h2">{userDisplayName}</h1>
           </div>
-          <p className="mt-2 text-center text-muted-foreground">Joined {data.userJoinedDisplay}</p>
 
-          <p
-            onClick={() => copyToClipboard(data.user.id)}
-            className="mt-2 cursor-pointer text-center text-muted-foreground"
-          >
-            {data.user.id}
-          </p>
+          <p className="text-center text-muted-foreground">Joined {data.userJoinedDisplay}</p>
 
-          {isLoggedInUser ? (
-            <Form action="/logout" method="POST" className="mt-3">
-              <Button type="submit" variant="link" size="pill">
+          <div className="flex flex-col flex-wrap gap-2">
+            <Button onClick={() => copyToClipboard(data.user.id)} variant="secondary">
+              Copy User ID
+            </Button>
+
+            {isLoggedInUser && (
+              <Button asChild>
+                <Link to="/settings/profile" prefetch="intent">
+                  Edit profile
+                </Link>
+              </Button>
+            )}
+          </div>
+
+          {isLoggedInUser && (
+            <Form action="/logout" method="POST">
+              <Button type="submit" variant="outline" size="lg">
                 <Icon name="exit" className="scale-125 max-md:scale-150">
                   Logout
                 </Icon>
               </Button>
             </Form>
-          ) : null}
-          <div className="mt-10 flex gap-4">
-            {isLoggedInUser ? (
-              <>
-                <Button asChild>
-                  <Link to="notes" prefetch="intent">
-                    My notes
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/settings/profile" prefetch="intent">
-                    Edit profile
-                  </Link>
-                </Button>
-              </>
-            ) : (
-              <Button asChild>
-                <Link to="notes" prefetch="intent">
-                  {userDisplayName}'s notes
-                </Link>
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
