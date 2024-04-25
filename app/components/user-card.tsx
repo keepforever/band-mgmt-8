@@ -21,7 +21,11 @@ export const UserCard: React.FC<UserCardProps> = ({ instrument, name, imageId, i
         {/* Image */}
 
         <div className="flex items-center px-1.5 pb-1">
-          <img alt={name ?? instrument} src={getUserImgSrc(imageId)} className="mr-3 h-16 w-16 rounded-full" />
+          <img
+            alt={name ?? instrument}
+            src={getUserImgSrc(imageId)}
+            className="mr-3 h-16 w-16 rounded-full object-fill"
+          />
 
           {/* Name */}
 
