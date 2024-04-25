@@ -164,9 +164,22 @@ export default function CreateSetlistRoute() {
         console.error('Cannot remove the bucket column.')
         return prevColumns
       } else {
+        // Collect the songs from the column that is being removed
+        const songsFromRemovedColumn = prevColumns.find(column => column.order === order)?.list || []
+
+        // Filter out the column to be removed
         const filteredColumns = prevColumns.filter(column => column.order !== order)
+
         // Reassign order to maintain continuity except the last bucket
-        return filteredColumns.map((col, index) => ({ ...col, order: index }))
+        const reorderedColumns = filteredColumns.map((col, index) => ({ ...col, order: index }))
+
+        // Add the songs from the removed column back to the bucket
+        reorderedColumns[reorderedColumns.length - 1].list = [
+          ...reorderedColumns[reorderedColumns.length - 1].list,
+          ...songsFromRemovedColumn,
+        ]
+
+        return reorderedColumns
       }
     })
   }
