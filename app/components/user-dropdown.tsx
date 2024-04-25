@@ -16,6 +16,7 @@ export function UserDropdown() {
   const user = useUser()
   const submit = useSubmit()
   const formRef = useRef<HTMLFormElement>(null)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,12 +32,12 @@ export function UserDropdown() {
               alt={user.name ?? user.username}
               src={getUserImgSrc(user.image?.id)}
             />
-            <span className="text-body-sm font-bold">{user.name ?? user.username}</span>
+            <span className="text-body-xs font-bold text-foreground">{user.name ?? user.username}</span>
           </Link>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuContent sideOffset={8} align="start">
+        <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
           <DropdownMenuItem asChild>
             <Link prefetch="intent" to={`/users/${user.username}`}>
               <Icon className="text-body-sm" name="avatar">
@@ -44,13 +45,7 @@ export function UserDropdown() {
               </Icon>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link prefetch="intent" to={`/users/${user.username}/notes`}>
-              <Icon className="text-body-sm" name="pencil-2">
-                Notes
-              </Icon>
-            </Link>
-          </DropdownMenuItem>
+
           <DropdownMenuItem
             asChild
             // this prevents the menu from closing before the form submission is completed

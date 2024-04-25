@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { UserDropdown } from './user-dropdown'
 
 type BreadcrumbProps = {
   // Add any specific types if needed
@@ -10,7 +11,7 @@ export const Breadcrumbs: React.FC<BreadcrumbProps> = () => {
   const pathnames = location.pathname.split('/').filter(x => x)
 
   return (
-    <div className="hidden py-2 pl-8 text-xs sm:block">
+    <div className="mb-4 hidden items-center justify-between py-1 pl-8 text-xs sm:mr-6 sm:flex">
       <ul className="flex">
         <li>
           <Link to="/" className="text-muted-foreground">
@@ -37,6 +38,10 @@ export const Breadcrumbs: React.FC<BreadcrumbProps> = () => {
           )
         })}
       </ul>
+
+      {/* Usar Avatar */}
+
+      <UserDropdown />
     </div>
   )
 }

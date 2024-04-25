@@ -47,7 +47,9 @@ export default function EventDetailView() {
 
   return (
     <div>
-      <div className="flex justify-between px-4 sm:px-0">
+      <div className="flex flex-wrap justify-between gap-3 px-4 sm:px-0">
+        {/* Event name and Revenue column */}
+
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold leading-7">{event?.name}</h3>
 
@@ -55,12 +57,14 @@ export default function EventDetailView() {
             <div className="text-body-xs font-semibold text-accent-two">${event?.payment}</div>
 
             {event?.requiresPASystem && (
-              <span className="inline-block rounded-full bg-blue-500 px-2 text-xs font-semibold uppercase tracking-wider text-white">
+              <span className="inline-flex rounded-full bg-hyperlink px-1.5 py-px text-xs font-semibold uppercase tracking-wider text-muted">
                 PA System
               </span>
             )}
           </div>
         </div>
+
+        {/* Edit and Delete buttons */}
 
         <div className="flex items-center gap-2">
           <Link relative="path" to="../edit" className="text-hyperlink hover:underline">

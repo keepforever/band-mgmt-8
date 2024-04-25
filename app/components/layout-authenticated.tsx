@@ -4,7 +4,8 @@ import { Fragment, useEffect, useState } from 'react'
 import { Icon } from '#app/components/ui/icon.js'
 import { bandSubNavigation, settingsNavigation } from '#app/constants/navigation.js'
 import { type loader as rootLoader } from '#app/root.tsx'
-import { cn } from '#app/utils/misc.js'
+import { cn, getUserImgSrc } from '#app/utils/misc.js'
+import { useUser } from '#app/utils/user.js'
 import { Breadcrumbs } from './breadcrumbs'
 import { LogoutButton } from './logout-button'
 
@@ -17,6 +18,7 @@ export function LayoutAuthenticated({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const routerNavigation = useNavigation()
+  const user = useUser()
 
   // close the sidebar when the route changes
   useEffect(() => {
@@ -160,10 +162,14 @@ export function LayoutAuthenticated({
           Assets
         </NavLink>
 
-        <a href="https://tailwindui.com" className="flex items-center gap-x-4">
-          <span className="sr-only">Your profile</span>
-          <img className="h-8 w-8 rounded-full bg-gray-500" src="/img/user.png" alt="" />
-        </a>
+        <Link to={`/settings/profile`} className="flex flex-col items-center gap-2 sm:hidden">
+          <img
+            className="h-8 w-8 rounded-full object-cover"
+            alt={user.name ?? user.username}
+            src={getUserImgSrc(user.image?.id)}
+          />
+          <span className="sr-only">{user.name ?? user.username}</span>
+        </Link>
       </div>
 
       <main className="py-3 lg:pl-60">

@@ -35,6 +35,15 @@ export default function ProfileRoute() {
   const loggedInUser = useOptionalUser()
   const isLoggedInUser = data.user.id === loggedInUser?.id
 
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(
+      function () {},
+      function (err) {
+        console.error('Could not copy text: ', err)
+      },
+    )
+  }
+
   return (
     <div className="container mb-48 mt-36 flex flex-col items-center justify-center">
       <Spacer size="4xs" />
@@ -59,6 +68,14 @@ export default function ProfileRoute() {
             <h1 className="text-center text-h2">{userDisplayName}</h1>
           </div>
           <p className="mt-2 text-center text-muted-foreground">Joined {data.userJoinedDisplay}</p>
+
+          <p
+            onClick={() => copyToClipboard(data.user.id)}
+            className="mt-2 cursor-pointer text-center text-muted-foreground"
+          >
+            {data.user.id}
+          </p>
+
           {isLoggedInUser ? (
             <Form action="/logout" method="POST" className="mt-3">
               <Button type="submit" variant="link" size="pill">
