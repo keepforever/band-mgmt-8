@@ -14,9 +14,9 @@ const VenueSchema = z.object({
   name: z.string().min(1, 'Venue name is required'),
   location: z.string().min(1, 'Location is required'),
   capacity: z.number().optional(),
-  contactName: z.string().min(1, 'Contact name is required'),
-  contactEmail: z.string().email('Invalid email address'),
-  contactPhone: z.string().min(1, 'Contact phone is required'),
+  contactName: z.string().min(1, 'Contact name is required').optional(),
+  contactEmail: z.string().email('Invalid email address').optional(),
+  contactPhone: z.string().min(1, 'Contact phone is required').optional(),
 })
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -32,21 +32,25 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   const { name, location, capacity, contactEmail, contactName, contactPhone } = submission.value
 
+  const hasFullContactInfo = contactName && contactEmail && contactPhone
+
   await prisma.venue.create({
     data: {
       name,
       location,
       capacity,
-      contacts: {
-        create: [
-          {
-            name: contactName,
-            email: contactEmail,
-            phone: contactPhone,
-            status: 'active',
-          },
-        ],
-      },
+      ...(hasFullContactInfo && {
+        contacts: {
+          create: [
+            {
+              name: contactName,
+              email: contactEmail,
+              phone: contactPhone,
+              status: 'active',
+            },
+          ],
+        },
+      }),
       bands: {
         create: [
           {
