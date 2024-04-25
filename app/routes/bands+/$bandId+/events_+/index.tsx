@@ -22,6 +22,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       name: true,
       date: true,
       location: true,
+      payment: true,
       setlist: {
         include: {
           BandSetlist: {
@@ -52,22 +53,29 @@ export default function EventsRoute() {
 
   const columns: Column<(typeof events)[0]>[] = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-    },
-    {
       title: 'Date',
       dataIndex: 'date',
       render: date => formatDate(date),
     },
     {
-      title: 'Location',
-      dataIndex: 'location',
-    },
-    {
       title: 'Venue',
       dataIndex: 'venue',
       render: (venue, record) => <span className="capitalize">{`${venue.name} - ${venue.location}`}</span>,
+    },
+    // {
+    //   title: 'Name',
+    //   dataIndex: 'name',
+    // },
+    {
+      title: 'Pay',
+      dataIndex: 'payment',
+      render: payment =>
+        new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(payment),
     },
     {
       title: 'Setlist',

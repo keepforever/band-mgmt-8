@@ -68,7 +68,12 @@ export default function BandIdIndex() {
         <span className="text-sm text-accent-two">
           {band?.events
             .reduce((total, event) => total + (event?.event?.payment || 0), 0)
-            .toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+            .toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
         </span>
       </div>
 

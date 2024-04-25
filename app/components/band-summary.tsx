@@ -50,7 +50,12 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                     {band?.events
                       .reduce((total, event) => total + (event?.event?.payment || 0), 0)
-                      .toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                      .toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
                   </dd>
                 </div>
 
