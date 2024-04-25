@@ -57,11 +57,7 @@ export default function VenuesIndexRoute() {
     {
       title: 'Name',
       dataIndex: 'name',
-      render: (value, record) => (
-        <Link to={`/bands/${bandId}/venues/${record.id}/view`} className="text-blue-600 hover:underline">
-          {value}
-        </Link>
-      ),
+      render: (value, record) => <Link to={`/bands/${bandId}/venues/${record.id}/view`}>{value}</Link>,
     },
     {
       title: 'Location',

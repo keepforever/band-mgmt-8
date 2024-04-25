@@ -112,6 +112,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                       },
                       members: {
                         select: {
+                          instrument: true,
                           user: {
                             select: {
                               id: true,

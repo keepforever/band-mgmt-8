@@ -16,6 +16,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       members: {
         select: {
           isAdmin: true,
+          instrument: true,
           user: {
             select: {
               id: true,
@@ -76,16 +77,25 @@ export default function BandIdIndex() {
       <h2 className="mb-4 text-xl font-bold">Members</h2>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {band?.members.map((member, index) => (
+        {band?.members?.map((member, index) => (
           <div key={index} className="flex flex-col gap-2 rounded border p-4 shadow">
-            <h2 className="text-xl font-bold">{member.user.name}</h2>
+            <div className="flex flex-col items-start gap-1">
+              <h5 className="text-h5 font-bold">{member.user.name}</h5>
+              <span
+                className={cn(
+                  'inline-block rounded-full bg-secondary px-2 py-1 text-xs font-semibold text-secondary-foreground',
+                  { hidden: !member.instrument },
+                )}
+              >
+                {member.instrument}
+              </span>
+            </div>
 
             <span
-              className={cn(
-                'relative ml-auto flex-shrink-0 rounded-full px-2 py-1',
-                member.isAdmin ? 'bg-green-500 text-white' : 'bg-gray-800 text-gray-400',
-                'hover:text-foreground focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800',
-              )}
+              className={cn('relative ml-auto flex-shrink-0 rounded-full px-2 py-1', {
+                'border-2 border-secondary-foreground bg-muted text-secondary-foreground': member.isAdmin,
+                'border border-muted-foreground bg-muted text-secondary-foreground': !member.isAdmin,
+              })}
             >
               {member.isAdmin ? 'Admin' : 'Member'}
             </span>
