@@ -1,0 +1,26 @@
+Variable Name,Hue,Saturation,Lightness
+background-dark,222.2,84,6.9
+foreground-dark,210,40,98
+foreground-destructive-dark,-4,84,60
+muted-dark,217.2,32.6,12
+muted-foreground-dark,215,20.2,65.1
+popover-dark,222.2,84,4.9
+popover-foreground-dark,210,40,98
+card-dark,222.2,84,4.9
+card-foreground-dark,210,40,98
+border-dark,217.2,32.6,17.5
+input-dark,217.2,32.6,17.5
+input-invalid-dark,0,62.8,30.6
+primary-dark,210,40,98
+primary-foreground-dark,222.2,47.4,11.2
+secondary-dark,217.2,20,24
+secondary-foreground-dark,115,40,58
+accent-dark,217.2,32.6,10
+accent-foreground-dark,210,40,98
+destructive-dark,0,60,40
+destructive-foreground-dark,0,85.7,97.3
+ring-dark,217.2,32.6,60
+accent-two-dark,110,40,90
+accent-two-foreground-dark,222.2,47.4,11.2
+hyperlink-dark,140,60,68
+hyperlink-hover-dark,210,40,70

@@ -37,7 +37,6 @@ const VenueSchema = z
   )
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  console.log('\n', `hello action `, '\n')
   const userId = await requireUserId(request)
 
   const bandId = params.bandId

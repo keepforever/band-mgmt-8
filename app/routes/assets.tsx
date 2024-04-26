@@ -61,6 +61,18 @@ const ColorSwatches: React.FC = () => {
     { name: 'Popover Foreground', color: 'bg-popover-foreground' },
     { name: 'Card Default', color: 'bg-card' },
     { name: 'Card Foreground', color: 'bg-card-foreground' },
+    { name: 'Status Success', color: 'bg-status-success' },
+    { name: 'Status Success Foreground', color: 'bg-status-success-foreground' },
+    { name: 'Status Warning', color: 'bg-status-warning' },
+    { name: 'Status Warning Foreground', color: 'bg-status-warning-foreground' },
+    { name: 'Status Error', color: 'bg-status-error' },
+    { name: 'Status Error Foreground', color: 'bg-status-error-foreground' },
+    { name: 'Status Info', color: 'bg-status-info' },
+    { name: 'Status Info Foreground', color: 'bg-status-info-foreground' },
+    { name: 'Status Primary', color: 'bg-status-primary' },
+    { name: 'Status Primary Foreground', color: 'bg-status-primary-foreground' },
+    { name: 'Status Secondary', color: 'bg-status-secondary' },
+    { name: 'Status Secondary Foreground', color: 'bg-status-secondary-foreground' },
   ]
 
   return (

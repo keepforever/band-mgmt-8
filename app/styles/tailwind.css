@@ -4,14 +4,9 @@
 
 @layer base {
   :root {
-    /* --font-sans: here if you have one */
-    /* --font-mono: here if you got it... */
-
-    /* prefixed with foreground because it should look good on the background */
     --foreground-destructive: 345 82.7% 40.8%;
 
-    /* --background: 0 0% 100%; */
-    --background: 0 0% 60%;
+    --background: 0 0% 80%;
     --foreground: 222.2 84% 4.9%;
 
     --muted: 210 40% 93%;
@@ -36,7 +31,6 @@
     --accent: 210 40% 90%;
 
     --accent-foreground: 222.2 47.4% 11.2%;
-    /* --accent-foreground: 0 0% 1.2%; */
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 210 40% 98%;
@@ -50,14 +44,33 @@
 
     --hyperlink: 210 40% 90%;
     --hyperlink-hover: 210 40% 98%;
+
+    /*  Status Badges */
+
+    --status-success-background: 120 40% 50%;
+    --status-success-foreground: 210 40% 98%;
+
+    --status-warning-background: 45 100% 50%;
+    --status-warning-foreground: 210 40% 98%;
+
+    --status-error-background: 0 70% 50%;
+    --status-error-foreground: 210 40% 98%;
+
+    --status-info-background: 210 40% 90%;
+    --status-info-foreground: 222.2 47.4% 11.2%;
+
+    --status-primary-background: 222.2 47.4% 11.2%;
+    --status-primary-foreground: 210 40% 98%;
+
+    --status-secondary-background: 210 20% 83%;
+    --status-secondary-foreground: 222.2 47.4% 11.2%;
   }
 
   .dark {
     --background: 222.2 84% 6.9%;
     --foreground: 210 40% 98%;
 
-    /* prefixed with foreground because it should look good on the background */
-    --foreground-destructive: -4 84% 60%;
+    --foreground-destructive: 345 82.7% 40.8%;
 
     --muted: 217.2 32.6% 12%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -76,7 +89,7 @@
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 20% 24%;
-    --secondary-foreground: 115 40% 58%;
+    --secondary-foreground: 210 40% 98%;
 
     --accent: 217.2 32.6% 10%;
     --accent-foreground: 210 40% 98%;
@@ -91,5 +104,22 @@
 
     --hyperlink: 140 60% 68%;
     --hyperlink-hover: 210 40% 70%;
+
+    /*  Status Badges */
+
+    --status-success-background: 120 40% 50%;
+    --status-success-foreground: 210 40% 98%;
+
+    --status-warning-background: 45 100% 50%;
+    --status-warning-foreground: 210 40% 98%;
+
+    --status-error-background: 0 70% 50%;
+    --status-error-foreground: 210 40% 98%;
+
+    --status-info-background: 210 40% 90%;
+    --status-info-foreground: 222.2 47.4% 11.2%;
+
+    --status-primary-background: 222.2 47.4% 11.2%;
+    --status-primary-foreground: 210 40% 98%;
   }
 }

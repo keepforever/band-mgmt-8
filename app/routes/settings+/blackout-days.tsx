@@ -155,7 +155,7 @@ export const DayComponent: React.FC<DayComponentProps> = ({ day, isToday, isBlac
       type="button"
       onClick={handleDayClick}
       className={cn('py-1', {
-        'bg-yellow-800 text-white hover:bg-yellow-500 focus:z-10': isBlackoutForUser,
+        'bg-yellow-800 text-foreground hover:bg-yellow-500 focus:z-10': isBlackoutForUser,
         'bg-accent text-accent-foreground hover:bg-red-800 focus:z-10': !isBlackoutForUser,
       })}
     >

@@ -27,7 +27,7 @@ export function TableGeneric<T>({ columns, data, onRowClick }: TableProps<T>) {
             <thead>
               <tr>
                 {columns.map(({ title }, index) => (
-                  <th key={index} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                  <th key={index} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-foreground">
                     {title}
                   </th>
                 ))}

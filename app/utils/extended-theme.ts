@@ -52,6 +52,32 @@ export const extendedTheme = {
       DEFAULT: 'hsl(var(--card))',
       foreground: 'hsl(var(--card-foreground))',
     },
+    status: {
+      success: {
+        DEFAULT: 'hsl(var(--status-success-background))',
+        foreground: 'hsl(var(--status-success-foreground))',
+      },
+      warning: {
+        DEFAULT: 'hsl(var(--status-warning-background))',
+        foreground: 'hsl(var(--status-warning-foreground))',
+      },
+      error: {
+        DEFAULT: 'hsl(var(--status-error-background))',
+        foreground: 'hsl(var(--status-error-foreground))',
+      },
+      info: {
+        DEFAULT: 'hsl(var(--status-info-background))',
+        foreground: 'hsl(var(--status-info-foreground))',
+      },
+      primary: {
+        DEFAULT: 'hsl(var(--status-primary-background))',
+        foreground: 'hsl(var(--status-primary-foreground))',
+      },
+      secondary: {
+        DEFAULT: 'hsl(var(--status-secondary-background))',
+        foreground: 'hsl(var(--status-secondary-foreground))',
+      },
+    },
   },
   borderColor: {
     DEFAULT: 'hsl(var(--border))',

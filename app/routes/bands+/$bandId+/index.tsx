@@ -98,8 +98,8 @@ export default function BandIdIndex() {
 
             <span
               className={cn('relative ml-auto flex-shrink-0 rounded-full px-2 py-1', {
-                'border-2 border-secondary-foreground bg-muted text-secondary-foreground': member.isAdmin,
-                'border border-muted-foreground bg-muted text-secondary-foreground': !member.isAdmin,
+                'bg-status-success text-status-success-foreground border-2 border-secondary-foreground': member.isAdmin,
+                'bg-status-primary text-status-primary-foreground border border-muted-foreground': !member.isAdmin,
               })}
             >
               {member.isAdmin ? 'Admin' : 'Member'}

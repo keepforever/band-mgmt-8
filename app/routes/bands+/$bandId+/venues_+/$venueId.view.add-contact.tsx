@@ -18,7 +18,6 @@ const ContactSchema = z.object({
 })
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  console.log('\n', `hello action `, '\n')
   const formData = await request.formData()
 
   const userId = await requireUserId(request)
@@ -30,10 +29,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const submission = parseWithZod(formData, { schema: ContactSchema })
 
   if (submission.status !== 'success') {
-    console.log('\n', `alpha `, '\n')
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
-  console.log('\n', `beta `, '\n')
+
   const { contactEmail, contactName, contactPhone } = submission.value
 
   try {
@@ -76,8 +74,6 @@ export default function MyModal() {
     },
     shouldRevalidate: 'onBlur',
   })
-
-  console.log('\n', `actionData = `, actionData, '\n')
 
   return (
     <Transition appear show={true} as={Fragment}>
