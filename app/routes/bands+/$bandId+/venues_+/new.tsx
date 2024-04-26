@@ -10,29 +10,49 @@ import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
-const VenueSchema = z.object({
-  name: z.string().min(1, 'Venue name is required'),
-  location: z.string().min(1, 'Location is required'),
-  capacity: z.number().optional(),
-  contactName: z.string().min(1, 'Contact name is required').optional(),
-  contactEmail: z.string().email('Invalid email address').optional(),
-  contactPhone: z.string().min(1, 'Contact phone is required').optional(),
-})
+const VenueSchema = z
+  .object({
+    name: z.string().min(1, 'Venue name is required'),
+    location: z.string().min(1, 'Location is required'),
+    capacity: z.number().optional(),
+    contactName: z.string().min(1, 'Contact name is required').optional(),
+    contactEmail: z.string().email('Invalid email address').optional(),
+    contactPhone: z.string().min(1, 'Contact phone is required').optional(),
+    contactIncomplete: z.string().optional(),
+  })
+  .refine(
+    data => {
+      // If contactName is filled out, at least one of contactEmail or contactPhone should be filled out
+      if (data.contactName) {
+        return Boolean(data.contactEmail) || Boolean(data.contactPhone)
+      }
+      // If contactName is not filled out, it's valid
+      return true
+    },
+    {
+      // Custom error message
+      message: 'At least one of phone or email must be filled out if name is provided',
+      path: ['contactIncomplete'],
+    },
+  )
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  console.log('\n', `hello action `, '\n')
   const userId = await requireUserId(request)
 
   const bandId = params.bandId
   invariantResponse(userId, 'You must be logged in to create a venue')
 
   const formData = await request.formData()
-  const submission = await parseWithZod(formData, { schema: VenueSchema })
+  const submission = parseWithZod(formData, { schema: VenueSchema })
   if (submission.status !== 'success') {
+    console.error('Form errors:', submission.reply())
+
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
   const { name, location, capacity, contactEmail, contactName, contactPhone } = submission.value
 
-  const hasFullContactInfo = contactName && contactEmail && contactPhone
+  const hasFullContactInfo = contactName && (contactEmail || contactPhone)
 
   await prisma.venue.create({
     data: {
@@ -136,7 +156,7 @@ export default function CreateVenueRoute() {
             children: 'Contact Email',
           }}
           inputProps={getInputProps(fields.contactEmail, { type: 'email' })}
-          errors={fields.contactEmail.errors}
+          errors={fields.contactEmail.errors || fields.contactIncomplete.errors}
         />
 
         <Field
@@ -145,13 +165,15 @@ export default function CreateVenueRoute() {
             children: 'Contact Phone',
           }}
           inputProps={getInputProps(fields.contactPhone, { type: 'text' })}
-          errors={fields.contactPhone.errors}
+          errors={fields.contactPhone.errors || fields.contactIncomplete.errors}
         />
 
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Submit Venue
         </StatusButton>
+
         <br />
+
         <ErrorList errors={form.errors} id={form.errorId} />
       </Form>
     </div>

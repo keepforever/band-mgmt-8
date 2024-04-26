@@ -91,7 +91,7 @@ export default function MyModal() {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/25" />
+          <div className="fixed inset-0 bg-black/50" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -105,7 +105,7 @@ export default function MyModal() {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="min-w-[600px] transform overflow-hidden rounded-2xl bg-muted p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="min-w-full transform overflow-hidden rounded-2xl bg-muted px-2 py-6 text-left align-middle shadow-xl transition-all sm:min-w-[600px] sm:px-6">
                 <Form navigate={false} method="post" {...getFormProps(form)}>
                   <Dialog.Title as="h3" className="mb-4 text-h5 font-medium leading-6">
                     Add a Contact
@@ -137,13 +137,13 @@ export default function MyModal() {
                     errors={fields.contactPhone.errors}
                   />
 
-                  <div className="mt-4">
-                    <Button variant="ghost" type="submit">
+                  <div className="mt-4 flex items-center justify-end gap-2">
+                    <Link to=".." tabIndex={-1}>
+                      <Button variant="destructive">Cancel</Button>
+                    </Link>
+                    <Button variant="secondary" type="submit">
                       Add Contact
                     </Button>
-                    <Link to="..">
-                      <Button variant="ghost">Cancel</Button>
-                    </Link>
                   </div>
                 </Form>
               </Dialog.Panel>

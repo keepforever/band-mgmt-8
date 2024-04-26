@@ -1,12 +1,12 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
-import { Form, Link, redirect, useLoaderData, useParams } from '@remix-run/react'
+import { Form, Link, redirect, useFetcher, useLoaderData, useParams } from '@remix-run/react'
 import { DownloadCSVButton } from '#app/components/download-csv-button.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
-import { cn, formatDate } from '#app/utils/misc.js'
+import { cn, formatDate, useDoubleCheck } from '#app/utils/misc.js'
 
 const prepareCSVData = (setlist: any): string[][] => {
   const eventDetails = [
@@ -128,57 +128,70 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request)
 
-  const bandId = params.bandId
-  const setlistId = params.setlistId
+  const formData = await request.formData()
+  const intent = formData.get('intent')
 
-  invariantResponse(bandId, 'Band ID is required')
-  invariantResponse(setlistId, 'Setlist ID is required')
+  switch (intent) {
+    case 'deleteSetlist': {
+      const setlistId = params.setlistId
 
-  const setlist = await prisma.setlist.findUnique({
-    where: {
-      id: setlistId,
-    },
-    select: {
-      sets: {
-        select: {
-          setlistId: true,
-          id: true,
-        },
-      },
-    },
-  })
+      if (!setlistId) {
+        return json({ success: false, message: 'Setlist ID is required.' }, { status: 400 })
+      }
 
-  await prisma.$transaction(async transactionPrisma => {
-    const setIdArray = setlist?.sets.map(set => set.id)
+      // Place the transaction logic here for deleting the setlist
+      await prisma.$transaction(async transactionPrisma => {
+        const setlist = await transactionPrisma.setlist.findUnique({
+          where: { id: setlistId },
+          select: {
+            sets: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        })
 
-    await transactionPrisma.setSong.deleteMany({
-      where: {
-        setId: {
-          in: setIdArray,
-        },
-      },
-    })
+        if (!setlist) {
+          return json({ success: false, message: 'Setlist not found.' }, { status: 404 })
+        }
 
-    await transactionPrisma.set.deleteMany({
-      where: {
-        setlistId: setlistId,
-      },
-    })
+        const setIdArray = setlist.sets.map(set => set.id)
 
-    await transactionPrisma.bandSetlist.deleteMany({
-      where: {
-        setlistId: setlistId,
-      },
-    })
+        await transactionPrisma.setSong.deleteMany({
+          where: {
+            setId: {
+              in: setIdArray,
+            },
+          },
+        })
 
-    await transactionPrisma.setlist.delete({
-      where: {
-        id: setlistId,
-      },
-    })
-  })
+        await transactionPrisma.set.deleteMany({
+          where: {
+            setlistId: setlistId,
+          },
+        })
 
-  return redirect(`/bands/${bandId}/setlists`)
+        await transactionPrisma.bandSetlist.deleteMany({
+          where: {
+            setlistId: setlistId,
+          },
+        })
+
+        await transactionPrisma.setlist.delete({
+          where: {
+            id: setlistId,
+          },
+        })
+      })
+
+      return redirect(`/bands/${params.bandId}/setlists`)
+    }
+
+    // You can add more cases here for other types of actions
+    default:
+      return json({ success: false, message: 'Invalid intent.' }, { status: 400 })
+  }
 }
 
 export default function SetlistDetailViewRoute() {
@@ -201,11 +214,7 @@ export default function SetlistDetailViewRoute() {
             filename={`${setlist?.events?.[0]?.name} - ${setlist?.events?.[0]?.date}`}
           />
 
-          <Form method="post">
-            <Button size="sm" variant="destructive">
-              Delete
-            </Button>
-          </Form>
+          <DeleteSetlist />
         </div>
       </div>
 
@@ -354,5 +363,27 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
         <Button type="submit">Add</Button>
       </div>
     </Form>
+  )
+}
+
+function DeleteSetlist() {
+  const params = useParams()
+  const dc = useDoubleCheck()
+  const fetcher = useFetcher()
+
+  return (
+    <fetcher.Form method="POST">
+      <Button
+        {...dc.getButtonProps({
+          type: 'submit',
+          name: 'setlistId',
+          value: params.setlistId,
+        })}
+        variant={dc.doubleCheck ? 'destructive' : 'destructive'}
+      >
+        <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Setlist`}</Icon>
+      </Button>
+      <input type="hidden" name="intent" value="deleteSetlist" />
+    </fetcher.Form>
   )
 }
