@@ -69,6 +69,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                   artist: true,
                   rating: true,
                   status: true,
+                  youtubeUrl: true,
                   lyrics: {
                     select: {
                       id: true,
@@ -180,7 +181,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return redirect(`/bands/${bandId}/setlists`)
 }
 
-export default function CreateSetlistRoute() {
+export default function SetlistDetailViewRoute() {
   const { setlist, events } = useLoaderData<typeof loader>()
   const params = useParams()
   const csvData = prepareCSVData(setlist)
@@ -207,8 +208,13 @@ export default function CreateSetlistRoute() {
           </Form>
         </div>
       </div>
+
+      {/* Setlist Columns */}
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {setlist.sets.map((set, setIndex) => (
+          // Set Columns
+
           <div key={set.id} className="rounded border border-foreground p-4 shadow">
             <h2 className="mb-4 text-center text-xl font-bold text-accent-two outline outline-accent-two">
               Set {setIndex + 1}
@@ -217,23 +223,56 @@ export default function CreateSetlistRoute() {
               {set.setSongs
                 .sort((a, b) => a.order - b.order)
                 .map(setSong => (
+                  // Song List Item
+
                   <li key={setSong.song.id} className="mb-2">
                     <div className="flex flex-col gap-0.5">
-                      <div className="flex items-center gap-1">
+                      {/* Title, Lyrics Link, YouTube Link */}
+
+                      <div className="flex items-center gap-2">
                         <Link to={`/bands/${params.bandId}/songs/${setSong.song.id}/view`}>
                           <span className="text-sm font-bold text-primary hover:underline">{setSong.song.title}</span>
                         </Link>
-                        <Link
-                          to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
-                          className={cn('flex items-center text-muted-foreground', {
-                            hidden: !setSong.song.lyrics?.id,
-                          })}
+
+                        {setSong.song.lyrics?.id ? (
+                          <Link
+                            to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
+                            className={cn('flex items-center text-muted-foreground')}
+                          >
+                            <Icon name="file-text" className="text-hyperlink hover:text-hyperlink-hover" />
+                          </Link>
+                        ) : (
+                          <a
+                            href={
+                              setSong.song.youtubeUrl ||
+                              `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist} guitar chords`)}`
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center"
+                          >
+                            <Icon name="question-mark-circled" className="text-hyperlink hover:text-hyperlink-hover" />
+                          </a>
+                        )}
+
+                        <a
+                          href={
+                            setSong.song.youtubeUrl ||
+                            `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist}`)}+youtube+video`
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center"
                         >
-                          <Icon name="file-text" className="fill-lime-400" />
-                        </Link>
+                          <Icon name="link-2" className="text-hyperlink hover:text-hyperlink-hover" />
+                        </a>
                       </div>
+
+                      {/* Artist and Rating (if one exists) */}
+
                       <div className="flex items-center gap-1">
                         <span className="text-xs text-accent-two">{setSong.song.artist}</span>
+
                         {setSong.song.rating && (
                           <div className="inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs text-accent-two">
                             {setSong.song.rating}
