@@ -4,18 +4,16 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json, redirect, type ActionFunctionArgs } from '@remix-run/node'
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
-import { Field, ErrorList, CheckboxField, TextareaField } from '#app/components/forms.tsx'
+import { Field, ErrorList, CheckboxField, TextareaField, selectInputClassName } from '#app/components/forms.tsx'
 import { Label } from '#app/components/ui/label.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc.js'
 
 // Updated schema to include all fields
 const EventSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
   date: z.string().min(1, 'Event date is required'),
-  location: z.string().min(1, 'Event location is required').optional(),
   venueId: z.string().min(1, 'Venue ID is required'),
   payment: z.number().int().min(0, 'Payment must be a positive number').optional(),
   requiresPASystem: z.boolean().optional(),
@@ -34,23 +32,22 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
 
-  const { name, date, location, venueId, payment, requiresPASystem, startEndTime, notes } = submission.value
+  const { name, date, venueId, payment, requiresPASystem, startEndTime, notes } = submission.value
 
   await prisma.event.update({
     where: { id: eventId },
     data: {
       name,
+      notes,
+      payment,
+      startEndTime,
+      requiresPASystem,
       date: new Date(date),
-      location,
       venue: {
         connect: {
           id: venueId,
         },
       },
-      payment,
-      requiresPASystem,
-      startEndTime,
-      notes,
     },
   })
 
@@ -100,7 +97,6 @@ export default function EditEventRoute() {
       ? {
           name: event.name,
           date: event.date.split('T')[0], // Assuming date is stored in ISO format
-          location: event.location,
           venueId: event.venue?.id,
           payment: event.payment,
           requiresPASystem: event.requiresPASystem,
@@ -115,6 +111,21 @@ export default function EditEventRoute() {
     <div className="mx-auto max-w-md">
       <h1 className="text-center text-2xl font-bold">Edit Event</h1>
       <Form method="POST" {...getFormProps(form)} className="mt-6">
+        {/* Venue Select */}
+
+        <Label htmlFor={getSelectProps(fields.venueId).id} children="Venue" className="mt-0" />
+
+        <select {...getSelectProps(fields.venueId)} className={selectInputClassName()}>
+          <option value="">Select a Venue</option>
+          {venues.map(venue => (
+            <option key={venue.id} value={venue.id}>
+              {venue.name} - {venue.location}
+            </option>
+          ))}
+        </select>
+
+        <ErrorList errors={fields.venueId.errors} id={fields.venueId.errorId} className="mb-2 pl-4 pt-1" />
+
         <CheckboxField
           labelProps={{
             htmlFor: fields.requiresPASystem.id,
@@ -152,28 +163,6 @@ export default function EditEventRoute() {
           errors={fields.notes.errors}
         />
 
-        {/* Venue Select */}
-
-        <Label htmlFor={getSelectProps(fields.venueId).id} children="Venue" className="mt-0" />
-
-        <select
-          {...getSelectProps(fields.venueId)}
-          className={cn(
-            'mb-0 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
-          )}
-        >
-          <option value="">Select a Venue</option>
-          {venues.map(venue => (
-            <option key={venue.id} value={venue.id}>
-              {venue.name} - {venue.location}
-            </option>
-          ))}
-        </select>
-
-        <ErrorList errors={fields.venueId.errors} id={fields.venueId.errorId} className="mb-5 pl-4 pt-1" />
-
-        {/* Existing input fields for name, date, location, and venue selection */}
-
         <Field
           labelProps={{
             htmlFor: fields.name.id,
@@ -192,14 +181,6 @@ export default function EditEventRoute() {
           }}
           inputProps={getInputProps(fields.date, { type: 'date' })}
           errors={fields.date.errors}
-        />
-        <Field
-          labelProps={{
-            htmlFor: fields.location.id,
-            children: 'Location',
-          }}
-          inputProps={getInputProps(fields.location, { type: 'text' })}
-          errors={fields.location.errors}
         />
 
         <Label htmlFor={getSelectProps(fields.venueId).id} children="Venue" />

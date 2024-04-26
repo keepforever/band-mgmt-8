@@ -1,7 +1,7 @@
 import { Link, useNavigate } from '@remix-run/react'
 import React from 'react'
 import { bandSubNavigation } from '#app/constants/navigation.js'
-import { cn, removeLeadingSlash } from '#app/utils/misc.js'
+import { cn, formatDate, removeLeadingSlash } from '#app/utils/misc.js'
 import { type useOptionalUser } from '#app/utils/user.js'
 
 type RootLoaderUserSummary = ReturnType<typeof useOptionalUser>
@@ -92,9 +92,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                           className="cursor-pointer text-foreground hover:text-destructive"
                           onClick={() => navigate(`${band.id}/events/${event.event.id}/view`)}
                         >
-                          {`Date: ${new Date(event.event.date).toLocaleDateString()}, Location: ${
-                            event.event.venue?.name || 'TBD'
-                          }`}
+                          {`Date: ${formatDate(event.event.date)}, Location: ${event.event.venue?.name || 'TBD'}`}
                           {index < band.events.length - 1 ? <br /> : null}
                         </div>
                       )
