@@ -66,7 +66,7 @@ export default function EventDetailView() {
 
         {/* Edit and Delete buttons */}
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link relative="path" to="../edit" className="text-hyperlink hover:underline">
             <Button size="sm">Edit</Button>
           </Link>

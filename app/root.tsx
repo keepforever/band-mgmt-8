@@ -64,6 +64,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
     { title: data ? 'Band Mgmt' : 'Error | Band Mgmt' },
     { name: 'description', content: `Your own captain's log` },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
   ]
 }
 
