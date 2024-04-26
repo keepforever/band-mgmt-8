@@ -58,14 +58,14 @@ export default function BandIdIndex() {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
+      <h1 className="mb-0 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
 
       {/* Current Year Revenue */}
 
-      <div className="mb-4 flex items-center gap-2">
-        <h1 className="text-body-sm text-foreground">Projected {new Date().getFullYear()} revenue:</h1>
+      <div className="mb-4 flex items-center gap-2 text-body-xs font-bold text-foreground">
+        <h1 className="">Projected {new Date().getFullYear()} revenue:</h1>
 
-        <span className="text-sm text-accent-two">
+        <span className="font-mono">
           {band?.events
             .reduce((total, event) => total + (event?.event?.payment || 0), 0)
             .toLocaleString('en-US', {

@@ -225,7 +225,7 @@ export default function SetlistDetailViewRoute() {
           // Set Columns
 
           <div key={set.id} className="rounded border border-foreground p-4 shadow">
-            <h2 className="mb-4 text-center text-xl font-bold text-accent-two outline outline-accent-two">
+            <h2 className="mb-4 text-center text-xl font-bold text-muted-foreground outline outline-muted-foreground">
               Set {setIndex + 1}
             </h2>
             <ul>
@@ -247,6 +247,7 @@ export default function SetlistDetailViewRoute() {
                           <Link
                             to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
                             className={cn('flex items-center text-muted-foreground')}
+                            title="Open Lyrics"
                           >
                             <Icon name="file-text" className="text-hyperlink hover:text-hyperlink-hover" />
                           </Link>
@@ -259,6 +260,7 @@ export default function SetlistDetailViewRoute() {
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center"
+                            title="Search Google for Chords"
                           >
                             <Icon name="question-mark-circled" className="text-hyperlink hover:text-hyperlink-hover" />
                           </a>
@@ -272,6 +274,7 @@ export default function SetlistDetailViewRoute() {
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center"
+                          title="Search YouTube for Song Video"
                         >
                           <Icon name="link-2" className="text-hyperlink hover:text-hyperlink-hover" />
                         </a>
@@ -280,10 +283,10 @@ export default function SetlistDetailViewRoute() {
                       {/* Artist and Rating (if one exists) */}
 
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-accent-two">{setSong.song.artist}</span>
+                        <span className="text-xs text-muted-foreground">{setSong.song.artist}</span>
 
                         {setSong.song.rating && (
-                          <div className="inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs text-accent-two">
+                          <div className="inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs text-muted-foreground">
                             {setSong.song.rating}
                           </div>
                         )}
@@ -312,13 +315,13 @@ export default function SetlistDetailViewRoute() {
                 <div className="flex flex-col border-2 border-foreground px-2 py-1" key={event.name}>
                   <Link
                     to={`/bands/${params.bandId}/events/${event?.id}/view`}
-                    className="flex items-center gap-1 hover:text-accent-two hover:underline"
+                    className="flex items-center gap-1 hover:text-muted-foreground hover:underline"
                   >
-                    <span className="text-xl font-bold text-accent-two">{event?.name}</span>
+                    <span className="text-xl font-bold text-muted-foreground">{event?.name}</span>
                   </Link>
                   <Link
                     to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
-                    className="flex items-center gap-1 hover:text-accent-two hover:underline"
+                    className="flex items-center gap-1 hover:text-muted-foreground hover:underline"
                   >
                     <div className="flex gap-1">
                       &#64; <span>{event?.venue?.name}</span>, <span>{event?.location}</span>
@@ -343,15 +346,15 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
       action={`/resources/setlist/${setlistId}/associate-event`}
       navigate={false}
     >
-      <div className="flex gap-4">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-4">
+        <div className="flex flex-[2.5] gap-2">
           <select
             name="eventId"
             className={cn(
               'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
             )}
           >
-            <option value="">Associate a setlist with an event</option>
+            <option value="">Ass. to eventDetails</option>
             {events?.map(event => (
               <option key={event.id} value={event.id}>
                 {event.name}: {formatDate(event.date)}
@@ -360,7 +363,9 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
           </select>
         </div>
 
-        <Button type="submit">Add</Button>
+        <Button className="flex-1" type="submit">
+          Add
+        </Button>
       </div>
     </Form>
   )

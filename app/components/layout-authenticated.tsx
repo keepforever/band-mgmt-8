@@ -202,7 +202,7 @@ const UserBands = () => {
               className={({ isActive }) =>
                 cn({
                   'bg-primary text-primary-foreground': isActive,
-                  'text-foreground': !isActive,
+                  'text-foreground hover:text-hyperlink-hover hover:underline': !isActive,
                 })
               }
             >
@@ -219,7 +219,7 @@ const UserBands = () => {
                       className={({ isActive }) => {
                         return cn('flex items-center hover:underline', {
                           'tracking-widest underline': isActive,
-                          '': !isActive,
+                          'hover:text-hyperlink-hover': !isActive,
                         })
                       }}
                     >
@@ -258,7 +258,7 @@ const UserSettings = () => {
               className={({ isActive }) =>
                 cn('flex gap-3', {
                   'tracking-widest underline': isActive,
-                  'text-foreground hover:text-accent-two hover:underline': !isActive,
+                  'text-foreground hover:text-hyperlink-hover hover:underline': !isActive,
                 })
               }
             >

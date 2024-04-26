@@ -64,7 +64,7 @@ export default function AvailabilityIndexRoute() {
 
               <Weekdays />
 
-              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-slate-700 text-sm shadow ring-1 ring-green-200">
+              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-secondary text-sm shadow ring-1 ring-green-200">
                 {Array.from(Array(month.offset).keys()).map(el => (
                   <div key={el}></div>
                 ))}
@@ -127,7 +127,7 @@ export const DayComponent: React.FC<DayComponentProps> = ({
       onClick={handleDayClick}
       className={cn('py-1', {
         'bg-yellow-800 text-foreground hover:bg-yellow-500 focus:z-10': isBlackoutForUser && !isBlackoutForCurrentUser,
-        'bg-blue-800 text-foreground hover:bg-blue-500 focus:z-10': isBlackoutForUser,
+        'bg-blue-600 text-secondary hover:bg-blue-200 hover:text-primary focus:z-10': isBlackoutForUser,
         'bg-red-800 text-foreground hover:bg-red-500 focus:z-10': isBlackoutForCurrentUser,
         'bg-green-500': isEventDay,
         'hover:bg-destructive-foreground hover:text-foreground-destructive':
