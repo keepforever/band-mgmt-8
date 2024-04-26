@@ -226,7 +226,7 @@ function Document({
   allowIndexing?: boolean
 }) {
   return (
-    <html lang="en" className={`${theme} h-full overflow-x-hidden`}>
+    <html lang="en" className={`${theme} h-full overflow-x-hidden bg-background text-foreground`}>
       <head>
         <ClientHintCheck nonce={nonce} />
         <Meta />
@@ -235,7 +235,7 @@ function Document({
         {allowIndexing ? null : <meta name="robots" content="noindex, nofollow" />}
         <Links />
       </head>
-      <body className="bg-background text-foreground">
+      <body className="">
         {children}
         <script
           nonce={nonce}

@@ -1,4 +1,5 @@
 import { Icon, iconNameArray } from '#app/components/ui/icon.js'
+import { cn } from '#app/utils/misc.js'
 
 export default function Assets() {
   return (
@@ -33,6 +34,35 @@ const Icons: React.FC = () => {
 }
 
 const ColorSwatches: React.FC = () => {
+  const colorBlocks = [
+    { name: 'Border', color: 'bg-border' },
+    { name: 'Input Default', color: 'bg-input' },
+    { name: 'Input Invalid', color: 'bg-input-invalid' },
+    { name: 'Ring Default', color: 'bg-ring' },
+    { name: 'Ring Invalid', color: 'bg-ring-invalid' },
+    { name: 'Background', color: 'bg-background' },
+    { name: 'Foreground Default', color: 'bg-foreground' },
+    { name: 'Foreground Destructive', color: 'bg-foreground-destructive' },
+    { name: 'Primary Default', color: 'bg-primary' },
+    { name: 'Primary Foreground', color: 'bg-primary-foreground' },
+    { name: 'Secondary Default', color: 'bg-secondary' },
+    { name: 'Secondary Foreground', color: 'bg-secondary-foreground' },
+    { name: 'Destructive Default', color: 'bg-destructive' },
+    { name: 'Destructive Foreground', color: 'bg-destructive-foreground' },
+    { name: 'Muted Default', color: 'bg-muted' },
+    { name: 'Muted Foreground', color: 'bg-muted-foreground' },
+    { name: 'Accent Default', color: 'bg-accent' },
+    { name: 'Accent Foreground', color: 'bg-accent-foreground' },
+    { name: 'Accent Two Default', color: 'bg-accent-two' },
+    { name: 'Accent Two Foreground', color: 'bg-accent-two-foreground' },
+    { name: 'Hyperlink Default', color: 'bg-hyperlink' },
+    { name: 'Hyperlink Hover', color: 'bg-hyperlink-hover' },
+    { name: 'Popover Default', color: 'bg-popover' },
+    { name: 'Popover Foreground', color: 'bg-popover-foreground' },
+    { name: 'Card Default', color: 'bg-card' },
+    { name: 'Card Foreground', color: 'bg-card-foreground' },
+  ]
+
   return (
     <div>
       <div className="bg-primary">
@@ -40,94 +70,12 @@ const ColorSwatches: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 bg-gray-500 p-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Border</p>
-          <div className="h-20 w-full bg-border"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Input Default</p>
-          <div className="h-20 w-full bg-input"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Input Invalid</p>
-          <div className="h-20 w-full bg-input-invalid"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Ring Default</p>
-          <div className="h-20 w-full bg-ring"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Ring Invalid</p>
-          <div className="h-20 w-full bg-ring-invalid"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Background</p>
-          <div className="h-20 w-full bg-background"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Foreground Default</p>
-          <div className="h-20 w-full bg-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Foreground Destructive</p>
-          <div className="h-20 w-full bg-foreground-destructive"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Primary Default</p>
-          <div className="h-20 w-full bg-primary"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Primary Foreground</p>
-          <div className="h-20 w-full bg-primary-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Secondary Default</p>
-          <div className="h-20 w-full bg-secondary"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Secondary Foreground</p>
-          <div className="h-20 w-full bg-secondary-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Destructive Default</p>
-          <div className="h-20 w-full bg-destructive"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Destructive Foreground</p>
-          <div className="h-20 w-full bg-destructive-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Muted Default</p>
-          <div className="h-20 w-full bg-muted"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Muted Foreground</p>
-          <div className="h-20 w-full bg-muted-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Accent Default</p>
-          <div className="h-20 w-full bg-accent"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-accent-foreground">Accent Foreground</p>
-          <div className="h-20 w-full bg-accent-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Popover Default</p>
-          <div className="h-20 w-full bg-popover"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Popover Foreground</p>
-          <div className="h-20 w-full bg-popover-foreground"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Card Default</p>
-          <div className="h-20 w-full bg-card"></div>
-        </div>
-        <div className="flex flex-col gap-2 p-1">
-          <p className="text-foreground">Card Foreground</p>
-          <div className="h-20 w-full bg-card-foreground"></div>
-        </div>
+        {colorBlocks.map(block => (
+          <div key={block.name} className="flex flex-col gap-2 p-1">
+            <p className="text-foreground">{block.name}</p>
+            <div className={cn(`h-20 w-full`, block.color)}></div>
+          </div>
+        ))}
       </div>
     </div>
   )
