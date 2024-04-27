@@ -126,6 +126,48 @@ export function CheckboxField({
 }
 export const selectInputClassName = (additionalClasses?: string) =>
   cn(
-    'mb-0 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
+    'mb-0 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
     additionalClasses,
   )
+
+type SelectProps<T> = {
+  getOptionLabel: (option: T) => string
+  getOptionValue: (option: T) => string
+  label?: string
+  labelHtmlFor?: string
+  options: T[]
+  selectProps: React.SelectHTMLAttributes<HTMLSelectElement>
+  errors?: ListOfErrors
+  className?: string
+  selectClassName?: string
+}
+
+export const SelectField: React.FC<SelectProps<any>> = ({
+  getOptionLabel,
+  getOptionValue,
+  label = '',
+  labelHtmlFor,
+  options,
+  selectProps,
+  errors,
+  className,
+  selectClassName,
+}) => {
+  const id = selectProps.id
+  const errorId = errors?.length ? `${id}-error` : undefined
+  return (
+    <div className={className}>
+      <Label htmlFor={labelHtmlFor} children={label} className="mt-0" />
+      <select {...selectProps} className={selectInputClassName(selectClassName)}>
+        <option value="">Select an option</option>
+        {options.map(option => (
+          <option key={getOptionValue(option)} value={getOptionValue(option)}>
+            {getOptionLabel(option)}
+          </option>
+        ))}
+      </select>
+
+      <div className="min-h-[32px] px-4 pb-3 pt-1">{errorId ? <ErrorList id={errorId} errors={errors} /> : null}</div>
+    </div>
+  )
+}
