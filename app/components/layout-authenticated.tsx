@@ -18,7 +18,17 @@ export function LayoutAuthenticated({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const routerNavigation = useNavigation()
+  const data = useRouteLoaderData<typeof rootLoader>('root')
+  const params = useParams()
   const user = useUser()
+  const userBands =
+    data?.user?.bands?.map(band => ({
+      id: band.band.id,
+      name: band.band.name,
+      to: `/bands/${band.band.id}`,
+      initial: band.band.name[0],
+      current: params.bandId === band.band.id,
+    })) ?? []
 
   // close the sidebar when the route changes
   useEffect(() => {
@@ -29,7 +39,7 @@ export function LayoutAuthenticated({
 
   return (
     <div>
-      {/* Mobile */}
+      {/* Mobile Slid-out Nav */}
 
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
@@ -136,6 +146,8 @@ export function LayoutAuthenticated({
         </div>
       </div>
 
+      {/* Static Mobile Navbar */}
+
       <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-muted/95 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
         <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
           <span className="sr-only">Open sidebar</span>
@@ -145,7 +157,7 @@ export function LayoutAuthenticated({
 
         <Link
           to="/bands"
-          className="flex-1 text-sm font-semibold leading-6 text-foreground hover:text-hyperlink-hover hover:underline"
+          className="text-sm font-semibold leading-6 text-foreground hover:text-hyperlink-hover hover:underline"
         >
           Dashboard
         </Link>
@@ -173,7 +185,29 @@ export function LayoutAuthenticated({
       </div>
 
       <main className="py-3 lg:pl-60">
+        <div className="flex flex-1 gap-x-4 overflow-x-auto overflow-y-hidden px-3 pb-3 sm:hidden">
+          {userBands.map(band => (
+            <Fragment key={band.name}>
+              {bandSubNavigation.map(item => (
+                <NavLink
+                  key={item.name}
+                  to={`${band.to}${item.to}`}
+                  className={({ isActive }) =>
+                    cn('flex items-center gap-1.5 text-body-2xs hover:underline', {
+                      'tracking-widest underline': isActive,
+                      'text-foreground hover:text-hyperlink-hover': !isActive,
+                    })
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              ))}
+            </Fragment>
+          ))}
+        </div>
+
         <Breadcrumbs />
+
         <div className="px-4 sm:px-6 lg:px-8">{children}</div>
       </main>
     </div>
