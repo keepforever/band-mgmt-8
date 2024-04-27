@@ -24,9 +24,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     where: {
       bands: {
         some: {
-          bandId: params.bandId,
+          bandId: params.bandId, // only show events for this band
         },
       },
+      setlistId: null, // only show events that do not yet have a setlist
     },
     select: {
       id: true,

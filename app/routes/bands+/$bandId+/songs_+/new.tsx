@@ -131,7 +131,7 @@ export default function CreateSongRoute() {
           <h1 className="text-2xl font-bold">Create a Song</h1>
 
           <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
-            Submit Event
+            Submit Song
           </StatusButton>
         </div>
         <Field

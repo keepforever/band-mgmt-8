@@ -108,10 +108,20 @@ export default function CreateVenueRoute() {
   })
 
   return (
-    <div className="mx-auto max-w-md">
-      <h1 className="text-center text-2xl font-bold">Submit a New Venue</h1>
+    <div className="max-w-2xl">
+      <Form
+        method="POST"
+        encType="multipart/form-data"
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
+        {...getFormProps(form)}
+      >
+        <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Create a Venue</h1>
 
-      <Form method="POST" {...getFormProps(form)} className="mt-6">
+          <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
+            Submit Venue
+          </StatusButton>
+        </div>
         <Field
           labelProps={{
             htmlFor: fields.name.id,
@@ -122,6 +132,7 @@ export default function CreateVenueRoute() {
             autoFocus: true,
           }}
           errors={fields.name.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -130,6 +141,7 @@ export default function CreateVenueRoute() {
           }}
           inputProps={getInputProps(fields.location, { type: 'text' })}
           errors={fields.location.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -138,6 +150,7 @@ export default function CreateVenueRoute() {
           }}
           inputProps={getInputProps(fields.capacity, { type: 'number' })}
           errors={fields.capacity.errors}
+          className="col-span-2 sm:col-span-1"
         />
 
         <Field
@@ -147,6 +160,7 @@ export default function CreateVenueRoute() {
           }}
           inputProps={getInputProps(fields.contactName, { type: 'text' })}
           errors={fields.contactName.errors}
+          className="col-span-2 sm:col-span-1"
         />
 
         <Field
@@ -156,6 +170,7 @@ export default function CreateVenueRoute() {
           }}
           inputProps={getInputProps(fields.contactEmail, { type: 'email' })}
           errors={fields.contactEmail.errors || fields.contactIncomplete.errors}
+          className="col-span-2 sm:col-span-1"
         />
 
         <Field
@@ -165,11 +180,8 @@ export default function CreateVenueRoute() {
           }}
           inputProps={getInputProps(fields.contactPhone, { type: 'text' })}
           errors={fields.contactPhone.errors || fields.contactIncomplete.errors}
+          className="col-span-2 sm:col-span-1"
         />
-
-        <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
-          Submit Venue
-        </StatusButton>
 
         <br />
 
