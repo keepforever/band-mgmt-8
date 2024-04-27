@@ -103,14 +103,15 @@ export default function CreateEventRoute() {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex flex-wrap-reverse items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">Create an Event</h1>
-
-        <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
-          Submit Event
-        </StatusButton>
-      </div>
       <Form method="POST" {...getFormProps(form)} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Create an Event</h1>
+
+          <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
+            Submit Event
+          </StatusButton>
+        </div>
+
         <CheckboxField
           className="col-span-1"
           labelProps={{

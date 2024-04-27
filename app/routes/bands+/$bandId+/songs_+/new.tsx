@@ -117,20 +117,23 @@ export default function CreateSongRoute() {
       return result
     },
     shouldRevalidate: 'onBlur',
-    // defaultValue: {
-    //   artist: faker.person.firstName(),
-    //   title: faker.company.name(),
-    //   youtubeUrl: faker.internet.url(),
-    //   rating: 2,
-    //   status: faker.lorem.words(),
-    // },
   })
 
   return (
-    <div className="mx-auto max-w-md">
-      <h1 className="text-center text-h5">Add a Song</h1>
+    <div className="max-w-2xl">
+      <Form
+        method="POST"
+        encType="multipart/form-data"
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
+        {...getFormProps(form)}
+      >
+        <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Create a Song</h1>
 
-      <Form method="POST" encType="multipart/form-data" {...getFormProps(form)} className="mt-6 flex flex-col gap-2">
+          <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
+            Submit Event
+          </StatusButton>
+        </div>
         <Field
           labelProps={{
             htmlFor: fields.artist.id,
@@ -141,6 +144,7 @@ export default function CreateSongRoute() {
             autoFocus: true,
           }}
           errors={fields.artist.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -149,6 +153,7 @@ export default function CreateSongRoute() {
           }}
           inputProps={getInputProps(fields.title, { type: 'text' })}
           errors={fields.title.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -157,6 +162,7 @@ export default function CreateSongRoute() {
           }}
           inputProps={getInputProps(fields.youtubeUrl, { type: 'text' })}
           errors={fields.youtubeUrl.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -165,6 +171,7 @@ export default function CreateSongRoute() {
           }}
           inputProps={getInputProps(fields.rating, { type: 'number' })}
           errors={fields.rating.errors}
+          className="col-span-2 sm:col-span-1"
         />
         <Field
           labelProps={{
@@ -173,20 +180,25 @@ export default function CreateSongRoute() {
           }}
           inputProps={getInputProps(fields.status, { type: 'text' })}
           errors={fields.status.errors}
+          className="col-span-2 sm:col-span-1"
         />
-        <input
-          type="file"
-          name="lyricsFile"
-          accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          className={cn(
-            'rounded-md border border-gray-300 p-2',
-            'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
-            'hover:border-blue-500 hover:ring hover:ring-blue-500',
-          )}
+
+        <Field
+          labelProps={{
+            htmlFor: fields.status.id,
+            children: 'Choose a lyrics file',
+          }}
+          inputProps={{
+            name: 'lyricsFile',
+            accept: 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            type: 'file',
+            placeholder: 'Choose a file',
+            className: cn('bg-secondary text-secondary-foreground cursor-pointer hover:bg-secondary/70'),
+          }}
+          errors={fields.status.errors}
+          className="col-span-2 sm:col-span-1"
         />
-        <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
-          Submit Song
-        </StatusButton>
+
         <br />
         <ErrorList errors={form.errors} id={form.errorId} />
       </Form>
