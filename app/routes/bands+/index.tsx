@@ -19,7 +19,7 @@ export default function BandsIndex() {
   if (!userHasBand) return <BandsEmptyState />
 
   return (
-    <div>
+    <div className="max-w-2xl">
       <div className="mb-4 flex justify-between">
         <h1 className="text-3xl font-bold">Your Bands</h1>
         <Button

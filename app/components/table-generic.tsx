@@ -47,7 +47,7 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames }: Table
                   {columns.map(({ dataIndex, render, stopPropagation }, columnIndex) => (
                     <td
                       key={columnIndex}
-                      className="whitespace-nowrap px-3 py-1.5 text-sm"
+                      className="whitespace-nowrap px-3 py-2 text-sm"
                       onClick={e => {
                         if (stopPropagation?.(record[dataIndex], record)) {
                           e.stopPropagation()

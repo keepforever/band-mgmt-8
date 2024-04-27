@@ -183,8 +183,6 @@ export default function EditEventRoute() {
           errors={fields.date.errors}
         />
 
-        <Label htmlFor={getSelectProps(fields.venueId).id} children="Venue" />
-
         <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
           Update Event
         </StatusButton>

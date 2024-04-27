@@ -36,7 +36,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                     {band?.members.map((member, index) => (
                       <div
                         key={member.user.id}
-                        className="mb-2 mr-2 inline-block rounded-full bg-accent-two px-3 py-1 text-sm font-semibold text-muted"
+                        className="mb-2 mr-2 inline-block rounded-full bg-background px-3 py-1 text-sm font-semibold text-foreground"
                       >
                         {`${member.user.name}`}
                         {index < band.members.length - 1 ? <br /> : null}
@@ -110,7 +110,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                         return (
                           <li
                             key={item.name}
-                            className="group cursor-pointer rounded-md bg-accent-two/30 p-2 text-foreground hover:bg-destructive/30"
+                            className="group cursor-pointer rounded-md bg-muted p-2 text-foreground hover:bg-muted/80"
                             onClick={() => navigate(`${band.id}/${removeLeadingSlash(item.to)}`)}
                           >
                             <Link

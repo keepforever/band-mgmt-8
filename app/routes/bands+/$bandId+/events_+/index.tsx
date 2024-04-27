@@ -113,7 +113,7 @@ export default function EventsRoute() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <>
       <HeaderWithActions title="Events">
         <Link to="new">
           <Button type="button" variant="outline">
@@ -121,8 +121,9 @@ export default function EventsRoute() {
           </Button>
         </Link>
       </HeaderWithActions>
-
-      <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
-    </div>
+      <div className="max-w-2xl">
+        <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
+      </div>
+    </>
   )
 }
