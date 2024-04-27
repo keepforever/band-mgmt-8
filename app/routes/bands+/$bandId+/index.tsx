@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
-import { Link, json, useLoaderData } from '@remix-run/react'
+import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
 import { bandSubNavigation } from '#app/constants/navigation.js'
 import { prisma } from '#app/utils/db.server'
 import { cn, removeLeadingSlash } from '#app/utils/misc'
@@ -55,9 +55,10 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 export default function BandIdIndex() {
   const { band } = useLoaderData<typeof loader>()
+  const navigate = useNavigate()
 
   return (
-    <div>
+    <div className="max-w-3xl">
       <h1 className="mb-0 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
 
       {/* Current Year Revenue */}
@@ -97,9 +98,9 @@ export default function BandIdIndex() {
             </div>
 
             <span
-              className={cn('relative ml-auto flex-shrink-0 rounded-full px-2 py-1', {
-                'bg-status-success text-status-success-foreground border-2 border-secondary-foreground': member.isAdmin,
-                'bg-status-primary text-status-primary-foreground border border-muted-foreground': !member.isAdmin,
+              className={cn('relative ml-auto flex-shrink-0 rounded-full px-2 py-1 text-body-2xs', {
+                'border-2 border-secondary-foreground bg-status-success text-status-success-foreground': member.isAdmin,
+                'border border-muted-foreground bg-status-primary text-status-primary-foreground': !member.isAdmin,
               })}
             >
               {member.isAdmin ? 'Admin' : 'Member'}
@@ -112,15 +113,16 @@ export default function BandIdIndex() {
 
       <h2 className="mb-4 text-xl font-bold">Quick Links</h2>
 
-      <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {bandSubNavigation.map(item => {
           return (
             <li
               key={item.name}
-              className="group cursor-pointer rounded-md bg-accent-two/30 p-4 text-foreground hover:bg-destructive/30"
+              className="group cursor-pointer rounded-md bg-accent-two/30 p-2 text-foreground hover:bg-destructive/30"
+              onClick={() => navigate(`${band?.id}/${removeLeadingSlash(item.to)}`)}
             >
               <Link
-                to={`${removeLeadingSlash(item.to)}`}
+                to={`${band?.id}/${removeLeadingSlash(item.to)}`}
                 className={cn('flex items-center gap-1 group-hover:text-hyperlink group-hover:underline')}
               >
                 {item.name}

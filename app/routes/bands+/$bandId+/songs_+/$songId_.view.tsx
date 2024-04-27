@@ -81,21 +81,22 @@ export default function SongDetails() {
           <DeleteSong />
         </div>
       </div>
-      <div className="my-6 border-t border-white/10">
-        <dl className="divide-y divide-white/10">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+
+      <div className="my-6 max-w-2xl border-t border-border">
+        <dl className="divide-y divide-border">
+          <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Artist</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{song?.artist}</dd>
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">{song?.artist}</dd>
           </div>
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Title</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{song?.title}</dd>
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">{song?.title}</dd>
           </div>
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">YouTube URL</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">
               <a
                 href={String(song?.youtubeUrl)}
                 target="_blank"
@@ -107,18 +108,18 @@ export default function SongDetails() {
             </dd>
           </div>
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Rating</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{song?.rating}</dd>
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">{song?.rating}</dd>
           </div>
 
           <div
-            className={cn('px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0', {
+            className={cn('px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0', {
               '!hidden': !song?.status,
             })}
           >
             <dt className="text-sm font-medium leading-5">Status</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">{song?.status}</dd>
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">{song?.status}</dd>
           </div>
         </dl>
       </div>

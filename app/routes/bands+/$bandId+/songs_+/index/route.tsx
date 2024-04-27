@@ -26,6 +26,7 @@ export default function SongsIndexRoute() {
         columns={columns}
         data={songs}
         onRowClick={event => navigate(`/bands/${params?.bandId}/songs/${event.id}/view`)}
+        classNames="max-w-2xl"
       />
     </div>
   )

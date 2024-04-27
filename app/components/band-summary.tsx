@@ -16,7 +16,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
   return (
     <>
       {user?.bands?.map(bandIterator => {
-        const { band, isAdmin } = bandIterator
+        const { band } = bandIterator
 
         return (
           <div className="overflow-hidden bg-accent shadow sm:rounded-lg" key={band.id}>
@@ -61,10 +61,10 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
                 {/* Role */}
 
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Your Role in Band</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{isAdmin ? 'Admin' : 'Member'}</dd>
-                </div>
+                </div> */}
 
                 {/* Upcoming Events */}
 
@@ -105,12 +105,12 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Quick Links</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
-                    <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                       {bandSubNavigation.map(item => {
                         return (
                           <li
                             key={item.name}
-                            className="group cursor-pointer rounded-md bg-accent-two/30 p-4 text-foreground hover:bg-destructive/30"
+                            className="group cursor-pointer rounded-md bg-accent-two/30 p-2 text-foreground hover:bg-destructive/30"
                             onClick={() => navigate(`${band.id}/${removeLeadingSlash(item.to)}`)}
                           >
                             <Link

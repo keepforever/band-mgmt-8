@@ -27,9 +27,22 @@ export const useSongsIndexRouteUtils = () => {
               to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`}
               className="flex items-center text-muted-foreground"
             >
-              <Icon name="file-text" className="fill-lime-400" />
+              <Icon name="file-text" className="h-5 w-5 text-hyperlink hover:text-hyperlink-hover" />
             </Link>
           )}
+
+          <a
+            href={
+              record.youtubeUrl ||
+              `https://www.google.com/search?q=${encodeURIComponent(`${record.title} by ${record.artist}`)}+youtube+video`
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center"
+            title="Search YouTube for Song Video"
+          >
+            <Icon name="youtube" className="h-6 w-6 stroke-hyperlink text-background hover:stroke-hyperlink-hover" />
+          </a>
         </div>
       ),
     },
@@ -37,18 +50,15 @@ export const useSongsIndexRouteUtils = () => {
       title: 'Artist',
       dataIndex: 'artist',
     },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-    },
-    {
-      title: 'Rating',
-      dataIndex: 'rating',
-    },
-    {
-      title: 'YouTube',
-      dataIndex: 'youtubeUrl',
-    },
+
+    // {
+    //   title: 'Rating',
+    //   dataIndex: 'rating',
+    // },
+    // {
+    //   title: 'YouTube',
+    //   dataIndex: 'youtubeUrl',
+    // },
     // {
     //   title: 'Lyric ID',
     //   dataIndex: 'lyricId',

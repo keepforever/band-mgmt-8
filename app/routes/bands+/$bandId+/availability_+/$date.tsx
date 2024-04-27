@@ -54,17 +54,19 @@ export default function DateDetailView() {
   if (!events.length && !blackoutDates.length) {
     return (
       <div className="container mx-auto">
-        <Card className="mx-auto w-full max-w-lg">
+        <Card className="mx-auto w-full max-w-lg bg-muted text-muted-foreground">
           <CardContent className="flex flex-col items-center gap-4 p-10">
-            <Icon name="pope" className="h-40 w-40 fill-red-400 text-gray-400 dark:text-gray-500" />
+            <Icon name="pope" className="h-40 w-40 fill-muted-foreground" />
 
             <div className="flex flex-col items-center gap-2 text-center">
               <h2 className="text-2xl font-bold">All Clear!</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">No events or unavailable members on this date.</p>
+              <p className="text-sm text-muted-foreground">No events or unavailable members on this date.</p>
             </div>
             <div className="flex w-full">
               <Link relative="path" to=".." className="w-full">
-                <Button className="w-full">Back</Button>
+                <Button variant="secondary" className="w-full">
+                  Back
+                </Button>
               </Link>
             </div>
           </CardContent>
