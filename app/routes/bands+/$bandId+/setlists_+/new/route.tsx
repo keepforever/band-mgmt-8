@@ -29,6 +29,8 @@ export default function CreateSetlistRoute() {
 
   type Song = (typeof songs)[0]
 
+  const usedSongIds: Array<string> = columns.slice(0, -1).flatMap(col => col.list.map(song => song.id))
+
   return (
     <Form method="POST">
       {/* Action buttons */}
@@ -101,10 +103,11 @@ export default function CreateSetlistRoute() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
+                                  className="flex items-center justify-between rounded-lg bg-secondary bg-opacity-40 p-2"
                                 >
-                                  <div className="flex items-center gap-2">
-                                    <h2 className="font-bold">{song.title}</h2>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
+                                    <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                   </div>
                                 </div>
                               )
@@ -149,10 +152,11 @@ export default function CreateSetlistRoute() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="mb-2 flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
+                                className="mb-2 flex items-center justify-between rounded-lg bg-secondary bg-opacity-40 p-2"
                               >
-                                <div className="flex items-center gap-2">
-                                  <h2 className="font-bold">{song.title}</h2>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
+                                  <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                 </div>
                                 <Button
                                   type="button"
@@ -175,6 +179,7 @@ export default function CreateSetlistRoute() {
                       placeholder="Search for a song..."
                       onSongSelect={(song: SongSelectorItem) => addSongToColumn(song as Song, col.order)}
                       onInputValueChange={inputValue => debouncedLoad(inputValue)}
+                      usedSongIds={usedSongIds}
                     />
 
                     <input type="hidden" name={`set${col.order}`} value={JSON.stringify(col.list)} />

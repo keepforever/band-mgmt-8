@@ -10,9 +10,16 @@ interface SongSelectorProps {
   placeholder?: string
   onInputValueChange?: (inputValue: string) => void
   hideLabel?: boolean
+  usedSongIds?: Array<string>
 }
 
-export const SongSelector = ({ onSongSelect, placeholder = '', onInputValueChange, hideLabel }: SongSelectorProps) => {
+export const SongSelector = ({
+  onSongSelect,
+  placeholder = '',
+  onInputValueChange,
+  hideLabel,
+  usedSongIds,
+}: SongSelectorProps) => {
   const fetchers = useFetchers()
   const songSearchFetcher = fetchers.find(fetcher => fetcher.key === 'songSearch')
   const fetchedSongs = songSearchFetcher?.data?.songs as SongSelectorItem[]
@@ -47,21 +54,23 @@ export const SongSelector = ({ onSongSelect, placeholder = '', onInputValueChang
         })}
       >
         {isOpen &&
-          fetchedSongs?.map?.((song, index) => (
-            <li
-              key={song.id}
-              {...getItemProps({
-                index,
-                item: song,
-              })}
-              className={cn('p-2', {
-                'cursor-pointer bg-accent-two text-accent-two-foreground hover:bg-destructive':
-                  highlightedIndex === index,
-              })}
-            >
-              {song.title}
-            </li>
-          ))}
+          fetchedSongs
+            ?.filter(song => !usedSongIds?.includes(song.id) || usedSongIds?.length === 0)
+            ?.map?.((song, index) => (
+              <li
+                key={song.id}
+                {...getItemProps({
+                  index,
+                  item: song,
+                })}
+                className={cn('p-2', {
+                  'cursor-pointer bg-accent-two text-accent-two-foreground hover:bg-destructive':
+                    highlightedIndex === index,
+                })}
+              >
+                {song.title}
+              </li>
+            ))}
       </ul>
     </div>
   )

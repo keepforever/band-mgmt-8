@@ -366,6 +366,8 @@ export default function EditSetlistRoute() {
     })
   }
 
+  const usedSongIds: Array<string> = columns.slice(0, -1).flatMap(col => col.list.map(song => song.id))
+
   return (
     <Form method="POST">
       <div className="flex justify-end gap-2">
@@ -434,8 +436,9 @@ export default function EditSetlistRoute() {
                                   {...provided.dragHandleProps}
                                   className="flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
                                 >
-                                  <div className="flex items-center gap-2">
-                                    <h2 className="font-bold">{song.title}</h2>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
+                                    <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                   </div>
                                 </div>
                               )
@@ -482,8 +485,9 @@ export default function EditSetlistRoute() {
                                 {...provided.dragHandleProps}
                                 className="mb-2 flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
                               >
-                                <div className="flex items-center gap-2">
-                                  <h2 className="font-bold">{song.title}</h2>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
+                                  <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                 </div>
                                 <Button
                                   type="button"
@@ -506,6 +510,7 @@ export default function EditSetlistRoute() {
                       placeholder="Search for a song..."
                       onSongSelect={(song: SongSelectorItem) => addSongToColumn(song as Song, col.order)}
                       onInputValueChange={inputValue => debouncedLoad(inputValue)}
+                      usedSongIds={usedSongIds}
                     />
 
                     <input type="hidden" name={`set${col.order}`} value={JSON.stringify(col.list)} />
@@ -523,6 +528,3 @@ export default function EditSetlistRoute() {
 export function ErrorBoundary() {
   return <GeneralErrorBoundary />
 }
-
-// https://band-mgmt-8-e1d0-staging.fly.dev/bands/clv4ethyj0005xb6c7vt5gnqs/events ✅
-//                                         /bands/clv4ethyj0005xb6c7vt5gnqs/clv4ethyj0005xb6c7vt5gnqs/events
