@@ -5,6 +5,7 @@ import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
 export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'id' | 'updatedAt'>> & {
@@ -14,7 +15,9 @@ export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'i
   }[]
 }
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+  await requireUserId(request)
+
   const bandId = params.bandId
   const setlists = await prisma.setlist.findMany({
     where: {

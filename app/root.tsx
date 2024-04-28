@@ -166,6 +166,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     // them in the database. Maybe they were deleted? Let's log them out.
     await logout({ request, redirectTo: '/' })
   }
+
   const { toast, headers: toastHeaders } = await getToast(request)
   const honeyProps = honeypot.getInputProps()
 

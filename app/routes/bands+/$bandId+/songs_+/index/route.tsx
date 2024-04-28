@@ -1,4 +1,5 @@
 import { Link } from '@remix-run/react'
+import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
@@ -30,4 +31,8 @@ export default function SongsIndexRoute() {
       />
     </div>
   )
+}
+
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />
 }
