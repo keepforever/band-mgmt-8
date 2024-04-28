@@ -523,3 +523,6 @@ export default function EditSetlistRoute() {
 export function ErrorBoundary() {
   return <GeneralErrorBoundary />
 }
+
+// https://band-mgmt-8-e1d0-staging.fly.dev/bands/clv4ethyj0005xb6c7vt5gnqs/events ✅
+//                                         /bands/clv4ethyj0005xb6c7vt5gnqs/clv4ethyj0005xb6c7vt5gnqs/events

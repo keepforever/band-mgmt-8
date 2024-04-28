@@ -119,10 +119,10 @@ export default function BandIdIndex() {
             <li
               key={item.name}
               className="group cursor-pointer rounded-md bg-accent-two/30 p-2 text-foreground hover:bg-destructive/30"
-              onClick={() => navigate(`${band?.id}/${removeLeadingSlash(item.to)}`)}
+              onClick={() => navigate(`${removeLeadingSlash(item.to)}`)}
             >
               <Link
-                to={`${band?.id}/${removeLeadingSlash(item.to)}`}
+                to={`${removeLeadingSlash(item.to)}`}
                 className={cn('flex items-center gap-1 group-hover:text-hyperlink group-hover:underline')}
               >
                 {item.name}
