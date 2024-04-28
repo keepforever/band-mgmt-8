@@ -1,12 +1,12 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { Form } from '@remix-run/react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
-import { Field } from '#app/components/forms'
+import { Field, SelectField } from '#app/components/forms'
 import { SongSelector } from '#app/components/song-selector.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
 import { type SongSelectorItem } from '#app/interfaces/song.js'
-import { cn, formatDate } from '#app/utils/misc'
+import { cn } from '#app/utils/misc'
 import useNewSetlistUtils from './useNewSetlistUtils'
 
 export { action } from './action'
@@ -23,7 +23,7 @@ export default function CreateSetlistRoute() {
     seedSets,
     onDragEnd,
     songs,
-    events,
+    eventOptions,
     defaultSetlistName,
   } = useNewSetlistUtils()
 
@@ -47,7 +47,7 @@ export default function CreateSetlistRoute() {
 
       {/* Setlist Name */}
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
         <Field
           className="w-full max-w-xl"
           labelProps={{ children: 'Setlist Name' }}
@@ -62,19 +62,16 @@ export default function CreateSetlistRoute() {
 
         {/* Event Selector */}
 
-        <select
-          name="event"
-          className={cn(
-            'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
-          )}
-        >
-          <option value="">Associate a setlist with an event</option>
-          {events.map(event => (
-            <option key={event.id} value={event.id}>
-              {event.name}: {formatDate(event.date)}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          className="flex-1"
+          selectClassName="w-full"
+          label="Associate a setlist with an event"
+          getOptionValue={(option: { label: string; value: string }) => option.value}
+          getOptionLabel={(option: { label: string; value: string }) => option.label}
+          labelHtmlFor="event" // Ensure this matches the ID used in getSelectProps if defined
+          options={eventOptions}
+          selectProps={{ name: 'event', id: 'event', disabled: eventOptions.length === 1 }}
+        />
       </div>
 
       {/* Drag and Drop */}

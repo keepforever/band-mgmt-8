@@ -158,8 +158,8 @@ export const SelectField: React.FC<SelectProps<any>> = ({
   return (
     <div className={className}>
       <Label htmlFor={labelHtmlFor} children={label} className="mt-0" />
+
       <select {...selectProps} className={selectInputClassName(selectClassName)}>
-        <option value="">Select an option</option>
         {options.map(option => (
           <option key={getOptionValue(option)} value={getOptionValue(option)}>
             {getOptionLabel(option)}

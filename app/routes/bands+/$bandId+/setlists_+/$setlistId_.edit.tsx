@@ -6,7 +6,7 @@ import { Form, useFetcher, useLoaderData } from '@remix-run/react'
 import debounce from 'lodash/debounce'
 import { useState } from 'react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
-import { Field } from '#app/components/forms'
+import { Field, SelectField } from '#app/components/forms'
 import { SongSelector } from '#app/components/song-selector.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
@@ -188,6 +188,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function EditSetlistRoute() {
   const songsFetcher = useFetcher<typeof songSearchLoader>({ key: 'songSearch' })
   const { songs, events, bandId, setlist } = useLoaderData<typeof loader>()
+
+  // Convert events for SelectField usage
+  const eventOptions = [
+    { label: !events.length ? 'All events have setlists' : 'Select an Event', value: '' },
+    ...events.map(event => ({
+      label: `${event.name}: ${formatDate(event.date)}`,
+      value: event.id,
+    })),
+  ]
 
   const [columns, setColumns] = useState<MySetlistType>(() => {
     if (!setlist) return []
@@ -381,19 +390,21 @@ export default function EditSetlistRoute() {
           }}
         />
 
-        <select
-          name="event"
-          className={cn(
-            'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
-          )}
-        >
-          <option value="">Associate a setlist with an event</option>
-          {events.map(event => (
-            <option key={event.id} value={event.id}>
-              {event.name}: {formatDate(event.date)}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          className="flex-1"
+          selectClassName="w-full"
+          label="Associate a setlist with an event"
+          getOptionValue={(option: { label: string; value: string }) => option.value}
+          getOptionLabel={(option: { label: string; value: string }) => option.label}
+          labelHtmlFor="event" // Ensure this matches the ID used in getSelectProps if defined
+          options={eventOptions}
+          selectProps={{
+            name: 'event',
+            id: 'event',
+            disabled: eventOptions.length === 1,
+            defaultValue: setlist?.events[0]?.id,
+          }}
+        />
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>

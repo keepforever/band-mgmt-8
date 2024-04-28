@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce'
 import { useState } from 'react'
 import { MAX_SONGS_PER_SET } from '#app/constants/setlists.js'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
+import { formatDate } from '#app/utils/misc.js'
 import { type loader } from './loader'
 
 export default function useNewSetlistUtils() {
@@ -236,17 +237,26 @@ export default function useNewSetlistUtils() {
     })
   }
 
+  // Convert events for SelectField usage
+  const eventOptions = [
+    { label: !events.length ? 'All events have setlists' : 'Select an Event', value: '' },
+    ...events.map(event => ({
+      label: `${event.name}: ${formatDate(event.date)}`,
+      value: event.id,
+    })),
+  ]
+
   return {
-    columns,
     addColumn,
-    removeColumn,
-    seedSets,
-    onDragEnd,
     addSongToColumn,
-    removeSongFromColumn,
+    columns,
     debouncedLoad,
-    events,
-    songs,
     defaultSetlistName: clonedSetlist?.name ?? '',
+    eventOptions,
+    onDragEnd,
+    removeColumn,
+    removeSongFromColumn,
+    seedSets,
+    songs,
   }
 }
