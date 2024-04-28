@@ -19,7 +19,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
         const { band } = bandIterator
 
         return (
-          <div className="overflow-hidden bg-accent shadow sm:rounded-lg" key={band.id}>
+          <div className="overflow-hidden border border-border sm:rounded-md" key={band.id}>
             <div className="px-4 py-6 sm:px-6">
               <Link to={`${band.id}`} className="block text-foreground hover:text-destructive-foreground">
                 <h3 className="text-xl font-semibold leading-7">{band?.name}</h3>
@@ -103,14 +103,17 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                 {/* Quick Links */}
 
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  {/* /bands */}
+
                   <dt className="text-sm font-medium">Quick Links</dt>
+
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                     <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                       {bandSubNavigation.map(item => {
                         return (
                           <li
                             key={item.name}
-                            className="group cursor-pointer rounded-md bg-muted p-2 text-foreground hover:bg-muted/80"
+                            className="group cursor-pointer rounded-md border border-border p-2"
                             onClick={() => navigate(`${band.id}/${removeLeadingSlash(item.to)}`)}
                           >
                             <Link

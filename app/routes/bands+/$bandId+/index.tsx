@@ -1,5 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
+import { BandMemberCard } from '#app/components/band-member-card.js'
 import { bandSubNavigation } from '#app/constants/navigation.js'
 import { prisma } from '#app/utils/db.server'
 import { cn, removeLeadingSlash } from '#app/utils/misc'
@@ -84,41 +85,26 @@ export default function BandIdIndex() {
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {band?.members?.map((member, index) => (
-          <div key={index} className="flex flex-col gap-2 rounded border p-4 shadow">
-            <div className="flex flex-col items-start gap-1">
-              <h5 className="text-h5 font-bold">{member.user.name}</h5>
-              <span
-                className={cn(
-                  'inline-block rounded-full bg-secondary px-2 py-1 text-xs font-semibold text-secondary-foreground',
-                  { hidden: !member.instrument },
-                )}
-              >
-                {member.instrument}
-              </span>
-            </div>
-
-            <span
-              className={cn('relative ml-auto flex-shrink-0 rounded-full px-2 py-1 text-body-2xs', {
-                'border-2 border-secondary-foreground bg-status-success text-status-success-foreground': member.isAdmin,
-                'border border-muted-foreground bg-status-primary text-status-primary-foreground': !member.isAdmin,
-              })}
-            >
-              {member.isAdmin ? 'Admin' : 'Member'}
-            </span>
-          </div>
+          <BandMemberCard
+            key={index}
+            name={member.user.name || ''}
+            instrument={member.instrument || 'N/A'}
+            status={member.isAdmin ? 'Admin' : 'Member'}
+          />
         ))}
       </div>
 
       {/* Quick Links */}
 
       <h2 className="mb-4 text-xl font-bold">Quick Links</h2>
+      {/* /bands/:bandId */}
 
       <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {bandSubNavigation.map(item => {
           return (
             <li
               key={item.name}
-              className="group cursor-pointer rounded-md bg-accent-two/30 p-2 text-foreground hover:bg-destructive/30"
+              className="group cursor-pointer rounded-md border border-border p-2"
               onClick={() => navigate(`${removeLeadingSlash(item.to)}`)}
             >
               <Link
