@@ -48,13 +48,22 @@ export default function SetlistsRoute() {
     {
       title: 'Name',
       dataIndex: 'name',
+      stopPropagation: () => true,
+      render: (_, setlist) => (
+        <div className="flex flex-wrap items-center gap-6">
+          {setlist.name}
+          <Button asChild variant="secondary" size="xs">
+            <Link to={`new?clonedSetlistId=${setlist.id}`}>Clone</Link>
+          </Button>
+        </div>
+      ),
     },
     {
       title: 'Event',
       dataIndex: 'events',
       render: (events: Setlist['events']) =>
         !events.length ? (
-          <span className="flex items-center text-xs text-gray-500">No Events</span>
+          <span className="flex items-center text-xs">No Events</span>
         ) : (
           <div className="flex items-center text-xs">{`${events.length} Events`}</div>
         ),
@@ -67,7 +76,7 @@ export default function SetlistsRoute() {
   ]
 
   return (
-    <>
+    <div className="max-w-3xl">
       <HeaderWithActions title="Setlists">
         <Button asChild variant="secondary" size="lg">
           <Link to="new">Create</Link>
@@ -85,6 +94,6 @@ export default function SetlistsRoute() {
       ) : (
         <TableGeneric columns={columns} data={setlists} onRowClick={setlist => navigate(`${setlist.id}/view`)} />
       )}
-    </>
+    </div>
   )
 }

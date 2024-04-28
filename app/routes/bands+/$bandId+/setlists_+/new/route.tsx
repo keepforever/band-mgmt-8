@@ -24,6 +24,7 @@ export default function CreateSetlistRoute() {
     onDragEnd,
     songs,
     events,
+    defaultSetlistName,
   } = useNewSetlistUtils()
 
   type Song = (typeof songs)[0]
@@ -55,6 +56,7 @@ export default function CreateSetlistRoute() {
             autoFocus: true,
             name: 'name',
             required: true,
+            defaultValue: defaultSetlistName ? `Copy of ${defaultSetlistName}` : '',
           }}
         />
 

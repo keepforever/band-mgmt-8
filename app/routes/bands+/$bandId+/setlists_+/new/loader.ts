@@ -4,6 +4,43 @@ import { prisma } from '#app/utils/db.server.ts'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  const clonedSetlistId = new URL(request.url).searchParams.get('clonedSetlistId')
+
+  let clonedSetlist
+
+  if (clonedSetlistId) {
+    clonedSetlist = await prisma.setlist.findUnique({
+      where: {
+        id: clonedSetlistId,
+      },
+      select: {
+        name: true,
+        events: {
+          select: {
+            id: true,
+          },
+        },
+        sets: {
+          select: {
+            name: true,
+            order: true,
+            setSongs: {
+              select: {
+                order: true,
+                song: {
+                  select: {
+                    id: true,
+                    title: true,
+                    artist: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+  }
 
   const songs = await prisma.song.findMany({
     select: {
@@ -45,5 +82,5 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   shuffleArray(songs)
 
-  return json({ songs, events, bandId: params.bandId } as const)
+  return json({ songs, events, bandId: params.bandId, clonedSetlist } as const)
 }

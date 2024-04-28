@@ -8,18 +8,49 @@ import { type loader } from './loader'
 
 export default function useNewSetlistUtils() {
   const songsFetcher = useFetcher<typeof songSearchLoader>({ key: 'songSearch' })
-  const { songs, events, bandId } = useLoaderData<typeof loader>()
-  const [columns, setColumns] = useState<MySetlistType>([
-    {
-      order: 0,
-      list: [],
-    },
-    // Bucket column
-    {
-      order: 1,
-      list: songs.sort((a, b) => a.title.localeCompare(b.title)),
-    },
-  ])
+  const { songs, events, bandId, clonedSetlist } = useLoaderData<typeof loader>()
+
+  const [columns, setColumns] = useState<MySetlistType>(() => {
+    if (clonedSetlist) {
+      const setlistPayload = clonedSetlist.sets
+        .map(set => {
+          return {
+            order: set.order - 1,
+            list: set.setSongs
+              .map(setSong => ({
+                id: setSong.song.id,
+                title: setSong.song.title,
+                artist: setSong.song.artist,
+                order: setSong.order,
+              }))
+              .sort((a, b) => a.order - b.order),
+          }
+        })
+        .sort((a, b) => a.order - b.order)
+
+      const bucketColumn = {
+        order: setlistPayload.length,
+        // filter out any songs that are already in a set, sort songs alphabetically
+        list: songs
+          .filter(song => !setlistPayload.some(set => set.list.some(setSong => setSong.id === song.id)))
+          .sort((a, b) => a.title.localeCompare(b.title)),
+      }
+
+      return [...setlistPayload, bucketColumn]
+    }
+
+    return [
+      {
+        order: 0,
+        list: [],
+      },
+      // Bucket column
+      {
+        order: 1,
+        list: songs.sort((a, b) => a.title.localeCompare(b.title)),
+      },
+    ]
+  })
 
   type Song = (typeof songs)[0]
 
@@ -216,5 +247,6 @@ export default function useNewSetlistUtils() {
     debouncedLoad,
     events,
     songs,
+    defaultSetlistName: clonedSetlist?.name ?? '',
   }
 }
