@@ -126,18 +126,20 @@ export const DayComponent: React.FC<DayComponentProps> = ({
       type="button"
       onClick={handleDayClick}
       className={cn('py-1', {
-        'bg-yellow-800 text-foreground hover:bg-yellow-500 focus:z-10': isBlackoutForUser && !isBlackoutForCurrentUser,
-        'bg-blue-600 text-secondary hover:bg-blue-200 hover:text-primary focus:z-10': isBlackoutForUser,
-        'bg-red-800 text-foreground hover:bg-red-500 focus:z-10': isBlackoutForCurrentUser,
-        'bg-green-500': isEventDay,
+        'bg-status-warning text-foreground hover:bg-status-warning-foreground focus:z-10':
+          isBlackoutForUser && !isBlackoutForCurrentUser,
+        'bg-status-info text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
+          isBlackoutForUser,
+        'bg-status-error text-foreground hover:bg-status-error-foreground focus:z-10': isBlackoutForCurrentUser,
+        'bg-status-success': isEventDay,
         'hover:bg-destructive-foreground hover:text-foreground-destructive':
           !isEventDay && !isBlackoutForUser && !isBlackoutForCurrentUser,
       })}
     >
       <time
         dateTime={day.date}
-        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full', 'border-2 border-blue-100', {
-          'bg-green-200 font-semibold text-black': isToday,
+        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full', 'border-2 border-ring', {
+          'bg-status-success-foreground font-semibold': isToday,
         })}
       >
         {day.day.toString().padStart(2, '0')}

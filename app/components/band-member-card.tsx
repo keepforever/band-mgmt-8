@@ -12,7 +12,8 @@ export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument
     <div className="rounded-lg bg-background shadow-md transition-shadow duration-300 hover:shadow-lg">
       <div className="p-4">
         <h3 className="text-lg font-semibold text-foreground">{name}</h3>
-        <p className="text-muted-foreground">{instrument}</p>
+        <p className="text-button text-muted-foreground">{instrument}</p>
+
         <div className="mt-4 flex items-center justify-between">
           <span
             className={`rounded-full px-2 py-1 text-xs font-medium ${status === 'Admin' ? 'bg-status-success text-status-success-foreground' : 'bg-status-primary text-status-primary-foreground'}`}

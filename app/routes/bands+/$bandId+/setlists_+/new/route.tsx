@@ -49,7 +49,7 @@ export default function CreateSetlistRoute() {
 
       {/* Setlist Name */}
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <Field
           className="w-full max-w-xl"
           labelProps={{ children: 'Setlist Name' }}
@@ -79,7 +79,7 @@ export default function CreateSetlistRoute() {
       {/* Drag and Drop */}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-2">
           {/* Set Columns */}
 
           {columns.map(col => {
@@ -89,8 +89,8 @@ export default function CreateSetlistRoute() {
               return (
                 <Droppable droppableId={String(col.order)} key={String(col.order)}>
                   {provided => (
-                    <div className="max-w-md flex-[1] border p-4 md:max-w-sm">
-                      <h2 className="mb-3 text-xl underline">Bucket</h2>
+                    <div className="max-w-md flex-[1] border p-2 md:max-w-sm">
+                      <h2 className="mb-3e txt-xl underline">Bucket</h2>
 
                       <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-col gap-2">
                         {/* Song List */}
@@ -105,7 +105,7 @@ export default function CreateSetlistRoute() {
                                   {...provided.dragHandleProps}
                                   className="flex items-center justify-between rounded-lg bg-secondary bg-opacity-40 p-2"
                                 >
-                                  <div className="flex flex-wrap items-center gap-2">
+                                  <div className="flex flex-wrap items-center gap-1">
                                     <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                     <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                   </div>
@@ -125,7 +125,7 @@ export default function CreateSetlistRoute() {
             return (
               <Droppable droppableId={String(col.order)} key={String(col.order)}>
                 {provided => (
-                  <div className="max-w-md flex-[1] border p-4 md:max-w-sm">
+                  <div className="max-w-md flex-[1] border p-2 md:max-w-sm">
                     <div className="mb-4 flex items-center justify-between">
                       <h2 className="text-xl underline">{String(col.order + 1)}</h2>
 
@@ -154,7 +154,7 @@ export default function CreateSetlistRoute() {
                                 {...provided.dragHandleProps}
                                 className="mb-2 flex items-center justify-between rounded-lg bg-secondary bg-opacity-40 p-2"
                               >
-                                <div className="flex flex-wrap items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-1">
                                   <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                   <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                 </div>

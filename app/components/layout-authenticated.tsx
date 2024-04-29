@@ -3,11 +3,21 @@ import { Link, NavLink, useNavigation, useParams, useRouteLoaderData } from '@re
 import { Fragment, useEffect, useState } from 'react'
 import { Icon } from '#app/components/ui/icon.js'
 import { bandSubNavigation, settingsNavigation } from '#app/constants/navigation.js'
+import { useMediaQuery } from '#app/hooks/useMediaQuery.js'
 import { type loader as rootLoader } from '#app/root.tsx'
 import { cn, getUserImgSrc } from '#app/utils/misc.js'
 import { useUser } from '#app/utils/user.js'
 import { Breadcrumbs } from './breadcrumbs'
 import { LogoutButton } from './logout-button'
+
+const getLinkCss = (isActive: boolean) =>
+  cn(
+    'inline-flex items-center rounded-md px-2 py-1 text-button font-semibold hover:bg-status-info hover:text-status-info-foreground',
+    {
+      'rounded-bl-none rounded-br-none border-b-2 border-border dark:border-accent-two': isActive,
+      'text-foreground': !isActive,
+    },
+  )
 
 export function LayoutAuthenticated({
   children,
@@ -36,6 +46,8 @@ export function LayoutAuthenticated({
       setSidebarOpen(false)
     }
   }, [routerNavigation.state, sidebarOpen])
+
+  const isSmallScreen = useMediaQuery('(max-width: 1022px)')
 
   return (
     <div>
@@ -86,8 +98,14 @@ export function LayoutAuthenticated({
                 {/* Sidebar component, swap this element with another sidebar if you like */}
 
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-muted px-6 pb-2">
-                  <div className="flex h-16 shrink-0 items-center">
-                    <img className="h-8 w-auto" src="/img/user.png" alt="Your Company" />
+                  <div className="flex items-center gap-2 pt-3">
+                    <img
+                      className="h-8 w-8 rounded-full object-cover"
+                      alt={user.name ?? user.username}
+                      src={getUserImgSrc(user.image?.id)}
+                    />
+
+                    <span className="text-body-xs font-bold text-foreground">{user.name ?? user.username}</span>
                   </div>
 
                   <nav className="flex flex-1 flex-col">
@@ -117,7 +135,7 @@ export function LayoutAuthenticated({
               <p className="text-2xl font-bold text-foreground-destructive">MGMT</p>
             </Link>
 
-            {themeSwitch}
+            {!isSmallScreen && themeSwitch}
 
             <NavLink
               to="/assets"
@@ -154,7 +172,6 @@ export function LayoutAuthenticated({
 
           <Icon name="hamburger-menu" className="h-6 w-6 stroke-foreground" aria-hidden="true" />
         </button>
-
         <Link
           to="/bands"
           className="text-sm font-semibold leading-6 text-foreground hover:text-hyperlink-hover hover:underline"
@@ -174,6 +191,8 @@ export function LayoutAuthenticated({
           Assets
         </NavLink>
 
+        {isSmallScreen && themeSwitch}
+        <h2>hello</h2>
         <Link to={`/settings/profile`} className="flex flex-col items-center gap-2 sm:hidden">
           <img
             className="h-8 w-8 rounded-full object-cover"
@@ -185,19 +204,20 @@ export function LayoutAuthenticated({
       </div>
 
       <main className="py-3 lg:pl-60">
-        <div className="flex flex-1 gap-x-4 overflow-x-auto overflow-y-hidden px-3 pb-3 sm:hidden">
+        <div className="flex flex-1 gap-x-1 overflow-x-auto overflow-y-hidden px-3 pb-3 sm:hidden">
           {userBands.map(band => (
             <Fragment key={band.name}>
               {bandSubNavigation.map(item => (
                 <NavLink
                   key={item.name}
                   to={`${band.to}${item.to}`}
-                  className={({ isActive }) =>
-                    cn('flex items-center gap-1.5 text-body-2xs hover:underline', {
-                      'tracking-widest underline': isActive,
-                      'text-foreground hover:text-hyperlink-hover': !isActive,
-                    })
-                  }
+                  // className={({ isActive }) =>
+                  //   cn('flex items-center gap-1.5 text-body-2xs hover:underline', {
+                  //     'tracking-widest underline': isActive,
+                  //     'text-foreground hover:text-hyperlink-hover': !isActive,
+                  //   })
+                  // }
+                  className={({ isActive }) => cn(getLinkCss(isActive))}
                 >
                   {item.name}
                 </NavLink>
@@ -231,31 +251,18 @@ const UserBands = () => {
       <ul className="-mx-2 mt-2 space-y-1">
         {userBands.map(band => (
           <li key={band.name}>
-            <NavLink
-              to={band.to}
-              className={({ isActive }) =>
-                cn({
-                  'bg-primary text-primary-foreground': isActive,
-                  'text-foreground hover:text-hyperlink-hover hover:underline': !isActive,
-                })
-              }
-            >
+            <NavLink to={band.to} className={({ isActive }) => getLinkCss(isActive)}>
               <span className="truncate">{band.name}</span>
             </NavLink>
 
-            <ul className="ml-4 mt-2 space-y-1">
+            <ul className="ml-4 mt-2">
               {bandSubNavigation.map(item => {
                 return (
-                  <li key={item.name} className="flex gap-1.5">
+                  <li key={item.name} className="flex items-center gap-1.5 rounded-md p-1">
                     <NavLink
                       title={`Navigate to ${item.name} list`}
                       to={`${band.to}${item.to}`}
-                      className={({ isActive }) => {
-                        return cn('flex items-center hover:underline', {
-                          'tracking-widest underline': isActive,
-                          'hover:text-hyperlink-hover': !isActive,
-                        })
-                      }}
+                      className={({ isActive }) => getLinkCss(isActive)}
                     >
                       {item.name}
                     </NavLink>
@@ -264,9 +271,9 @@ const UserBands = () => {
                       <Link
                         title={`Create new ${item.name}`}
                         to={`${band.to}${item.to}/new`}
-                        className={cn('flex transform items-center transition-transform hover:scale-110')}
+                        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-button font-semibold transition-all duration-300 ease-in-out hover:bg-status-info hover:text-accent-foreground"
                       >
-                        (<item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />)
+                        <Icon name="pencil-2" className="h-4 w-4" />
                       </Link>
                     )}
                   </li>
@@ -287,15 +294,7 @@ const UserSettings = () => {
       <ul className="ml-2 mt-2 space-y-1">
         {settingsNavigation.map(item => (
           <li key={item.name}>
-            <NavLink
-              to={item.to}
-              className={({ isActive }) =>
-                cn('flex gap-3', {
-                  'tracking-widest underline': isActive,
-                  'text-foreground hover:text-hyperlink-hover hover:underline': !isActive,
-                })
-              }
-            >
+            <NavLink to={item.to} className={({ isActive }) => getLinkCss(isActive)}>
               <span className="truncate">{item.name}</span>
             </NavLink>
           </li>
