@@ -368,7 +368,7 @@ async function seed() {
       data: {
         artist: faker.music.genre(), // Random artist name
         title: faker.music.songName(), // Random song title
-        youtubeUrl: faker.internet.url(), // Random URL, assuming songs might have a video link
+        youtubeUrl: 'https://youtu.be/i8dh9gDzmz8', // Random URL, assuming songs might have a video link
         rating: faker.number.int({ min: 0, max: 5 }), // Random rating
         status: 'active', // Assuming a default status for the song
         bandSongs: {

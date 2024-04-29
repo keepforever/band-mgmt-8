@@ -38,6 +38,7 @@ export const useSongsIndexRouteUtils = () => {
             rel="noreferrer"
             className="flex items-center"
             title="Search YouTube for Song Video"
+            onClick={e => e.stopPropagation()}
           >
             <Icon name="youtube" className="h-6 w-6 stroke-hyperlink text-background hover:stroke-hyperlink-hover" />
           </a>
