@@ -23,41 +23,19 @@ export const SongSelector = ({
   const fetchers = useFetchers()
   const songSearchFetcher = fetchers.find(fetcher => fetcher.key === 'songSearch')
   const fetchedSongs = songSearchFetcher?.data?.songs as SongSelectorItem[]
+  const filteredSongs = fetchedSongs?.filter(song => !usedSongIds?.includes(song.id))
 
   const { isOpen, getMenuProps, getInputProps, getLabelProps, getItemProps, highlightedIndex, reset } = useCombobox({
-    items: fetchedSongs || [],
+    items: filteredSongs || [],
     itemToString: item => (item ? item.title : ''),
     onInputValueChange: ({ inputValue }) => onInputValueChange?.(inputValue),
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
-        console.log(
-          `
-        #########################################################
-                        selectedItem = `,
-          selectedItem,
-          `
-        #########################################################
-        `,
-        )
-
-        console.log('\n', '\n', `selectedItem = `, selectedItem, '\n', '\n')
-
-        console.log(`
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        #########################################################
-        `)
         onSongSelect(selectedItem)
         reset()
       }
     },
   })
-
-  const filteredSongs = fetchedSongs?.filter(song => !usedSongIds?.includes(song.id))
-
-  console.group(`%csong-selector.tsx`, 'color: #ffffff; font-size: 13px; font-weight: bold;')
-  console.log('\n', `fetchedSongs = `, fetchedSongs, '\n')
-  console.log('\n', `filteredSongs = `, filteredSongs, '\n')
-  console.groupEnd()
 
   return (
     <div className="flex flex-col gap-3">
@@ -77,24 +55,21 @@ export const SongSelector = ({
         })}
       >
         {isOpen &&
-          fetchedSongs
-            ?.filter(song => !usedSongIds?.includes(song.id) || usedSongIds?.length === 0)
-            ?.map?.((song, index) => (
-              <li
-                key={song.id}
-                {...getItemProps({
-                  index,
-                  item: song,
-                })}
-                className={cn('p-2', {
-                  'cursor-pointer bg-accent-two text-accent-two-foreground hover:bg-destructive':
-                    highlightedIndex === index,
-                })}
-              >
-                {song.title}
-                {song.id.slice(-4)}
-              </li>
-            ))}
+          filteredSongs?.map?.((song, index) => (
+            <li
+              key={song.id}
+              {...getItemProps({
+                index,
+                item: song,
+              })}
+              className={cn('p-2', {
+                'cursor-pointer bg-accent-two text-accent-two-foreground hover:bg-destructive':
+                  highlightedIndex === index,
+              })}
+            >
+              {song.title}
+            </li>
+          ))}
       </ul>
     </div>
   )
