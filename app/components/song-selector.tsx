@@ -30,11 +30,34 @@ export const SongSelector = ({
     onInputValueChange: ({ inputValue }) => onInputValueChange?.(inputValue),
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
+        console.log(
+          `
+        #########################################################
+                        selectedItem = `,
+          selectedItem,
+          `
+        #########################################################
+        `,
+        )
+
+        console.log('\n', '\n', `selectedItem = `, selectedItem, '\n', '\n')
+
+        console.log(`
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        #########################################################
+        `)
         onSongSelect(selectedItem)
         reset()
       }
     },
   })
+
+  const filteredSongs = fetchedSongs?.filter(song => !usedSongIds?.includes(song.id))
+
+  console.group(`%csong-selector.tsx`, 'color: #ffffff; font-size: 13px; font-weight: bold;')
+  console.log('\n', `fetchedSongs = `, fetchedSongs, '\n')
+  console.log('\n', `filteredSongs = `, filteredSongs, '\n')
+  console.groupEnd()
 
   return (
     <div className="flex flex-col gap-3">
@@ -69,6 +92,7 @@ export const SongSelector = ({
                 })}
               >
                 {song.title}
+                {song.id.slice(-4)}
               </li>
             ))}
       </ul>

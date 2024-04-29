@@ -5,6 +5,7 @@ export type Column<T> = {
   title: string
   dataIndex: keyof T
   render?: (value: any, record: T) => React.ReactNode
+  stopPropagation?: (value: any, record: T) => boolean
 }
 
 export type TableProps<T> = {
@@ -13,7 +14,7 @@ export type TableProps<T> = {
   onRowClick?: (record: T) => void
   classNames?: string
 }
-export function TableGeneric<T>({ columns, data, onRowClick, classNames }: TableProps<T>) {
+export function TableGenericOld<T>({ columns, data, onRowClick, classNames }: TableProps<T>) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTableRowElement>, record: T) => {
     if (event.key === 'Enter') {
       onRowClick?.(record)
@@ -43,8 +44,16 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames }: Table
                   onClick={() => onRowClick?.(record)}
                   onKeyDown={e => handleKeyDown(e, record)}
                 >
-                  {columns.map(({ dataIndex, render }, columnIndex) => (
-                    <td key={columnIndex} className="whitespace-nowrap px-3 py-2 text-sm">
+                  {columns.map(({ dataIndex, render, stopPropagation }, columnIndex) => (
+                    <td
+                      key={columnIndex}
+                      className="whitespace-nowrap px-3 py-2 text-sm"
+                      onClick={e => {
+                        if (stopPropagation?.(record[dataIndex], record)) {
+                          e.stopPropagation()
+                        }
+                      }}
+                    >
                       {render ? render(record[dataIndex], record) : String(record[dataIndex])}
                     </td>
                   ))}

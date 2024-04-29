@@ -52,12 +52,11 @@ export default function SetlistsRoute() {
     {
       title: 'Name',
       dataIndex: 'name',
-      stopPropagation: () => true,
       render: (_, setlist) => (
         <div className="flex items-center gap-3">
           {setlist.name}
 
-          <Link title="Clone Setlist" to={`new?clonedSetlistId=${setlist.id}`}>
+          <Link title="Clone Setlist" to={`new?clonedSetlistId=${setlist.id}`} onClick={e => e.stopPropagation()}>
             <Icon name="copy" size="sm" className="hover:text-hyperlink" />
           </Link>
         </div>

@@ -199,6 +199,10 @@ export default function useNewSetlistUtils() {
   }
 
   const addSongToColumn = (song: Song, columnOrder: number) => {
+    console.group(`%caddSongToColumn`, 'color: red; font-size: 13px; font-weight: bold;')
+    console.log('\n', `song = `, song, '\n')
+    console.groupEnd()
+
     setColumns(currentColumns => {
       return currentColumns.map((column, index) => {
         // if column order matches, add song to column

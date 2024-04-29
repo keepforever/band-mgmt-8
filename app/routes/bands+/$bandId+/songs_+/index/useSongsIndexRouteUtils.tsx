@@ -15,9 +15,6 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Title',
       dataIndex: 'title',
-      stopPropagation: (value, record) => {
-        return !!record.lyricId
-      },
       render: (value, record) => (
         <div className="flex items-center gap-2">
           <span>{value}</span>
@@ -26,6 +23,7 @@ export const useSongsIndexRouteUtils = () => {
             <Link
               to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`}
               className="flex items-center text-muted-foreground"
+              onClick={e => e.stopPropagation()}
             >
               <Icon name="file-text" className="h-5 w-5 text-hyperlink hover:text-hyperlink-hover" />
             </Link>

@@ -31,6 +31,11 @@ export default function CreateSetlistRoute() {
 
   const usedSongIds: Array<string> = columns.slice(0, -1).flatMap(col => col.list.map(song => song.id))
 
+  console.group(`%cCreateSetlistRoute`, 'color: yellow; font-size: 13px; font-weight: bold;')
+  console.log('\n', `usedSongIds = `, usedSongIds, '\n')
+
+  console.groupEnd()
+
   return (
     <Form method="POST">
       {/* Action buttons */}
@@ -156,7 +161,8 @@ export default function CreateSetlistRoute() {
                               >
                                 <div className="flex flex-wrap items-center gap-1">
                                   <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
-                                  <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
+                                  {/* <span className="text-body-2xs text-muted-foreground">{song.artist}</span> */}
+                                  <span>{song.id.slice(-4)}</span>
                                 </div>
                                 <Button
                                   type="button"
