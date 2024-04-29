@@ -39,8 +39,10 @@
 
     --radius: 0.5rem;
 
-    --accent-two: 110 40% 90%;
-    --accent-two-foreground: 222.2 47.4% 11.2%;
+    /* --accent-two: 210 80% 60%;
+    --accent-two-foreground: 222.2 47.4% 11.2%; */
+    --accent-two: 210 80% 60%;
+    --accent-two-foreground: 30 60% 40%;
 
     --hyperlink: 210 60% 50%;
     --hyperlink-hover: 225 70% 50%;

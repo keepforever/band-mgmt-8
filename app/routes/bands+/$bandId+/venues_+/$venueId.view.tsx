@@ -97,7 +97,7 @@ export default function VenueDetails() {
   const { bandId } = useParams()
 
   return (
-    <div>
+    <div className="max-w-3xl">
       <div className="flex flex-wrap justify-between gap-2 px-4 sm:px-0">
         <h3 className="text-lg font-semibold leading-7">
           {venue?.name}, located at {venue?.location}

@@ -16,42 +16,6 @@ const VenueSchema = z.object({
   capacity: z.number().optional(),
 })
 
-// export async function action({ request, params }: ActionFunctionArgs) {
-//   const userId = await requireUserId(request)
-
-//   const bandId = params.bandId
-//   invariantResponse(userId, 'You must be logged in to create a venue')
-
-//   const formData = await request.formData()
-//   const submission = await parseWithZod(formData, { schema: VenueSchema })
-//   if (submission.status !== 'success') {
-//     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
-//   }
-//   const { name, location, capacity } = submission.value
-
-//   await prisma.venue.create({
-//     data: {
-//       name,
-//       location,
-//       capacity,
-//       bands: {
-//         create: [
-//           {
-//             band: {
-//               connect: {
-//                 id: bandId,
-//               },
-//             },
-//           },
-//         ],
-//       },
-//     },
-//   })
-
-//   return redirect(`/bands/${bandId}/venues`)
-// }
-
-// In CreateVenueForm.tsx
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
 
