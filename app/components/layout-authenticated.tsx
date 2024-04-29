@@ -166,7 +166,7 @@ export function LayoutAuthenticated({
 
       {/* Static Mobile Navbar */}
 
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-muted/95 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center justify-between gap-x-2 bg-background/90 px-4 py-2 shadow-sm sm:px-6 lg:hidden">
         <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
           <span className="sr-only">Open sidebar</span>
 
@@ -192,7 +192,7 @@ export function LayoutAuthenticated({
         </NavLink>
 
         {isSmallScreen && themeSwitch}
-        <h2>hello</h2>
+
         <Link to={`/settings/profile`} className="flex flex-col items-center gap-2 sm:hidden">
           <img
             className="h-8 w-8 rounded-full object-cover"

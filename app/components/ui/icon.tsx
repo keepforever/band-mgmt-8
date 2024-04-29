@@ -92,4 +92,5 @@ export const iconNameArray = [
   'update',
   'facebook',
   'youtube',
+  'copy',
 ] as const

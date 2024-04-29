@@ -216,8 +216,11 @@ export default function SetlistDetailViewRoute() {
 
           <DeleteSetlist />
         </div>
+
+        {/* Associate Setlist to Event */}
       </div>
 
+      {!!events.length && <AssociateSetlistToEvent setlistId={setlist.id} events={events} />}
       {/* Setlist Columns */}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -299,10 +302,6 @@ export default function SetlistDetailViewRoute() {
         ))}
       </div>
 
-      {/* Associate Setlist to Event */}
-
-      {!!events.length && <AssociateSetlistToEvent setlistId={setlist.id} events={events} />}
-
       {/* Events */}
 
       {setlist.events.length > 0 && (
@@ -342,12 +341,12 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
   return (
     <Form
       method="post"
-      className="flex flex-col gap-4"
+      className="flex max-w-2xl flex-col gap-4"
       action={`/resources/setlist/${setlistId}/associate-event`}
       navigate={false}
     >
       <div className="flex flex-wrap gap-4">
-        <div className="flex flex-[2.5] gap-2">
+        <div className="flex flex-[2.5] flex-shrink-0 gap-2">
           <select
             name="eventId"
             className={cn(

@@ -5,6 +5,7 @@ import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
 import { requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
@@ -53,11 +54,12 @@ export default function SetlistsRoute() {
       dataIndex: 'name',
       stopPropagation: () => true,
       render: (_, setlist) => (
-        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex items-center gap-3">
           {setlist.name}
-          <Button asChild variant="secondary" size="xs">
-            <Link to={`new?clonedSetlistId=${setlist.id}`}>Clone</Link>
-          </Button>
+
+          <Link title="Clone Setlist" to={`new?clonedSetlistId=${setlist.id}`}>
+            <Icon name="copy" size="sm" className="hover:text-hyperlink" />
+          </Link>
         </div>
       ),
     },

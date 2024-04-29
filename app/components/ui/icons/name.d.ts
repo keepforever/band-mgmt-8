@@ -7,6 +7,7 @@ export type IconName =
   | 'camera'
   | 'check'
   | 'clock'
+  | 'copy'
   | 'cross-1'
   | 'dots-horizontal'
   | 'download'
