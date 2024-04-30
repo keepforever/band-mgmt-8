@@ -125,7 +125,7 @@ export const DayComponent: React.FC<DayComponentProps> = ({
     <button
       type="button"
       onClick={handleDayClick}
-      className={cn('py-1', {
+      className={cn('bg-muted py-1', {
         'bg-status-warning text-foreground hover:bg-status-warning-foreground focus:z-10':
           isBlackoutForUser && !isBlackoutForCurrentUser,
         'bg-status-info text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
