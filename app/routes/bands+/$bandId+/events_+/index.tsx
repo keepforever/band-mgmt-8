@@ -102,7 +102,7 @@ export default function EventsRoute() {
     return (
       <div className="mx-auto max-w-7xl">
         <EmptyStateGeneric
-          iconNames={['pope']}
+          iconNames={['rocket']}
           title="No Events Found"
           messages={['Add a new event to get started.']}
           linkTo="new"

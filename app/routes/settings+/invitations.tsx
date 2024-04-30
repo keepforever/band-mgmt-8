@@ -87,7 +87,7 @@ export default function BandIdIndex() {
 
   if (invitations.length === 0) {
     return (
-      <div className="flex w-full flex-col items-center justify-center rounded border border-gray-200 p-12">
+      <div className="flex w-full max-w-3xl flex-col items-center justify-center rounded border border-accent-foreground p-12">
         <h2 className="text-2xl text-foreground">No pending invitations</h2>
         <p className="text-destructive">You have no pending invitations at this time.</p>
       </div>

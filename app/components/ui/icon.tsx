@@ -85,6 +85,7 @@ export const iconNameArray = [
   'pencil-2',
   'plus',
   'pope',
+  'rocket',
   'question-mark-circled',
   'reset',
   'sun',

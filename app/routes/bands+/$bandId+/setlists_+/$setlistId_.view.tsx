@@ -234,7 +234,7 @@ export default function SetlistDetailViewRoute() {
             <ul>
               {set.setSongs
                 .sort((a, b) => a.order - b.order)
-                .map(setSong => (
+                .map((setSong, setSongIndex) => (
                   // Song List Item
 
                   <li key={setSong.song.id} className="mb-2">
@@ -242,6 +242,8 @@ export default function SetlistDetailViewRoute() {
                       {/* Title, Lyrics Link, YouTube Link */}
 
                       <div className="flex items-center gap-2">
+                        <div className="h-full flex-col justify-start text-body-2xs">{setSongIndex + 1}</div>
+
                         <Link to={`/bands/${params.bandId}/songs/${setSong.song.id}/view`}>
                           <span className="text-sm font-bold text-primary hover:underline">{setSong.song.title}</span>
                         </Link>
@@ -288,11 +290,11 @@ export default function SetlistDetailViewRoute() {
                       <div className="flex items-center gap-1">
                         <span className="text-xs text-muted-foreground">{setSong.song.artist}</span>
 
-                        {setSong.song.rating && (
-                          <div className="inline-flex items-center justify-center rounded-full bg-destructive px-1 text-xs text-muted-foreground">
+                        {/* {setSong.song.rating && (
+                          <div className="inline-flex rounded-full bg-muted px-1 text-button text-muted-foreground">
                             {setSong.song.rating}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </li>

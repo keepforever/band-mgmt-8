@@ -81,22 +81,23 @@ export default function SetlistsRoute() {
 
   return (
     <div className="max-w-3xl">
-      <HeaderWithActions title="Setlists">
-        <Button asChild variant="secondary" size="lg">
-          <Link to="new">Create</Link>
-        </Button>
-      </HeaderWithActions>
-
       {setlists.length === 0 ? (
         <EmptyStateGeneric
           title="No Setlists"
           messages={['Create a new setlist by clicking the "Create" button above.']}
-          iconNames={['pope']}
+          iconNames={['rocket']}
           linkTo="new"
           buttonTitle="Create Setlist"
         />
       ) : (
-        <TableGeneric columns={columns} data={setlists} onRowClick={setlist => navigate(`${setlist.id}/view`)} />
+        <>
+          <HeaderWithActions title="Setlists">
+            <Button asChild variant="secondary" size="lg">
+              <Link to="new">Create</Link>
+            </Button>
+          </HeaderWithActions>
+          <TableGeneric columns={columns} data={setlists} onRowClick={setlist => navigate(`${setlist.id}/view`)} />
+        </>
       )}
     </div>
   )

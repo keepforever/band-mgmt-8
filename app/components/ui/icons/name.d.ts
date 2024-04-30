@@ -30,6 +30,7 @@ export type IconName =
   | 'pope'
   | 'question-mark-circled'
   | 'reset'
+  | 'rocket'
   | 'sun'
   | 'trash'
   | 'update'
