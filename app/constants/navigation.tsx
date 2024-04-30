@@ -41,15 +41,13 @@ export const bandSubNavigation = [
     icon: TempIcon,
     current: false,
   },
-
-  {
-    name: 'Invitations',
-    to: '/invitations',
-    toCreate: true,
-    icon: TempIcon,
-    current: false,
-  },
-
+  // {
+  //   name: 'Invitations',
+  //   to: '/invitations',
+  //   toCreate: true,
+  //   icon: TempIcon,
+  //   current: false,
+  // },
   {
     name: 'Availability',
     to: '/availability',
@@ -61,14 +59,14 @@ export const bandSubNavigation = [
 
 export const settingsNavigation = [
   {
-    name: 'Blackout Days',
-    to: '/settings/blackout-days',
+    name: 'Profile',
+    to: '/settings/profile',
     icon: TempIcon,
     current: false,
   },
   {
-    name: 'Profile',
-    to: '/settings/profile',
+    name: 'Blackout Days',
+    to: '/settings/blackout-days',
     icon: TempIcon,
     current: false,
   },

@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
-import { BandMemberCard } from '#app/components/band-member-card.js'
+import { BandMemberCard, BandMemberPlaceholderCard } from '#app/components/band-member-card.js'
 import { bandSubNavigation } from '#app/constants/navigation.js'
 import { prisma } from '#app/utils/db.server'
 import { cn, removeLeadingSlash } from '#app/utils/misc'
@@ -92,6 +92,8 @@ export default function BandIdIndex() {
             status={member.isAdmin ? 'Admin' : 'Member'}
           />
         ))}
+
+        <BandMemberPlaceholderCard />
       </div>
 
       {/* Quick Links */}

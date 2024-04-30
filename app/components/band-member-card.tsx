@@ -1,5 +1,8 @@
+import { Link, useParams } from '@remix-run/react'
 import React from 'react'
 import { Icon } from '#app/components/ui/icon.js'
+import { cn } from '#app/utils/misc.js'
+import { Button } from './ui/button'
 
 interface BandMemberCardProps {
   name: string
@@ -16,7 +19,10 @@ export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument
 
         <div className="mt-4 flex items-center justify-between">
           <span
-            className={`rounded-full px-2 py-1 text-xs font-medium ${status === 'Admin' ? 'bg-status-success text-status-success-foreground' : 'bg-status-primary text-status-primary-foreground'}`}
+            className={cn('rounded-full px-2 py-1 text-xs font-medium', {
+              'bg-status-success text-status-success-foreground': status === 'Admin',
+              'bg-status-primary text-status-primary-foreground': status !== 'Admin',
+            })}
           >
             {status}
           </span>
@@ -26,5 +32,29 @@ export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument
         </div>
       </div>
     </div>
+  )
+}
+
+interface BandMemberPlaceholderCardProps {}
+
+export const BandMemberPlaceholderCard: React.FC<BandMemberPlaceholderCardProps> = () => {
+  const params = useParams()
+  const { bandId } = params
+
+  return (
+    <Link
+      to={`/bands/${bandId}/invitations/new`}
+      className="rounded-lg bg-muted shadow-md transition-shadow duration-300 hover:bg-muted/80 hover:shadow-lg"
+    >
+      <div className="p-4">
+        <Button variant="ghost">Add Member</Button>
+
+        <div className="mt-4 flex items-center justify-end">
+          <div className="flex items-center space-x-2">
+            <Icon name="plus" className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </div>
+      </div>
+    </Link>
   )
 }
