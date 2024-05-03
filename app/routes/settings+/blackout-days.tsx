@@ -1,6 +1,7 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node'
 import { json, useLoaderData, useSubmit } from '@remix-run/react'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { getMonths } from '#app/constants/months.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { isDayInListOfDates } from '#app/utils/date'
@@ -79,6 +80,46 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ status: 'success' } as const, { headers: toastHeaders })
 }
 
+interface DayComponentProps {
+  day: string // The date of the day
+  isToday: boolean // If the day is today
+  isBlackoutForUser: boolean // If the day is a blackout day for the user
+  onToggleBlackout: (date: string, isCurrentlyBlackout: boolean) => void // Callback to handle blackout toggle
+}
+
+export const DayComponent: React.FC<DayComponentProps> = ({ day, isToday, isBlackoutForUser, onToggleBlackout }) => {
+  const submit = useSubmit()
+
+  const dayNumber = day.split('-').pop()?.replace(/^0/, '')
+
+  const handleDayClick = () => {
+    const intent = isBlackoutForUser ? 'delete' : 'add'
+    submit({ date: day, intent }, { method: 'post' })
+  }
+
+  // if (isToday) console.info('Blackout Day DayComponent', { day, isToday, isBlackoutForUser, dayNumber })
+
+  return (
+    <button
+      type="button"
+      onClick={handleDayClick}
+      className={cn('py-1', {
+        'bg-yellow-800 text-foreground hover:bg-yellow-500 focus:z-10': isBlackoutForUser,
+        'bg-muted text-accent-foreground hover:bg-red-800 focus:z-10': !isBlackoutForUser,
+      })}
+    >
+      <time
+        dateTime={day}
+        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full', 'border-2 border-ring', {
+          'bg-status-success font-semibold': isToday,
+        })}
+      >
+        {dayNumber}
+      </time>
+    </button>
+  )
+}
+
 export default function BlackoutDays() {
   const currentDate = new Date()
   const { user } = useLoaderData<typeof loader>()
@@ -87,14 +128,14 @@ export default function BlackoutDays() {
 
   return (
     <div className="">
-      <h1 className="mb-4 text-h4 text-foreground">Blackout Days</h1>
+      <HeaderWithActions title="Blackout Days" />
 
       {/* Months Grid */}
 
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map((month, index) => {
-          const date = new Date()
-          const isCurrentMonth = date.getMonth() === month.monthIndex
+          const isCurrentMonth = currentDate.getMonth() === month.monthIndex
+
           return (
             <section key={`${month.name}_${month.year}}`} className="text-center">
               <h2 className="font-semibold text-foreground">
@@ -103,7 +144,7 @@ export default function BlackoutDays() {
 
               <Weekdays />
 
-              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-slate-700 text-sm shadow ring-1 ring-green-200">
+              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-secondary text-sm shadow ring-1">
                 {Array.from(Array(month.offset).keys()).map((el, i) => (
                   <div key={el}></div>
                 ))}
@@ -113,11 +154,13 @@ export default function BlackoutDays() {
                     dates: user.blackoutDates.map(d => d.date),
                   })
 
+                  const isToday = isCurrentMonth && currentDate.getDate() === day.day
+
                   return (
                     <DayComponent
                       key={day.date}
                       day={day.date}
-                      isToday={isCurrentMonth && currentDate.getDate() === day.day}
+                      isToday={isToday}
                       isBlackoutForUser={isCurrentDayBlackedOutForUser}
                       onToggleBlackout={(date, isCurrentlyBlackout) => {
                         submit({ date, intent: isCurrentlyBlackout ? 'delete' : 'add' }, { method: 'post' })
@@ -131,42 +174,5 @@ export default function BlackoutDays() {
         })}
       </div>
     </div>
-  )
-}
-
-interface DayComponentProps {
-  day: string // The date of the day
-  isToday: boolean // If the day is today
-  isBlackoutForUser: boolean // If the day is a blackout day for the user
-  onToggleBlackout: (date: string, isCurrentlyBlackout: boolean) => void // Callback to handle blackout toggle
-}
-
-export const DayComponent: React.FC<DayComponentProps> = ({ day, isToday, isBlackoutForUser, onToggleBlackout }) => {
-  const submit = useSubmit()
-  const handleDayClick = () => {
-    const intent = isBlackoutForUser ? 'delete' : 'add'
-    submit({ date: day, intent }, { method: 'post' })
-  }
-
-  const dayNumber = day.split('-').pop()?.replace(/^0/, '')
-
-  return (
-    <button
-      type="button"
-      onClick={handleDayClick}
-      className={cn('py-1', {
-        'bg-yellow-800 text-foreground hover:bg-yellow-500 focus:z-10': isBlackoutForUser,
-        'bg-accent text-accent-foreground hover:bg-red-800 focus:z-10': !isBlackoutForUser,
-      })}
-    >
-      <time
-        dateTime={day}
-        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full border-2 border-accent-two', {
-          'bg-green-200 font-semibold text-black': isToday,
-        })}
-      >
-        {dayNumber}
-      </time>
-    </button>
   )
 }

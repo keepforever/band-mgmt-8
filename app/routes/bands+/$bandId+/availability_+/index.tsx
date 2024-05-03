@@ -44,8 +44,71 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return json({ events, bandMembers, allBlackoutDates })
 }
 
+interface DayComponentProps {
+  day: {
+    date: string
+    dateIsoString: string
+    name: string
+    dayIndex: number
+    day: number
+  }
+  isToday: boolean
+  isBlackoutForUser: boolean
+  isBlackoutForCurrentUser: boolean // New property
+  isEventDay: boolean
+}
+
+export const DayComponent: React.FC<DayComponentProps> = ({
+  day,
+  isToday,
+  isBlackoutForUser,
+  isBlackoutForCurrentUser,
+  isEventDay,
+}) => {
+  const navigate = useNavigate()
+  const handleDayClick = () => navigate(day.date)
+  // if (isToday) console.info('Availability DayComponent', { day, isToday, isBlackoutForUser })
+  return (
+    <button
+      type="button"
+      onClick={handleDayClick}
+      className={cn('bg-muted py-1', {
+        'bg-status-warning text-foreground hover:bg-status-warning-foreground focus:z-10':
+          isBlackoutForUser && !isBlackoutForCurrentUser,
+        'bg-status-info text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
+          isBlackoutForUser,
+        'bg-status-error text-foreground hover:bg-status-error-foreground focus:z-10': isBlackoutForCurrentUser,
+        'bg-status-success': isEventDay,
+        'hover:bg-destructive-foreground hover:text-foreground-destructive':
+          !isEventDay && !isBlackoutForUser && !isBlackoutForCurrentUser,
+      })}
+    >
+      <time
+        dateTime={day.date}
+        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full', 'border-2 border-ring', {
+          'bg-status-success font-semibold': isToday,
+        })}
+      >
+        {day.day.toString()}
+      </time>
+    </button>
+  )
+}
+
+export const Weekdays = () => (
+  <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-foreground">
+    <div>S</div>
+    <div>M</div>
+    <div>T</div>
+    <div>W</div>
+    <div>T</div>
+    <div>F</div>
+    <div>S</div>
+  </div>
+)
+
 export default function AvailabilityIndexRoute() {
-  const currentDateIsoString = new Date().toISOString().split('T')[0]
+  const currentDate = new Date()
   const { events, allBlackoutDates } = useLoaderData<typeof loader>()
   const months = getMonths(12)
   const allEventDatesSet = new Set(events.map(e => e.date))
@@ -54,8 +117,11 @@ export default function AvailabilityIndexRoute() {
     <div>
       <HeaderWithActions title="Availability" />
 
+      {/* Months Grid */}
+
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
-        {months.map((month, monthIndex) => {
+        {months.map(month => {
+          const isCurrentMonth = currentDate.getMonth() === month.monthIndex
           return (
             <section key={`${month.name}_${month.year}}`} className="text-center">
               <h2 className="font-semibold text-foreground">
@@ -64,7 +130,7 @@ export default function AvailabilityIndexRoute() {
 
               <Weekdays />
 
-              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-secondary text-sm shadow ring-1 ring-green-200">
+              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-lg bg-secondary text-sm shadow ring-1">
                 {Array.from(Array(month.offset).keys()).map(el => (
                   <div key={el}></div>
                 ))}
@@ -72,7 +138,7 @@ export default function AvailabilityIndexRoute() {
                 {month.days.map((day, dayIndex) => {
                   const dayIsoString = new Date(day.date).toISOString()
                   const isEventDay = allEventDatesSet.has(dayIsoString)
-                  const isToday = dayIsoString === currentDateIsoString
+                  const isToday = isCurrentMonth && currentDate.getDate() === day.day
                   const isBlackoutForUser = allBlackoutDates.some(d => d.date === dayIsoString)
                   const isBlackoutForCurrentUser = allBlackoutDates.some(
                     d => d.date === dayIsoString && d.isCurrentUser,
@@ -97,65 +163,3 @@ export default function AvailabilityIndexRoute() {
     </div>
   )
 }
-
-interface DayComponentProps {
-  day: {
-    date: string
-    dateIsoString: string
-    name: string
-    dayIndex: number
-    day: number
-  }
-  isToday: boolean
-  isBlackoutForUser: boolean
-  isBlackoutForCurrentUser: boolean // New property
-  isEventDay: boolean
-}
-
-export const DayComponent: React.FC<DayComponentProps> = ({
-  day,
-  isToday,
-  isBlackoutForUser,
-  isBlackoutForCurrentUser,
-  isEventDay,
-}) => {
-  const navigate = useNavigate()
-  const handleDayClick = () => navigate(day.date)
-  return (
-    <button
-      type="button"
-      onClick={handleDayClick}
-      className={cn('bg-muted py-1', {
-        'bg-status-warning text-foreground hover:bg-status-warning-foreground focus:z-10':
-          isBlackoutForUser && !isBlackoutForCurrentUser,
-        'bg-status-info text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
-          isBlackoutForUser,
-        'bg-status-error text-foreground hover:bg-status-error-foreground focus:z-10': isBlackoutForCurrentUser,
-        'bg-status-success': isEventDay,
-        'hover:bg-destructive-foreground hover:text-foreground-destructive':
-          !isEventDay && !isBlackoutForUser && !isBlackoutForCurrentUser,
-      })}
-    >
-      <time
-        dateTime={day.date}
-        className={cn('mx-auto flex h-7 w-7 items-center justify-center rounded-full', 'border-2 border-ring', {
-          'bg-status-success-foreground font-semibold': isToday,
-        })}
-      >
-        {day.day.toString().padStart(2, '0')}
-      </time>
-    </button>
-  )
-}
-
-export const Weekdays = () => (
-  <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-foreground">
-    <div>S</div>
-    <div>M</div>
-    <div>T</div>
-    <div>W</div>
-    <div>T</div>
-    <div>F</div>
-    <div>S</div>
-  </div>
-)
