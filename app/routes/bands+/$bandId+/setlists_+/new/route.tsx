@@ -49,9 +49,9 @@ export default function CreateSetlistRoute() {
 
       {/* Setlist Name */}
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2">
         <Field
-          className="w-full max-w-xl"
+          className="md:col-span-1"
           labelProps={{ children: 'Setlist Name' }}
           inputProps={{
             type: 'text',
@@ -65,7 +65,7 @@ export default function CreateSetlistRoute() {
         {/* Event Selector */}
 
         <SelectField
-          className="flex-1"
+          className="md:col-span-1"
           selectClassName="w-full"
           label="Associate a setlist with an event"
           getOptionValue={(option: { label: string; value: string }) => option.value}

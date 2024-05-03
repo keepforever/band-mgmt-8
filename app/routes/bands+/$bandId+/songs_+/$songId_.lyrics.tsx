@@ -67,7 +67,7 @@ export default function CreateSongRoute() {
 
   return (
     <div className="mx-auto max-w-full">
-      <h1 className="text-center text-2xl font-bold">{loaderData.song?.title}</h1>
+      <h1 className="mb-3 text-body-lg font-bold">{loaderData.song?.title}</h1>
 
       <Tabs defaultValue="mode2">
         <TabsList>

@@ -201,10 +201,10 @@ export default function SetlistDetailViewRoute() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="mb-4 flex flex-wrap-reverse sm:flex-wrap sm:justify-between">
+      <div className="mb-4 flex flex-wrap sm:justify-between">
         <h1 className="mb-4 text-2xl font-bold">{setlist.name}</h1>
 
-        <div className="flex items-end gap-3 sm:items-start">
+        <div className="hidden flex-wrap items-end gap-3 sm:flex sm:items-start">
           <Link relative="path" to="../edit">
             <Button size="sm">Edit</Button>
           </Link>
@@ -238,7 +238,7 @@ export default function SetlistDetailViewRoute() {
                   // Song List Item
 
                   <li key={setSong.song.id} className="mb-2">
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col flex-wrap gap-0.5">
                       {/* Title, Lyrics Link, YouTube Link */}
 
                       <div className="flex items-center gap-2">
@@ -287,15 +287,15 @@ export default function SetlistDetailViewRoute() {
 
                       {/* Artist and Rating (if one exists) */}
 
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-muted-foreground">{setSong.song.artist}</span>
+                      {/* <div className="flex items-center gap-1"> */}
+                      {/* <span className="text-xs text-muted-foreground">{setSong.song.artist}</span> */}
 
-                        {/* {setSong.song.rating && (
+                      {/* {setSong.song.rating && (
                           <div className="inline-flex rounded-full bg-muted px-1 text-button text-muted-foreground">
                             {setSong.song.rating}
                           </div>
                         )} */}
-                      </div>
+                      {/* </div> */}
                     </div>
                   </li>
                 ))}
