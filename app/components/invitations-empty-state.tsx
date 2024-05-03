@@ -11,7 +11,7 @@ export function InvitationsEmptyState() {
         <Icon name="rocket" className="h-40 w-40 fill-muted-foreground" />
 
         <div className="flex flex-col items-center gap-2 text-center">
-          <h2 className="text-2xl font-bold text-muted-foreground">This band has no pending invitations</h2>
+          <h2 className="text-body-lg font-bold text-muted-foreground">This band has no pending invitations</h2>
           <p className="text-sm text-muted-foreground">
             Invite someone to join this band by sending them an invitation.
           </p>

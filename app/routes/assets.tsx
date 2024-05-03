@@ -123,7 +123,7 @@ const TypographySwatches: React.FC = () => {
         {typographyStyles.map(style => (
           <div key={style.name} className="flex flex-col gap-2 p-1">
             <p className="text-3xl text-accent-two underline">
-              {style.name} (<span className="text-2xl text-destructive">{style.className}</span>)
+              {style.name} (<span className="text-body-lg text-destructive">{style.className}</span>)
             </p>
             <p className={style.className}>{`The quick brown fox jumps over the lazy dog.`}</p>
           </div>

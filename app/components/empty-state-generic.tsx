@@ -19,7 +19,7 @@ export function EmptyStateGeneric({ iconNames, title, messages, linkTo, buttonTi
           <Icon key={index} name={iconName} className="h-40 w-40 fill-muted-foreground" />
         ))}
         <div className="flex flex-col items-center gap-2 text-center">
-          <h2 className="text-2xl font-bold text-muted-foreground">{title}</h2>
+          <h2 className="text-body-lg font-bold text-muted-foreground">{title}</h2>
           {messages?.map((message, index) => (
             <p key={index} className="text-sm text-muted-foreground">
               {message}

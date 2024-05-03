@@ -202,7 +202,7 @@ export default function SetlistDetailViewRoute() {
   return (
     <div className="flex flex-col gap-4">
       <div className="mb-4 flex flex-wrap sm:justify-between">
-        <h1 className="mb-4 text-2xl font-bold">{setlist.name}</h1>
+        <h1 className="mb-4 text-body-lg font-bold">{setlist.name}</h1>
 
         <div className="hidden flex-wrap items-end gap-3 sm:flex sm:items-start">
           <Link relative="path" to="../edit">

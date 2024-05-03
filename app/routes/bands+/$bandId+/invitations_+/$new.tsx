@@ -72,7 +72,7 @@ export default function CreateInvitationRoute() {
 
   return (
     <div className="max-w-md">
-      <h1 className="text-center text-2xl font-bold">Invite a Band Member</h1>
+      <h1 className="text-center text-body-lg font-bold">Invite a Band Member</h1>
 
       <Form method="POST" {...getFormProps(form)} className="mt-6">
         <Field

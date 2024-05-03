@@ -116,7 +116,7 @@ export default function CreateVenueRoute() {
         {...getFormProps(form)}
       >
         <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
-          <h1 className="text-2xl font-bold">Create a Venue</h1>
+          <h1 className="text-body-lg font-bold">Create a Venue</h1>
 
           <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
             Submit Venue

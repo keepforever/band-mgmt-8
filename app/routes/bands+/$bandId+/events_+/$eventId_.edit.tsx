@@ -115,7 +115,7 @@ export default function EditEventRoute() {
     <div className="max-w-2xl">
       <Form method="POST" {...getFormProps(form)} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
-          <h1 className="text-2xl font-bold">Edit {event?.name}</h1>
+          <h1 className="text-body-lg font-bold">Edit {event?.name}</h1>
 
           <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
             Update Event

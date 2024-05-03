@@ -59,7 +59,7 @@ export default function DateDetailView() {
             <Icon name="moon" className="h-40 w-40 fill-muted-foreground" />
 
             <div className="flex flex-col items-center gap-2 text-center">
-              <h2 className="text-2xl font-bold">All Clear!</h2>
+              <h2 className="text-body-lg font-bold">All Clear!</h2>
               <p className="text-sm text-muted-foreground">No events or unavailable members on this date.</p>
             </div>
             <div className="flex w-full">

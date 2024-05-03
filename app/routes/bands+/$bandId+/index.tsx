@@ -60,7 +60,7 @@ export default function BandIdIndex() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-0 text-2xl font-bold text-foreground-destructive">{band?.name}</h1>
+      <h1 className="mb-0 text-body-lg font-bold text-foreground-destructive">{band?.name}</h1>
 
       {/* Current Year Revenue */}
 

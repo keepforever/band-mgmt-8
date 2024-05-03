@@ -55,7 +55,7 @@ export default function CreateBandRoute() {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-center text-2xl font-bold">Create Your Band</h1>
+      <h1 className="text-center text-body-lg font-bold">Create Your Band</h1>
       <Form method="POST" {...getFormProps(form)} className="mt-6">
         <Field
           labelProps={{

@@ -146,7 +146,7 @@ export default function CreateSongRoute() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold">Edit Song</h1>
+      <h1 className="text-body-lg font-bold">Edit Song</h1>
 
       <Form method="POST" action="/resources/song-delete" className="flex flex-wrap items-center justify-end gap-3">
         <StatusButton

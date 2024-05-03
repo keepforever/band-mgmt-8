@@ -12,7 +12,7 @@ export function BandsEmptyState() {
         {/* <Icon name="monkey" className="h-40 w-40 bg-destructive fill-blue-200 stroke-red-400" /> */}
 
         <div className="flex flex-col items-center gap-2 text-center">
-          <h2 className="text-2xl font-bold">You haven’t added any bands yet</h2>
+          <h2 className="text-body-lg font-bold">You haven’t added any bands yet</h2>
 
           <p className="text-sm text-muted-foreground">
             Add your first band to get started or join an existing band via invitation.
