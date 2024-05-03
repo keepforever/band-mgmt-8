@@ -2,7 +2,6 @@ import { Link, useParams } from '@remix-run/react'
 import React from 'react'
 import { Icon } from '#app/components/ui/icon.js'
 import { cn } from '#app/utils/misc.js'
-import { Button } from './ui/button'
 
 interface BandMemberCardProps {
   name: string
@@ -46,13 +45,11 @@ export const BandMemberPlaceholderCard: React.FC<BandMemberPlaceholderCardProps>
       to={`/bands/${bandId}/invitations/new`}
       className="rounded-lg bg-muted shadow-md transition-shadow duration-300 hover:bg-muted/80 hover:shadow-lg"
     >
-      <div className="p-4">
-        <Button variant="ghost">Add Member</Button>
+      <div className="flex h-full flex-col justify-between p-4">
+        <h3 className="p-0 text-lg">Add Member</h3>
 
         <div className="mt-4 flex items-center justify-end">
-          <div className="flex items-center space-x-2">
-            <Icon name="plus" className="h-5 w-5 text-muted-foreground" />
-          </div>
+          <Icon name="plus" className="h-5 w-5 text-muted-foreground" />
         </div>
       </div>
     </Link>

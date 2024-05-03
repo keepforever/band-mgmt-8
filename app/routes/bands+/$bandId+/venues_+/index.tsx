@@ -87,6 +87,7 @@ export default function VenuesIndexRoute() {
         columns={columns}
         data={venues}
         onRowClick={event => navigate(`/bands/${bandId}/venues/${event.id}/view`)}
+        classNames="max-w-3xl"
       />
     </div>
   )
