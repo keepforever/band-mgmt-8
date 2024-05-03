@@ -67,7 +67,7 @@ export default function SongDetails() {
   const { song, lyricHtml, pdfUrl } = useLoaderData<typeof loader>()
 
   return (
-    <div>
+    <div className="max-w-3xl">
       <div className="flex flex-wrap justify-between gap-2 px-4 sm:px-0">
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold leading-7">{song?.title}</h3>

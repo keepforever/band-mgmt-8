@@ -19,7 +19,6 @@ import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc.js'
 
 const SongSchema = z.object({
   artist: z.string().min(1, 'Artist name is required'),
@@ -103,7 +102,7 @@ export default function CreateSongRoute() {
   const submit = useSubmit()
   const params = useParams()
   const [form, fields] = useForm({
-    id: 'create-song-form',
+    id: 'update-song-form',
     constraint: getZodConstraint(SongSchema),
     lastResult: actionData?.result,
     onValidate({ formData }) {
@@ -146,26 +145,32 @@ export default function CreateSongRoute() {
   }, [loaderData?.song?.lyrics?.id, isLyricUpdating])
 
   return (
-    <div className="container mx-auto max-w-3xl">
-      <h1 className="text-center text-2xl font-bold">Song Id Route</h1>
+    <div className="max-w-3xl">
+      <h1 className="text-2xl font-bold">Edit Song</h1>
 
-      <Form method="POST" action="/resources/song-delete">
+      <Form method="POST" action="/resources/song-delete" className="flex flex-wrap items-center justify-end gap-3">
         <StatusButton
           type="submit"
           name="delete"
           value={loaderData.song?.id}
           variant="destructive"
-          className="mt-4"
           status={form.status ?? 'idle'}
         >
           Delete
         </StatusButton>
         {/* Hiddent inputs to pass bandId  */}
         <input type="hidden" name="bandId" value={params?.bandId} />
+
+        <StatusButton type="submit" form="update-song-form" className="" status={form.status ?? 'idle'}>
+          Update Song
+        </StatusButton>
       </Form>
 
-      <Form method="POST" {...getFormProps(form)} className="mt-6 flex flex-col gap-2">
+      <ErrorList errors={form.errors} id={form.errorId} />
+
+      <Form method="POST" {...getFormProps(form)} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.artist.id,
             children: 'Artist',
@@ -177,6 +182,7 @@ export default function CreateSongRoute() {
           errors={fields.artist.errors}
         />
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.title.id,
             children: 'Title',
@@ -185,6 +191,7 @@ export default function CreateSongRoute() {
           errors={fields.title.errors}
         />
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.youtubeUrl.id,
             children: 'YouTube URL',
@@ -193,6 +200,7 @@ export default function CreateSongRoute() {
           errors={fields.youtubeUrl.errors}
         />
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.rating.id,
             children: 'Rating',
@@ -201,6 +209,7 @@ export default function CreateSongRoute() {
           errors={fields.rating.errors}
         />
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.status.id,
             children: 'Status',
@@ -208,12 +217,6 @@ export default function CreateSongRoute() {
           inputProps={getInputProps(fields.status, { type: 'text' })}
           errors={fields.status.errors}
         />
-
-        <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
-          Update Song
-        </StatusButton>
-        <br />
-        <ErrorList errors={form.errors} id={form.errorId} />
       </Form>
 
       <input
@@ -241,11 +244,7 @@ export default function CreateSongRoute() {
 
           fileInputRef.current!.value = ''
         }}
-        className={cn(
-          'rounded-md border border-gray-300 p-2',
-          'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
-          'hover:border-blue-500 hover:ring hover:ring-blue-500',
-        )}
+        className="col-span-2 rounded-md border border-border bg-background p-2 text-body-sm sm:col-span-1"
       />
 
       {pdfUrl && <iframe title="pdf-viewer" src={pdfUrl} className="h-[600px] w-full border-none" />}

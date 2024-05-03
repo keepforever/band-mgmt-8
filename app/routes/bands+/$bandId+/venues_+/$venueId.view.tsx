@@ -99,9 +99,7 @@ export default function VenueDetails() {
   return (
     <div className="max-w-3xl">
       <div className="flex flex-wrap justify-between gap-2 px-4 sm:px-0">
-        <h3 className="text-lg font-semibold leading-7">
-          {venue?.name}, located at {venue?.location}
-        </h3>
+        <h3 className="text-lg font-semibold leading-7">{venue?.name}</h3>
         <div className="flex flex-wrap items-center gap-2">
           <Link relative="path" to={`../edit`} className="text-hyperlink hover:underline">
             <Button size="sm">Edit Venue</Button>

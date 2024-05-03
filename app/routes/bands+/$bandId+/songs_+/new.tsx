@@ -112,10 +112,6 @@ export default function CreateSongRoute() {
     id: 'create-song-form',
     constraint: getZodConstraint(SongSchema),
     lastResult: actionData?.result,
-    onValidate({ formData }) {
-      const result = parseWithZod(formData, { schema: SongSchema })
-      return result
-    },
     shouldRevalidate: 'onBlur',
   })
 
@@ -124,70 +120,48 @@ export default function CreateSongRoute() {
       <Form
         method="POST"
         encType="multipart/form-data"
-        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
         {...getFormProps(form)}
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
       >
         <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
           <h1 className="text-2xl font-bold">Create a Song</h1>
-
           <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
             Submit Song
           </StatusButton>
         </div>
         <Field
-          labelProps={{
-            htmlFor: fields.artist.id,
-            children: 'Artist',
-          }}
-          inputProps={{
-            ...getInputProps(fields.artist, { type: 'text' }),
-            autoFocus: true,
-          }}
-          errors={fields.artist.errors}
           className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: fields.artist.id, children: 'Artist' }}
+          inputProps={{ ...getInputProps(fields.artist, { type: 'text' }), autoFocus: true }}
+          errors={fields.artist.errors}
         />
         <Field
-          labelProps={{
-            htmlFor: fields.title.id,
-            children: 'Title',
-          }}
+          className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: fields.title.id, children: 'Title' }}
           inputProps={getInputProps(fields.title, { type: 'text' })}
           errors={fields.title.errors}
-          className="col-span-2 sm:col-span-1"
         />
         <Field
-          labelProps={{
-            htmlFor: fields.youtubeUrl.id,
-            children: 'YouTube URL',
-          }}
+          className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: fields.youtubeUrl.id, children: 'YouTube URL' }}
           inputProps={getInputProps(fields.youtubeUrl, { type: 'text' })}
           errors={fields.youtubeUrl.errors}
-          className="col-span-2 sm:col-span-1"
         />
         <Field
-          labelProps={{
-            htmlFor: fields.rating.id,
-            children: 'Rating',
-          }}
+          className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: fields.rating.id, children: 'Rating' }}
           inputProps={getInputProps(fields.rating, { type: 'number' })}
           errors={fields.rating.errors}
-          className="col-span-2 sm:col-span-1"
         />
         <Field
-          labelProps={{
-            htmlFor: fields.status.id,
-            children: 'Status',
-          }}
+          className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: fields.status.id, children: 'Status' }}
           inputProps={getInputProps(fields.status, { type: 'text' })}
           errors={fields.status.errors}
-          className="col-span-2 sm:col-span-1"
         />
-
         <Field
-          labelProps={{
-            htmlFor: fields.status.id,
-            children: 'Choose a lyrics file',
-          }}
+          className="col-span-2 sm:col-span-1"
+          labelProps={{ htmlFor: 'lyricsFile', children: 'Choose a lyrics file' }}
           inputProps={{
             name: 'lyricsFile',
             accept: 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -196,11 +170,9 @@ export default function CreateSongRoute() {
             className: cn('bg-secondary text-secondary-foreground cursor-pointer hover:bg-secondary/70'),
           }}
           errors={fields.status.errors}
-          className="col-span-2 sm:col-span-1"
         />
-
         <br />
-        <ErrorList errors={form.errors} id={form.errorId} />
+        <ErrorList className="col-span-2" errors={form.errors} id={form.errorId} />
       </Form>
     </div>
   )
