@@ -4,6 +4,7 @@ import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
 import { prisma } from '#app/utils/db.server'
 import { formatDate } from '#app/utils/misc'
 
@@ -53,19 +54,38 @@ export default function EventsRoute() {
 
   const columns: Column<(typeof events)[0]>[] = [
     {
-      title: 'Date',
-      dataIndex: 'date',
-      render: date => formatDate(date),
-    },
-    {
       title: 'Venue',
       dataIndex: 'venue',
-      render: (venue, record) => <span className="capitalize">{`${venue.name} - ${venue.location}`}</span>,
+      render: (venue, record) => {
+        return (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="capitalize">{`${venue.name}`}</span>
+            <Link
+              title="Edit event"
+              to={`${record.id}/edit`}
+              className="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-button font-semibold transition-all duration-300 ease-in-out hover:bg-status-info hover:text-accent-foreground"
+            >
+              <Icon name="pencil-2" className="h-4 w-4" onClick={e => e.stopPropagation()} />
+            </Link>
+          </div>
+        )
+      },
     },
-    // {
-    //   title: 'Name',
-    //   dataIndex: 'name',
-    // },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      render: date => {
+        return (
+          <span className="tracking-wide" title={formatDate(date, { year: 'numeric', month: 'long', day: '2-digit' })}>
+            {formatDate(date, {
+              year: 'numeric',
+              month: 'numeric',
+              day: '2-digit',
+            })}
+          </span>
+        )
+      },
+    },
     {
       title: 'Pay',
       dataIndex: 'payment',
@@ -82,7 +102,8 @@ export default function EventsRoute() {
       dataIndex: 'setlist',
       render: (setlist, record) => {
         const setlistId = setlist?.BandSetlist?.[0]?.setlistId
-        if (!setlistId) return 'No Setlist Found'
+
+        if (!setlistId) return 'N/A'
 
         return (
           // http://localhost:3000/bands/cltg3ec8f0027ig7vxbhxxfab/setlists/cltg3o36q00024ey44moes965
@@ -91,7 +112,7 @@ export default function EventsRoute() {
             to={`/bands/${bandId}/setlists/${setlistId}/view`}
             onClick={e => e.stopPropagation()}
           >
-            View Setlist
+            View
           </Link>
         )
       },
@@ -121,7 +142,8 @@ export default function EventsRoute() {
           </Button>
         </Link>
       </HeaderWithActions>
-      <div className="max-w-2xl">
+
+      <div className="max-w-3xl">
         <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
       </div>
     </>

@@ -146,7 +146,7 @@ export default function CreateSongRoute() {
   }, [loaderData?.song?.lyrics?.id, isLyricUpdating])
 
   return (
-    <div className="container mx-auto max-w-full">
+    <div className="container mx-auto max-w-3xl">
       <h1 className="text-center text-2xl font-bold">Song Id Route</h1>
 
       <Form method="POST" action="/resources/song-delete">

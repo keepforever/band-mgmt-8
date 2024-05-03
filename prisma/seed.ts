@@ -431,6 +431,7 @@ async function seed() {
         requiresPASystem: faker.datatype.boolean(),
         payment: faker.number.int({ min: 750, max: 1300 }),
         name: faker.person.lastName(),
+        startEndTime: '8:00 PM - 11:00 PM',
         venue: {
           connect: {
             id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],

@@ -46,7 +46,7 @@ export default function EventDetailView() {
   const { event } = useLoaderData<typeof loader>()
 
   return (
-    <div>
+    <div className="max-w-3xl">
       <div className="flex flex-wrap justify-between gap-3 px-4 sm:px-0">
         {/* Event name and Revenue column */}
 
@@ -77,10 +77,17 @@ export default function EventDetailView() {
       <div className="mt-6 border-t border-white/10">
         <dl className="divide-y divide-white/10">
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6">Date & Location</dt>
+            <dt className="text-sm font-medium leading-6">Date</dt>
 
-            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${formatDate(String(event?.date))}, ${event?.location}`}</dd>
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${formatDate(String(event?.date))}`}</dd>
           </div>
+
+          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Time</dt>
+
+            <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{event?.startEndTime}</dd>
+          </div>
+
           {event?.venue && (
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6">Venue</dt>

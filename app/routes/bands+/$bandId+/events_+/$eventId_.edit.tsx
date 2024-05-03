@@ -4,8 +4,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json, redirect, type ActionFunctionArgs } from '@remix-run/node'
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
-import { Field, ErrorList, CheckboxField, TextareaField, selectInputClassName } from '#app/components/forms.tsx'
-import { Label } from '#app/components/ui/label.js'
+import { Field, ErrorList, CheckboxField, TextareaField, SelectField } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -107,26 +106,24 @@ export default function EditEventRoute() {
     shouldRevalidate: 'onBlur',
   })
 
+  const selectOptions = venues.map(venue => ({
+    label: `${venue.name} - ${venue.location}`,
+    value: venue.id,
+  }))
+
   return (
-    <div className="mx-auto max-w-md">
-      <h1 className="text-center text-2xl font-bold">Edit Event</h1>
-      <Form method="POST" {...getFormProps(form)} className="mt-6">
-        {/* Venue Select */}
+    <div className="max-w-2xl">
+      <Form method="POST" {...getFormProps(form)} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="col-span-2 flex flex-wrap-reverse items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Edit {event?.name}</h1>
 
-        <Label htmlFor={getSelectProps(fields.venueId).id} children="Venue" className="mt-0" />
-
-        <select {...getSelectProps(fields.venueId)} className={selectInputClassName()}>
-          <option value="">Select a Venue</option>
-          {venues.map(venue => (
-            <option key={venue.id} value={venue.id}>
-              {venue.name} - {venue.location}
-            </option>
-          ))}
-        </select>
-
-        <ErrorList errors={fields.venueId.errors} id={fields.venueId.errorId} className="mb-2 pl-4 pt-1" />
+          <StatusButton className="col-span-2 mt-4" status={form.status ?? 'idle'} type="submit">
+            Update Event
+          </StatusButton>
+        </div>
 
         <CheckboxField
+          className="col-span-1"
           labelProps={{
             htmlFor: fields.requiresPASystem.id,
             children: 'Requires PA System',
@@ -137,7 +134,20 @@ export default function EditEventRoute() {
           errors={fields.requiresPASystem.errors}
         />
 
+        <SelectField
+          className="col-span-2 sm:col-span-1"
+          selectClassName="w-full"
+          label="Venue"
+          labelHtmlFor={getSelectProps(fields.venueId).id}
+          options={[{ label: 'Select a Venue', value: '' }, ...selectOptions]}
+          selectProps={getSelectProps(fields.venueId)}
+          getOptionLabel={(option: { label: string; value: string }) => option.label}
+          getOptionValue={(option: { label: string; value: string }) => option.value}
+          errors={fields.venueId.errors}
+        />
+
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.startEndTime.id,
             children: 'Start and End Time',
@@ -147,23 +157,7 @@ export default function EditEventRoute() {
         />
 
         <Field
-          labelProps={{
-            htmlFor: fields.payment.id,
-            children: 'Payment',
-          }}
-          inputProps={getInputProps(fields.payment, { type: 'number' })}
-          errors={fields.payment.errors}
-        />
-
-        <TextareaField
-          labelProps={{ children: 'Notes' }}
-          textareaProps={{
-            ...getTextareaProps(fields.notes),
-          }}
-          errors={fields.notes.errors}
-        />
-
-        <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.name.id,
             children: 'Event Name',
@@ -174,7 +168,9 @@ export default function EditEventRoute() {
           }}
           errors={fields.name.errors}
         />
+
         <Field
+          className="col-span-2 sm:col-span-1"
           labelProps={{
             htmlFor: fields.date.id,
             children: 'Event Date',
@@ -183,10 +179,27 @@ export default function EditEventRoute() {
           errors={fields.date.errors}
         />
 
-        <StatusButton className="mt-4 w-full" status={form.status ?? 'idle'} type="submit">
-          Update Event
-        </StatusButton>
-        <ErrorList errors={form.errors} id={form.errorId} />
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.payment.id,
+            children: 'Payment',
+          }}
+          inputProps={getInputProps(fields.payment, { type: 'number' })}
+          errors={fields.payment.errors}
+        />
+
+        <TextareaField
+          className="col-span-2"
+          labelProps={{ children: 'Notes' }}
+          textareaProps={{
+            ...getTextareaProps(fields.notes),
+          }}
+          errors={fields.notes.errors}
+        />
+
+        <br />
+        <ErrorList className="col-span-2" errors={form.errors} id={form.errorId} />
       </Form>
     </div>
   )

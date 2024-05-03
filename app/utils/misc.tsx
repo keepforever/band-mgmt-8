@@ -249,13 +249,17 @@ export async function downloadFile(url: string, retries: number = 0) {
   }
 }
 
-// Format date using Intl.DateTimeFormat
-export const formatDate = (dateString: string) => {
+const defaultFormatOptions: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+}
+
+export const formatDate = (dateString: string, formatOptions?: Intl.DateTimeFormatOptions) => {
   return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: '2-digit',
-    timeZone: 'UTC', // Use UTC to avoid timezone offsets
+    ...defaultFormatOptions,
+    ...formatOptions,
   }).format(new Date(dateString))
 }
 
