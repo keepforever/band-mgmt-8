@@ -1,6 +1,6 @@
 import { invariantResponse } from '@epic-web/invariant'
 import {
-  redirect,
+  json,
   type LoaderFunctionArgs,
   type ActionFunctionArgs,
   unstable_parseMultipartFormData as parseMultipartFormData,
@@ -90,5 +90,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     })
   }
 
-  return redirect(redirectPath)
+  // return redirect(redirectPath)
+  return json({ foo: 'bar' })
 }
