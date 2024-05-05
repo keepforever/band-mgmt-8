@@ -1,3 +1,4 @@
+import { type Tech } from '@prisma/client'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
@@ -29,12 +30,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   })
 }
 
-type TechInfo = {
-  id: string
-  name: string
-  serviceType: string
-  contactInfo: string
-}
+type TechInfo = Pick<Tech, 'id' | 'name' | 'contactInfo'> & { serviceType: string }
 
 export default function TechsIndexRoute() {
   const { techs } = useLoaderData<typeof loader>()
