@@ -308,3 +308,12 @@ export function logObjectDetails(objects: Record<string, any>, filename: string,
 export function removeLeadingSlash(str: string): string {
   return str.startsWith('/') ? str.slice(1) : str
 }
+
+export function formatDollars(amount?: number | null) {
+  return (amount || 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+}

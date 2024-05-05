@@ -7,7 +7,7 @@ import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
-import { useDoubleCheck } from '#app/utils/misc'
+import { formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -50,7 +50,7 @@ export default function TechDetails() {
       <div className="flex flex-wrap justify-between gap-2 px-4 sm:px-0">
         <h3 className="text-lg font-semibold leading-7">{tech?.name}</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <Link to={`../edit`} className="text-hyperlink hover:underline">
+          <Link relative="path" to={`../edit`} className="text-hyperlink hover:underline">
             <Button size="sm">Edit Tech</Button>
           </Link>
 
@@ -68,6 +68,15 @@ export default function TechDetails() {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Service Type</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.serviceType.name}</dd>
+          </div>
+
+          {/* Rate */}
+
+          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Rate</dt>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
+              {formatDollars(tech?.rate)}
+            </dd>
           </div>
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
