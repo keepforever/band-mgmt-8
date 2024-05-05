@@ -3,11 +3,14 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json, redirect, type ActionFunctionArgs } from '@remix-run/node'
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
+import { useState } from 'react'
 import { z } from 'zod'
 import { Field, ErrorList, CheckboxField, TextareaField, SelectField } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
+
+const TechIdsSchema = z.array(z.string())
 
 const EventSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
@@ -17,7 +20,6 @@ const EventSchema = z.object({
   requiresPASystem: z.boolean().optional(),
   startEndTime: z.string().min(3, 'A minimum of 3 characters is required for the start and end time'),
   notes: z.string().max(1000).optional(),
-  techId: z.string().optional(),
 })
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -35,7 +37,36 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
 
-  const { name, date, venueId, payment, requiresPASystem, startEndTime, notes, techId } = submission.value
+  const { name, date, venueId, payment, requiresPASystem, startEndTime, notes } = submission.value
+
+  const techIds = formData.getAll('techIds') as Array<string>
+  let validTechIds = false
+
+  try {
+    TechIdsSchema.parse(techIds)
+    validTechIds = true
+  } catch (error) {
+    console.error('Invalid techIds:', error)
+  }
+
+  try {
+    if (validTechIds) {
+      await prisma.eventTech.deleteMany({
+        where: {
+          eventId,
+        },
+      })
+
+      await prisma.eventTech.createMany({
+        data: techIds.map(techId => ({
+          eventId,
+          techId,
+        })),
+      })
+    }
+  } catch (error) {
+    console.error('Invalid techIds:', error)
+  }
 
   await prisma.event.update({
     where: { id: eventId },
@@ -51,16 +82,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
           id: venueId,
         },
       },
-
-      ...(typeof techId === 'string' && {
-        EventTech: {
-          create: [
-            {
-              techId,
-            },
-          ],
-        },
-      }),
     },
   })
 
@@ -131,10 +152,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function EditEventRoute() {
   const actionData = useActionData<typeof action>()
   const { venues, event, techs } = useLoaderData<typeof loader>()
+
+  const [techIds, setTechIds] = useState<string[]>(() => {
+    return event?.EventTech.map(eventTech => eventTech.tech.id) ?? []
+  })
   const [form, fields] = useForm({
     id: 'edit-event-form',
     constraint: getZodConstraint(EventSchema),
+    onValidate({ formData }) {
+      const result = parseWithZod(formData, { schema: EventSchema })
+      return result
+    },
     lastResult: actionData?.result,
+
     defaultValue: event
       ? {
           name: event.name,
@@ -144,7 +174,6 @@ export default function EditEventRoute() {
           requiresPASystem: event.requiresPASystem,
           startEndTime: event.startEndTime,
           notes: event.notes,
-          techId: event.EventTech[0]?.tech.id,
         }
       : {},
     shouldRevalidate: 'onBlur',
@@ -160,7 +189,9 @@ export default function EditEventRoute() {
       label: tech.name,
       value: tech.id,
     }))
-    .filter(tech => !event?.EventTech.some(eventTech => eventTech.tech.id === tech.value))
+    .filter(
+      tech => !event?.EventTech.some(eventTech => eventTech.tech.id === tech.value) && !techIds.includes(tech.value),
+    )
 
   return (
     <div className="max-w-2xl">
@@ -186,24 +217,44 @@ export default function EditEventRoute() {
         />
 
         <SelectField
+          label="Tech What"
           className="col-span-2"
           selectClassName="w-full"
-          label="Tech"
-          labelHtmlFor={getSelectProps(fields.techId).id}
           options={[{ label: 'Select a Tech', value: '' }, ...techOptions]}
-          selectProps={{ ...getSelectProps(fields.techId), onChange: e => console.log(e.target.value) }}
           getOptionLabel={(option: { label: string; value: string }) => option.label}
           getOptionValue={(option: { label: string; value: string }) => option.value}
-          errors={fields.techId.errors}
+          selectProps={{
+            onChange: e => setTechIds(prevTechIds => [...prevTechIds, e.target.value]),
+          }}
         />
 
         {/* Selected Techs */}
 
-        {event?.EventTech.map(eventTech => (
-          <div key={eventTech.tech.id} className="col-span-2">
-            <p>{eventTech.tech.name}</p>
+        <div className="col-span-2 flex flex-col gap-2">
+          <h2 className={`text-body-lg font-bold ${techIds.length ? 'block' : 'hidden'}`}>Tech List</h2>
+          <div className="flex flex-wrap gap-2">
+            {techIds.map(techId => {
+              const tech = techs.find(tech => tech.id === techId)
+              return (
+                <div key={techId} className="relative col-span-2 rounded-lg bg-muted shadow-md">
+                  <button
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                    onClick={() => setTechIds(prevTechIds => prevTechIds.filter(id => id !== techId))}
+                  >
+                    X
+                  </button>
+                  <div className="p-2">
+                    <p className="text-lg font-bold">{tech?.name}</p>
+                    <p className="text-muted-foreground">{tech?.serviceType.name}</p>
+                  </div>
+                  <input className="hidden" name="techIds" value={techId} readOnly />
+                </div>
+              )
+            })}
           </div>
-        ))}
+        </div>
+
+        {/* <input className="hidden" name="techIds" value={JSON.stringify(techIds)} readOnly /> */}
 
         <SelectField
           className="col-span-2 sm:col-span-1"

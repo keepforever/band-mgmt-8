@@ -20,6 +20,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       venue: true,
       bands: true,
       setlist: true,
+      EventTech: {
+        select: {
+          tech: {
+            select: {
+              name: true,
+              serviceType: { select: { name: true } },
+              id: true,
+            },
+          },
+        },
+      },
     },
   })
   return json({ event })
@@ -98,6 +109,21 @@ export default function EventDetailView() {
               >
                 <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{`${event?.venue.name}, ${event?.venue.location} (Capacity: ${event?.venue.capacity ?? 'N/A'})`}</dd>
               </Link>
+            </div>
+          )}
+
+          {event?.EventTech && (
+            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt className="text-sm font-medium leading-6">Event Tech</dt>
+
+              <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
+                {event.EventTech.map(tech => (
+                  <div key={tech.tech?.id} className="flex items-center gap-2">
+                    <Icon name="avatar" className="text-accent-two" />
+                    <span>{`${tech.tech?.name} (${tech.tech?.serviceType?.name})`}</span>
+                  </div>
+                ))}
+              </dd>
             </div>
           )}
 
