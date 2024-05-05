@@ -149,11 +149,9 @@ export default function VenueDetails() {
                     </Form>
 
                     <p className="text-body-sm">{contact.name}</p>
-                    {/*  eslint-disable-next-line remix-react-routes/use-link-for-routes */}
                     <a className="text-hyperlink hover:text-hyperlink-hover" href={`mailto:${contact.email}`}>
                       {contact.email}
                     </a>
-                    {/*  eslint-disable-next-line remix-react-routes/use-link-for-routes */}
                     <a href={`tel:${contact.phone}`} className="block font-mono">
                       {contact.phone}
                     </a>

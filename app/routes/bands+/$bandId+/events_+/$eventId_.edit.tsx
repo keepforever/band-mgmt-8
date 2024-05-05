@@ -9,8 +9,7 @@ import { Field, ErrorList, CheckboxField, TextareaField, SelectField } from '#ap
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-
-const TechIdsSchema = z.array(z.string())
+import { TechIdsSchema } from './new'
 
 const EventSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
@@ -186,7 +185,7 @@ export default function EditEventRoute() {
 
   const techOptions = techs
     .map(tech => ({
-      label: tech.name,
+      label: `${tech.name} - ${tech.serviceType.name}`,
       value: tech.id,
     }))
     .filter(
@@ -215,46 +214,6 @@ export default function EditEventRoute() {
           })}
           errors={fields.requiresPASystem.errors}
         />
-
-        <SelectField
-          label="Tech What"
-          className="col-span-2"
-          selectClassName="w-full"
-          options={[{ label: 'Select a Tech', value: '' }, ...techOptions]}
-          getOptionLabel={(option: { label: string; value: string }) => option.label}
-          getOptionValue={(option: { label: string; value: string }) => option.value}
-          selectProps={{
-            onChange: e => setTechIds(prevTechIds => [...prevTechIds, e.target.value]),
-          }}
-        />
-
-        {/* Selected Techs */}
-
-        <div className="col-span-2 flex flex-col gap-2">
-          <h2 className={`text-body-lg font-bold ${techIds.length ? 'block' : 'hidden'}`}>Tech List</h2>
-          <div className="flex flex-wrap gap-2">
-            {techIds.map(techId => {
-              const tech = techs.find(tech => tech.id === techId)
-              return (
-                <div key={techId} className="relative col-span-2 rounded-lg bg-muted shadow-md">
-                  <button
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
-                    onClick={() => setTechIds(prevTechIds => prevTechIds.filter(id => id !== techId))}
-                  >
-                    X
-                  </button>
-                  <div className="p-2">
-                    <p className="text-lg font-bold">{tech?.name}</p>
-                    <p className="text-muted-foreground">{tech?.serviceType.name}</p>
-                  </div>
-                  <input className="hidden" name="techIds" value={techId} readOnly />
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* <input className="hidden" name="techIds" value={JSON.stringify(techIds)} readOnly /> */}
 
         <SelectField
           className="col-span-2 sm:col-span-1"
@@ -319,6 +278,44 @@ export default function EditEventRoute() {
           }}
           errors={fields.notes.errors}
         />
+
+        <SelectField
+          label="Tech What"
+          className="col-span-2"
+          selectClassName="w-full"
+          options={[{ label: 'Select a Tech', value: '' }, ...techOptions]}
+          getOptionLabel={(option: { label: string; value: string }) => option.label}
+          getOptionValue={(option: { label: string; value: string }) => option.value}
+          selectProps={{
+            onChange: e => setTechIds(prevTechIds => [...prevTechIds, e.target.value]),
+          }}
+        />
+
+        {/* Selected Techs */}
+
+        <div className="col-span-2 flex flex-col gap-2">
+          <h2 className={`text-body-lg font-bold ${techIds.length ? 'block' : 'hidden'}`}>Tech List</h2>
+          <div className="flex flex-wrap gap-2">
+            {techIds.map(techId => {
+              const tech = techs.find(tech => tech.id === techId)
+              return (
+                <div key={techId} className="relative col-span-2 rounded-lg bg-muted shadow-md">
+                  <button
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                    onClick={() => setTechIds(prevTechIds => prevTechIds.filter(id => id !== techId))}
+                  >
+                    X
+                  </button>
+                  <div className="p-2">
+                    <p className="text-lg font-bold">{tech?.name}</p>
+                    <p className="text-muted-foreground">{tech?.serviceType.name}</p>
+                  </div>
+                  <input className="hidden" name="techIds" value={techId} readOnly />
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         <br />
         <ErrorList className="col-span-2" errors={form.errors} id={form.errorId} />

@@ -4,6 +4,38 @@ import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getNoteImages, getUserImages, img } from '#tests/db-utils.ts'
 import { insertGitHubUser } from '#tests/mocks/github.ts'
 
+const dummyVenueNames = [
+  'Roxy',
+  'Viper Room',
+  'Troubadour',
+  'Whisky a Go Go',
+  'Echo',
+  'Satellite',
+  'Mint',
+  'Bootleg Theater',
+  'Hotel Cafe',
+  'Regent Theater',
+  'El Rey Theatre',
+  'Teragram Ballroom',
+  'Fonda Theatre',
+  'Palladium',
+  'Greek Theatre',
+  'Hollywood Bowl',
+].sort(() => Math.random() - 0.5)
+
+const dummyEventNames = [
+  'Battle of the Bands',
+  'Open Mic Night',
+  'County Fair',
+  'Hardly Strictly Bluegrass',
+  'Coachella',
+  'Burning Man',
+  'Outside Lands',
+  'Bonnaroo',
+  'Lollapalooza',
+  'Glastonbury',
+].sort(() => Math.random() - 0.5)
+
 function getFutureDate() {
   const tempDate = faker.date.future({
     refDate: new Date(),
@@ -371,6 +403,9 @@ async function seed() {
       data: {
         name: faker.person.firstName() + ' ' + faker.person.lastName(),
         contactInfo: faker.internet.email(),
+        email: faker.internet.email(),
+        phone: faker.phone.number(),
+        rate: faker.number.int({ min: 100, max: 500 }),
         serviceType: {
           create: {
             name: serviceTypes[i],
@@ -415,11 +450,7 @@ async function seed() {
     const tempId = await prisma.venue.create({
       data: {
         location: faker.location.city(),
-        // name: capitalLorem(),
-        name: capitalLorem()
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
+        name: dummyVenueNames[index],
         capacity: faker.number.int({ min: 100, max: 1000 }),
         bands: {
           create: [
@@ -453,7 +484,7 @@ async function seed() {
         // location: faker.location.city(),
         requiresPASystem: faker.datatype.boolean(),
         payment: faker.number.int({ min: 750, max: 1300 }),
-        name: faker.person.lastName(),
+        name: dummyEventNames[index],
         startEndTime: '8:00 PM - 11:00 PM',
         venue: {
           connect: {

@@ -112,7 +112,7 @@ export default function EventDetailView() {
             </div>
           )}
 
-          {event?.EventTech && (
+          {!!event?.EventTech?.length && (
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6">Event Tech</dt>
 

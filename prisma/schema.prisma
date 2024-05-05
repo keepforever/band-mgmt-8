@@ -104,9 +104,14 @@ model ServiceType {
 }
 
 model Tech {
-  id            String      @id @default(cuid())
-  name          String
-  contactInfo   String // Simple string for contact information, expand into more fields if needed
+  id   String @id @default(cuid())
+  name String
+
+  contactInfo String? // Simple string for contact information, expand into more fields if needed
+  phone       String?
+  email       String?
+  rate        Int?
+
   serviceTypeId String
   serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
   events        EventTech[]

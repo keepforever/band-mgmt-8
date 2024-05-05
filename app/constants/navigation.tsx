@@ -41,20 +41,6 @@ export const bandSubNavigation = [
     icon: TempIcon,
     current: false,
   },
-  // {
-  //   name: 'Invitations',
-  //   to: '/invitations',
-  //   toCreate: true,
-  //   icon: TempIcon,
-  //   current: false,
-  // },
-  {
-    name: 'Availability',
-    to: '/availability',
-    toCreate: false,
-    icon: TempIcon,
-    current: false,
-  },
   {
     name: 'Techs',
     to: '/techs',
@@ -62,6 +48,20 @@ export const bandSubNavigation = [
     icon: TempIcon,
     current: false,
   },
+  {
+    name: 'Availability',
+    to: '/availability',
+    toCreate: false,
+    icon: TempIcon,
+    current: false,
+  },
+  // {
+  //   name: 'Invitations',
+  //   to: '/invitations',
+  //   toCreate: true,
+  //   icon: TempIcon,
+  //   current: false,
+  // },
 ]
 
 export const settingsNavigation = [
