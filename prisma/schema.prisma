@@ -96,6 +96,41 @@ model Venue {
   @@index([id])
 }
 
+model ServiceType {
+  id          String  @id @default(cuid())
+  name        String // e.g., Sound Technician, Lighting Technician
+  description String?
+  techs       Tech[]
+}
+
+model Tech {
+  id            String      @id @default(cuid())
+  name          String
+  contactInfo   String // Simple string for contact information, expand into more fields if needed
+  serviceTypeId String
+  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+  events        EventTech[]
+  bands         BandTech[]
+}
+
+model EventTech {
+  eventId String
+  techId  String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tech    Tech   @relation(fields: [techId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, techId])
+}
+
+model BandTech {
+  bandId String
+  techId String
+  band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
+  tech   Tech   @relation(fields: [techId], references: [id], onDelete: Cascade)
+
+  @@id([bandId, techId])
+}
+
 model Event {
   id        String      @id @default(cuid())
   name      String
@@ -111,6 +146,7 @@ model Event {
   startEndTime     String?
   requiresPASystem Boolean?
   notes            String?
+  EventTech        EventTech[]
 
   @@index([id])
 }
@@ -136,6 +172,7 @@ model Band {
   events     BandEvent[]
   setlists   BandSetlist[]
   Invitation Invitation[]
+  BandTech   BandTech[]
 
   @@index([id])
 }

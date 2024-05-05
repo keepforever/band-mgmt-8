@@ -55,6 +55,13 @@ export const bandSubNavigation = [
     icon: TempIcon,
     current: false,
   },
+  {
+    name: 'Techs',
+    to: '/techs',
+    toCreate: true,
+    icon: TempIcon,
+    current: false,
+  },
 ]
 
 export const settingsNavigation = [

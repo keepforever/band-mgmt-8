@@ -143,17 +143,21 @@ export default function EventDetailView() {
   )
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const eventId = formData.get('eventId') as string
+  const bandId = params.bandId
 
+  invariantResponse(bandId, 'Band ID is required')
   invariantResponse(eventId, 'Event ID is required')
 
   await prisma.event.delete({
     where: { id: eventId },
   })
 
-  return redirectWithToast('/events', {
+  const redirectUrl = `/bands/${bandId}/events`
+
+  return redirectWithToast(redirectUrl, {
     type: 'success',
     title: 'Event Deleted',
     description: 'The event has been deleted successfully.',

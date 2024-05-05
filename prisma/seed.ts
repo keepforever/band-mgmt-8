@@ -362,6 +362,29 @@ async function seed() {
   })
   console.timeEnd('🎸 Created KODY band...')
 
+  // Create Techs for Kody Band
+  console.time('🔧 Creating techs for KODY band...')
+  const serviceTypes = ['Sound Engineer', 'Lighting Technician', 'Stage Manager', 'Roadie', 'Security']
+
+  for (let i = 0; i < serviceTypes.length; i++) {
+    await prisma.tech.create({
+      data: {
+        name: faker.person.firstName() + ' ' + faker.person.lastName(),
+        contactInfo: faker.internet.email(),
+        serviceType: {
+          create: {
+            name: serviceTypes[i],
+            description: `Responsible for ${serviceTypes[i].toLowerCase()} at events.`,
+          },
+        },
+        bands: {
+          create: [{ bandId: kodyBand.id }],
+        },
+      },
+    })
+  }
+  console.timeEnd('🔧 Creating techs for KODY band...')
+
   // Create 5 songs associated with the created band
   for (let i = 0; i < 5; i++) {
     await prisma.song.create({

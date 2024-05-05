@@ -202,16 +202,20 @@ export default function SongDetails() {
   )
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const songId = formData.get('songId') as string
+  const bandId = params.bandId
 
   invariantResponse(songId, 'Song ID is required')
+  invariantResponse(bandId, 'Band ID is required')
 
   await prisma.bandSong.deleteMany({ where: { songId } })
   await prisma.song.deleteMany({ where: { id: songId } })
 
-  return redirectWithToast('/bands', {
+  const redirectUrl = `/bands/${bandId}/songs`
+
+  return redirectWithToast(redirectUrl, {
     type: 'success',
     title: 'Song Deleted',
     description: 'Song has been deleted successfully.',
