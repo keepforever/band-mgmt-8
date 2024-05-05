@@ -9,7 +9,6 @@ import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
-// Updated schema to include all fields
 const EventSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
   date: z.string().min(1, 'Event date is required'),
@@ -18,20 +17,25 @@ const EventSchema = z.object({
   requiresPASystem: z.boolean().optional(),
   startEndTime: z.string().min(3, 'A minimum of 3 characters is required for the start and end time'),
   notes: z.string().max(1000).optional(),
+  techId: z.string().optional(),
 })
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const bandId = params.bandId
   const eventId = params.eventId
 
   invariantResponse(userId, 'You must be logged in to perform this action')
+  invariantResponse(bandId, 'Missing band ID')
+  invariantResponse(eventId, 'Missing event ID')
+
   const formData = await request.formData()
   const submission = await parseWithZod(formData, { schema: EventSchema })
   if (submission.status !== 'success') {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
 
-  const { name, date, venueId, payment, requiresPASystem, startEndTime, notes } = submission.value
+  const { name, date, venueId, payment, requiresPASystem, startEndTime, notes, techId } = submission.value
 
   await prisma.event.update({
     where: { id: eventId },
@@ -47,6 +51,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
           id: venueId,
         },
       },
+
+      ...(typeof techId === 'string' && {
+        EventTech: {
+          create: [
+            {
+              techId,
+            },
+          ],
+        },
+      }),
     },
   })
 
@@ -72,6 +86,18 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const eventId = params.eventId
 
+  const techs = await prisma.tech.findMany({
+    select: {
+      id: true,
+      name: true,
+      serviceType: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  })
+
   const event = await prisma.event?.findUnique({
     where: {
       id: eventId,
@@ -79,15 +105,32 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     include: {
       venue: true,
       bands: true,
+      EventTech: {
+        select: {
+          tech: {
+            select: {
+              id: true,
+              name: true,
+              serviceType: {
+                select: {
+                  name: true,
+                  description: true,
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   })
 
-  return json({ venues, event })
+  return json({ venues, event, techs })
 }
 
 export default function EditEventRoute() {
   const actionData = useActionData<typeof action>()
-  const { venues, event } = useLoaderData<typeof loader>()
+  const { venues, event, techs } = useLoaderData<typeof loader>()
   const [form, fields] = useForm({
     id: 'edit-event-form',
     constraint: getZodConstraint(EventSchema),
@@ -101,6 +144,7 @@ export default function EditEventRoute() {
           requiresPASystem: event.requiresPASystem,
           startEndTime: event.startEndTime,
           notes: event.notes,
+          techId: event.EventTech[0]?.tech.id,
         }
       : {},
     shouldRevalidate: 'onBlur',
@@ -110,6 +154,13 @@ export default function EditEventRoute() {
     label: `${venue.name} - ${venue.location}`,
     value: venue.id,
   }))
+
+  const techOptions = techs
+    .map(tech => ({
+      label: tech.name,
+      value: tech.id,
+    }))
+    .filter(tech => !event?.EventTech.some(eventTech => eventTech.tech.id === tech.value))
 
   return (
     <div className="max-w-2xl">
@@ -133,6 +184,26 @@ export default function EditEventRoute() {
           })}
           errors={fields.requiresPASystem.errors}
         />
+
+        <SelectField
+          className="col-span-2"
+          selectClassName="w-full"
+          label="Tech"
+          labelHtmlFor={getSelectProps(fields.techId).id}
+          options={[{ label: 'Select a Tech', value: '' }, ...techOptions]}
+          selectProps={{ ...getSelectProps(fields.techId), onChange: e => console.log(e.target.value) }}
+          getOptionLabel={(option: { label: string; value: string }) => option.label}
+          getOptionValue={(option: { label: string; value: string }) => option.value}
+          errors={fields.techId.errors}
+        />
+
+        {/* Selected Techs */}
+
+        {event?.EventTech.map(eventTech => (
+          <div key={eventTech.tech.id} className="col-span-2">
+            <p>{eventTech.tech.name}</p>
+          </div>
+        ))}
 
         <SelectField
           className="col-span-2 sm:col-span-1"
@@ -204,3 +275,19 @@ export default function EditEventRoute() {
     </div>
   )
 }
+
+// if (techId) {
+//   await prisma.eventTech.upsert({
+//     where: {
+//       eventId_techId: {
+//         eventId: eventId,
+//         techId: techId,
+//       },
+//     },
+//     update: {},
+//     create: {
+//       eventId: eventId,
+//       techId: techId,
+//     },
+//   })
+// }
