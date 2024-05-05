@@ -66,27 +66,9 @@ export default function TechDetails() {
           </div>
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6">Name</dt>
-            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.name}</dd>
-          </div>
-
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Service Type</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.serviceType.name}</dd>
           </div>
-
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6">Associated Bands</dt>
-            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
-              {tech?.bands.map(({ band }) => (
-                <Link key={band.id} to={`/bands/${band.id}/details`} className="block text-hyperlink hover:underline">
-                  {band.name}
-                </Link>
-              ))}
-            </dd>
-          </div>
-
-          {/* Contact Info */}
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Contact Info</dt>

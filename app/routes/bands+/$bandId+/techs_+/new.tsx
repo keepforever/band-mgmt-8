@@ -15,6 +15,9 @@ const TechSchema = z.object({
   name: z.string().min(1, 'Tech name is required'),
   contactInfo: z.string().min(1, 'Contact info is required'),
   serviceTypeId: z.string().min(1, 'Service type is required'),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  rate: z.number().optional(),
 })
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -29,12 +32,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (submission.status !== 'success') {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
-  const { name, contactInfo, serviceTypeId } = submission.value
+  const { name, contactInfo, serviceTypeId, email, phone, rate } = submission.value
 
   await prisma.tech.create({
     data: {
       name,
       contactInfo,
+      email,
+      phone,
+      rate,
       serviceType: {
         connect: {
           id: serviceTypeId,
@@ -79,26 +85,6 @@ export default function CreateTechRoute() {
           </StatusButton>
         </div>
 
-        <Field
-          className="col-span-2"
-          labelProps={{
-            htmlFor: fields.name.id,
-            children: 'Tech Name',
-          }}
-          inputProps={getInputProps(fields.name, { type: 'text' })}
-          errors={fields.name.errors}
-        />
-
-        <Field
-          className="col-span-2"
-          labelProps={{
-            htmlFor: fields.contactInfo.id,
-            children: 'Contact Info',
-          }}
-          inputProps={getInputProps(fields.contactInfo, { type: 'text' })}
-          errors={fields.contactInfo.errors}
-        />
-
         <SelectField
           className="col-span-2 sm:col-span-1"
           selectClassName="w-full"
@@ -109,6 +95,56 @@ export default function CreateTechRoute() {
           getOptionLabel={(option: { label: string; value: string }) => option.label}
           getOptionValue={(option: { label: string; value: string }) => option.value}
           errors={fields.serviceTypeId.errors}
+        />
+
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.name.id,
+            children: 'Tech Name',
+          }}
+          inputProps={getInputProps(fields.name, { type: 'text' })}
+          errors={fields.name.errors}
+        />
+
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.phone.id,
+            children: 'Phone',
+          }}
+          inputProps={getInputProps(fields.phone, { type: 'text' })}
+          errors={fields.phone.errors}
+        />
+
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.email.id,
+            children: 'Email',
+          }}
+          inputProps={getInputProps(fields.email, { type: 'text' })}
+          errors={fields.email.errors}
+        />
+
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.rate.id,
+            children: 'Rate',
+          }}
+          inputProps={getInputProps(fields.rate, { type: 'number' })}
+          errors={fields.rate.errors}
+        />
+
+        <Field
+          className="col-span-2 sm:col-span-1"
+          labelProps={{
+            htmlFor: fields.contactInfo.id,
+            children: 'Contact Info',
+          }}
+          inputProps={getInputProps(fields.contactInfo, { type: 'text' })}
+          errors={fields.contactInfo.errors}
         />
 
         <br />
