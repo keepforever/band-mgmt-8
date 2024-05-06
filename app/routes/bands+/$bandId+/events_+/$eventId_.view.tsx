@@ -1,4 +1,3 @@
-// EventDetailView.tsx
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
@@ -7,7 +6,7 @@ import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn, formatDate, useDoubleCheck } from '#app/utils/misc'
+import { cn, formatDate, formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -24,6 +23,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         select: {
           tech: {
             select: {
+              rate: true,
               name: true,
               serviceType: { select: { name: true } },
               id: true,
@@ -118,10 +118,18 @@ export default function EventDetailView() {
 
               <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                 {event.EventTech.map(tech => (
-                  <div key={tech.tech?.id} className="flex items-center gap-2">
-                    <Icon name="avatar" className="text-accent-two" />
+                  <Link
+                    relative="path"
+                    to={`../../../techs/${tech.tech?.id}/view`}
+                    key={tech.tech?.id}
+                    className="flex items-center gap-1 text-hyperlink hover:text-hyperlink-hover hover:underline"
+                  >
+                    <Icon name="avatar" className="h-5 w-5" />
                     <span>{`${tech.tech?.name} (${tech.tech?.serviceType?.name})`}</span>
-                  </div>
+                    <span>
+                      {!!tech?.tech?.rate && <span className="font-mono">{formatDollars(tech.tech.rate)}</span>}
+                    </span>
+                  </Link>
                 ))}
               </dd>
             </div>

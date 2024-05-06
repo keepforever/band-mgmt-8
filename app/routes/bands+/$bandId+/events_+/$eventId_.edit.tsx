@@ -280,7 +280,7 @@ export default function EditEventRoute() {
         />
 
         <SelectField
-          label="Tech What"
+          label="Add a Technician"
           className="col-span-2"
           selectClassName="w-full"
           options={[{ label: 'Select a Tech', value: '' }, ...techOptions]}
