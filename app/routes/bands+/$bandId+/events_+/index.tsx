@@ -56,12 +56,13 @@ export default function EventsRoute() {
 
   const columns: Column<(typeof events)[0]>[] = [
     {
-      title: 'Venue',
+      title: 'Name/Venue',
       dataIndex: 'venue',
       render: (venue, record) => {
         return (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="capitalize">{`${venue.name}`}</span>
+          <div className="flex items-center gap-1">
+            <span className="capitalize">{record.name}</span>
+            <span className="text-[16px] font-bold">@{venue.name}</span>
             <Link
               title="Edit event"
               to={`${record.id}/edit`}
