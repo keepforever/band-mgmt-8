@@ -12,7 +12,6 @@ import { getSongLyric } from '#app/utils/song.server.js'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  console.log('\n', `hello songId loader `, '\n')
   const userId = await requireUserId(request)
   const songId = params.songId
 

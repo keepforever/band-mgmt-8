@@ -3,9 +3,11 @@ import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/re
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+  await requireUserId(request)
   const bandId = params.bandId
   const venues = await prisma.bandVenue.findMany({
     where: {

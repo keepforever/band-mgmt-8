@@ -56,6 +56,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  await requireUserId(request)
   const serviceTypes = await prisma.serviceType.findMany({
     select: { id: true, name: true },
   })

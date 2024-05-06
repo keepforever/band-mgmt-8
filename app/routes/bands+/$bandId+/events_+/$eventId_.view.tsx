@@ -5,11 +5,13 @@ import { type FC } from 'react'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
+import { requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, formatDate, formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  await requireUserId(request)
   const eventId = params.eventId
   const event = await prisma.event?.findUnique({
     where: {
