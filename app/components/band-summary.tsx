@@ -20,7 +20,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
         return (
           <div className="overflow-hidden border border-border sm:rounded-md" key={band.id}>
-            <div className="px-4 py-6 sm:px-6">
+            <div className="px-2 py-3 sm:px-6">
               <Link to={`${band.id}`} className="block text-foreground hover:text-destructive-foreground">
                 <h3 className="text-xl font-semibold leading-7">{band?.name}</h3>
               </Link>
@@ -29,7 +29,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
               <dl className="divide-y divide-border">
                 {/* Members */}
 
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Members</dt>
 
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
@@ -45,7 +45,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                   </dd>
                 </div>
 
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Current Year Revenue</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
                     {band?.events
@@ -61,14 +61,14 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
                 {/* Role */}
 
-                {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                {/* <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Your Role in Band</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">{isAdmin ? 'Admin' : 'Member'}</dd>
                 </div> */}
 
                 {/* Upcoming Events */}
 
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Upcoming Events</dt>
 
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
@@ -102,7 +102,7 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
 
                 {/* Quick Links */}
 
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   {/* /bands */}
 
                   <dt className="text-sm font-medium">Quick Links</dt>

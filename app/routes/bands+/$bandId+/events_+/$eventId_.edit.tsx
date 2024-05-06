@@ -294,7 +294,8 @@ export default function EditEventRoute() {
         {/* Selected Techs */}
 
         <div className="col-span-2 flex flex-col gap-2">
-          <h2 className={`text-body-lg font-bold ${techIds.length ? 'block' : 'hidden'}`}>Tech List</h2>
+          <h2 className={`text-body-md font-bold ${techIds.length ? 'block' : 'hidden'}`}>Tech List</h2>
+
           <div className="flex flex-wrap gap-2">
             {techIds.map(techId => {
               const tech = techs.find(tech => tech.id === techId)

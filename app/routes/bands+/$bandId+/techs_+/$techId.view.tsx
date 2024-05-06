@@ -60,26 +60,26 @@ export default function TechDetails() {
 
       <div className="mt-6 border-t border-border">
         <dl className="divide-y divide-border">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Name</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.name}</dd>
           </div>
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Service Type</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.serviceType.name}</dd>
           </div>
 
           {/* Rate */}
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Rate</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
               {formatDollars(tech?.rate)}
             </dd>
           </div>
 
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <dt className="text-sm font-medium leading-6">Contact Info</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
               <ul className="divide-y divide-border">
