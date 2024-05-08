@@ -1,20 +1,48 @@
-import { Link, useParams } from '@remix-run/react'
+import { Link, useFetcher, useParams, useRevalidator } from '@remix-run/react'
 import React from 'react'
 import { Icon } from '#app/components/ui/icon.js'
 import { cn } from '#app/utils/misc.js'
+import { useOptionalUser } from '#app/utils/user.js'
+import { Input } from './ui/input'
 
 interface BandMemberCardProps {
   name: string
   instrument: string
-  status: string // admin or member
+  status: 'Admin' | 'Member'
+  memberUserId: string
 }
 
-export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument, status }) => {
+export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument, status, memberUserId }) => {
+  const [isEditing, setIsEditing] = React.useState(false)
+  const user = useOptionalUser()
+  const params = useParams()
+
   return (
     <div className="rounded-lg bg-background shadow-md transition-shadow duration-300 hover:shadow-lg">
       <div className="p-4">
         <h3 className="text-lg font-semibold text-foreground">{name}</h3>
-        <p className="text-button text-muted-foreground">{instrument}</p>
+        {isEditing ? (
+          <EditMemberInstrumentForm
+            bandId={String(params?.bandId)}
+            userId={memberUserId}
+            instrument={instrument}
+            setIsEditing={setIsEditing}
+          />
+        ) : (
+          <div className="flex flex-wrap items-center gap-1">
+            <p className="text-button text-muted-foreground">{instrument}</p>
+
+            {memberUserId === user?.id && (
+              <Icon
+                onClick={() => {
+                  setIsEditing(b => !b)
+                }}
+                name="pencil-2"
+                className="h-4 w-4"
+              />
+            )}
+          </div>
+        )}
 
         <div className="mt-4 flex items-center justify-between">
           <span
@@ -53,5 +81,51 @@ export const BandMemberPlaceholderCard: React.FC<BandMemberPlaceholderCardProps>
         </div>
       </div>
     </Link>
+  )
+}
+
+type EditMemberInstrumentFormProps = {
+  bandId: string
+  userId: string
+  instrument: string
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const EditMemberInstrumentForm: React.FC<EditMemberInstrumentFormProps> = ({
+  bandId,
+  userId,
+  instrument,
+  setIsEditing,
+}) => {
+  const fetcher = useFetcher({
+    key: 'update-user-band-instrument',
+  })
+  const isUpdating = fetcher.state !== 'idle'
+  const revalidator = useRevalidator()
+
+  React.useEffect(() => {
+    if (isUpdating) {
+      setIsEditing(false)
+      revalidator.revalidate()
+    }
+  }, [isUpdating, setIsEditing, revalidator])
+
+  return (
+    <fetcher.Form method="POST" action={`/resources/user-band`}>
+      <Input
+        autoFocus
+        type="text"
+        name="instrument"
+        defaultValue={instrument}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            setIsEditing(false)
+          }
+        }}
+      />
+
+      <input type="hidden" name="bandId" value={bandId} />
+      <input type="hidden" name="userId" value={userId} />
+    </fetcher.Form>
   )
 }

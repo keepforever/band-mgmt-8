@@ -92,6 +92,7 @@ export default function BandIdIndex() {
             name={member.user.name || ''}
             instrument={member.instrument || 'N/A'}
             status={member.isAdmin ? 'Admin' : 'Member'}
+            memberUserId={member.user.id}
           />
         ))}
 
