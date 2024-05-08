@@ -1,8 +1,10 @@
-import { Link, useFetcher, useParams, useRevalidator } from '@remix-run/react'
+import { Link, useFetcher, useParams } from '@remix-run/react'
 import React from 'react'
+import { flushSync } from 'react-dom'
 import { Icon } from '#app/components/ui/icon.js'
 import { cn } from '#app/utils/misc.js'
 import { useOptionalUser } from '#app/utils/user.js'
+import { Button } from './ui/button'
 import { Input } from './ui/input'
 
 interface BandMemberCardProps {
@@ -33,13 +35,15 @@ export const BandMemberCard: React.FC<BandMemberCardProps> = ({ name, instrument
             <p className="text-button text-muted-foreground">{instrument}</p>
 
             {memberUserId === user?.id && (
-              <Icon
+              <Button
+                className="h-5 p-px"
+                variant="ghost"
                 onClick={() => {
                   setIsEditing(b => !b)
                 }}
-                name="pencil-2"
-                className="h-4 w-4"
-              />
+              >
+                <Icon name="pencil-2" className="h-4 w-4" />
+              </Button>
             )}
           </div>
         )}
@@ -97,21 +101,18 @@ const EditMemberInstrumentForm: React.FC<EditMemberInstrumentFormProps> = ({
   instrument,
   setIsEditing,
 }) => {
-  const fetcher = useFetcher({
-    key: 'update-user-band-instrument',
-  })
-  const isUpdating = fetcher.state !== 'idle'
-  const revalidator = useRevalidator()
-
-  React.useEffect(() => {
-    if (isUpdating) {
-      setIsEditing(false)
-      revalidator.revalidate()
-    }
-  }, [isUpdating, setIsEditing, revalidator])
+  const fetcher = useFetcher()
 
   return (
-    <fetcher.Form method="POST" action={`/resources/user-band`}>
+    <fetcher.Form
+      method="POST"
+      action="/resources/user-band"
+      onSubmit={() => {
+        flushSync(() => {
+          setIsEditing(false)
+        })
+      }}
+    >
       <Input
         autoFocus
         type="text"
@@ -119,7 +120,9 @@ const EditMemberInstrumentForm: React.FC<EditMemberInstrumentFormProps> = ({
         defaultValue={instrument}
         onKeyDown={e => {
           if (e.key === 'Escape') {
-            setIsEditing(false)
+            flushSync(() => {
+              setIsEditing(false)
+            })
           }
         }}
       />
