@@ -1,6 +1,7 @@
 import { type Tech } from '@prisma/client'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
@@ -56,21 +57,32 @@ export default function TechsIndexRoute() {
   ]
 
   return (
-    <div>
-      <HeaderWithActions title="Techs">
-        <Link to="new">
-          <Button variant="secondary" size="sm">
-            Add New Tech
-          </Button>
-        </Link>
-      </HeaderWithActions>
+    <div className="max-w-3xl">
+      {techs.length === 0 ? (
+        <EmptyStateGeneric
+          title="No Techs"
+          messages={['Click the button below to create a new tech.']}
+          iconNames={['rocket']}
+          linkTo="new"
+          buttonTitle="Create Tech"
+        />
+      ) : (
+        <>
+          <HeaderWithActions title="Techs">
+            <Link to="new">
+              <Button variant="secondary" size="sm">
+                Add New Tech
+              </Button>
+            </Link>
+          </HeaderWithActions>
 
-      <TableGeneric
-        columns={columns}
-        data={techs}
-        onRowClick={event => navigate(`/bands/${bandId}/techs/${event.id}/view`)}
-        classNames="max-w-3xl"
-      />
+          <TableGeneric
+            columns={columns}
+            data={techs}
+            onRowClick={event => navigate(`/bands/${bandId}/techs/${event.id}/view`)}
+          />
+        </>
+      )}
     </div>
   )
 }

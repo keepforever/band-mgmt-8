@@ -302,7 +302,7 @@ function App() {
         </div>
       )}
 
-      <EpicToaster closeButton position="top-center" theme={theme} />
+      <EpicToaster closeButton position="top-right" theme={theme} />
       <EpicProgress />
     </Document>
   )
