@@ -1,10 +1,10 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Link, useFetchers, useLoaderData, useParams, useRouteError } from '@remix-run/react'
-import { useState, useEffect } from 'react'
+import { Link, useLoaderData, useParams, useRouteError } from '@remix-run/react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '#app/components/ui/tabs.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
+import { getSongLyric } from '#app/utils/song.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
@@ -32,38 +32,30 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
-  return json({
-    song,
-  })
+  // Initialize variables to hold lyrics or PDF URL based on content type.
+  let pdfUrl = ''
+  let lyricHtml = ''
+
+  // Fetch lyrics using the lyric ID from the song details.
+  const songLyricResp = await getSongLyric(song?.lyrics?.id || '')
+  const contentType = songLyricResp?.headers?.get('Content-Type')
+
+  // Check the content type of the lyrics and assign values accordingly.
+  if (contentType !== 'application/pdf') {
+    const text = await songLyricResp?.text()
+    lyricHtml = String(text)
+  } else {
+    pdfUrl = String(songLyricResp?.url)
+  }
+
+  const payload = { song, lyricHtml, pdfUrl }
+
+  return json({ ...payload })
 }
 
 export default function CreateSongRoute() {
   const loaderData = useLoaderData<typeof loader>()
-  const fetchers = useFetchers()
-
-  const [pdfUrl, setPdfUrl] = useState<string>('')
-  const [lyricHtml, setLyricHtml] = useState<string>('')
-
-  const isLyricUpdating = fetchers?.find(f => f.key === 'lyric')?.state === 'submitting'
-
-  useEffect(() => {
-    const fetchPdfUrl = async (id: string) => {
-      const response = await fetch(`/resources/song-lyric/${id}`)
-      const contentType = response.headers.get('Content-Type')
-
-      if (contentType !== 'application/pdf') {
-        const text = await response.text()
-        setLyricHtml(text)
-        return
-      }
-
-      setPdfUrl(response.url)
-    }
-
-    if (loaderData?.song?.lyrics?.id || (loaderData?.song?.lyrics?.id && !isLyricUpdating)) {
-      fetchPdfUrl(loaderData?.song?.lyrics?.id)
-    }
-  }, [loaderData?.song?.lyrics?.id, isLyricUpdating])
+  const { lyricHtml, pdfUrl } = loaderData
 
   return (
     <div className="mx-auto max-w-full">

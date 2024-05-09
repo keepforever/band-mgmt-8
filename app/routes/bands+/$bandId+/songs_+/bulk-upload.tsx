@@ -17,6 +17,8 @@ import { cn } from '#app/utils/misc'
 type SongData = {
   title: string
   artist: string
+  rating?: number
+  status?: string
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -54,6 +56,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
       .pipe(parse({ columns: true, trim: true }))
       .on('data', (row: SongData) => {
         // TODO:BAC - validate colum names against expected values
+
+        // convert rating from string to number before pushing to songs array
+        if (row.rating) row.rating = Number(row.rating)
+
         songs.push(row)
       })
       .on('end', async () => {
@@ -64,6 +70,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
                 data: {
                   artist: song.artist,
                   title: song.title,
+                  rating: song?.rating || null,
+                  status: song?.status || null,
                   bandSongs: {
                     create: [
                       {

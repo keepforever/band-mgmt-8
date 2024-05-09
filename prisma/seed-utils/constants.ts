@@ -48,3 +48,10 @@ export function capitalLorem(): string {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 }
+
+export const dummyServiceTypes = [
+  { name: 'Sound Technician', description: 'Handles all sound equipment.' },
+  { name: 'Lighting Technician', description: 'Manages lighting setups.' },
+  { name: 'Video Technician', description: 'Operates video recording and editing equipment.' },
+  { name: 'Photography Technician', description: 'Takes professional photographs at events.' },
+]

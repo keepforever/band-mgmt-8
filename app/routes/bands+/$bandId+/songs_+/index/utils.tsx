@@ -22,6 +22,11 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     where: {
       bandId,
     },
+    orderBy: {
+      song: {
+        title: 'asc',
+      },
+    },
     select: {
       song: {
         select: {

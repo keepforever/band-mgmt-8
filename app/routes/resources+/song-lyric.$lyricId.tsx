@@ -11,6 +11,8 @@ import mammoth from 'mammoth'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
+// TODO:BAC - consider using pdf-parse to extract text from PDFs,
+// ChatGPT Demo: https://chat.openai.com/share/4451f601-1a99-4738-9a81-d81e0fb38f71
 export async function loader({ params }: LoaderFunctionArgs) {
   invariantResponse(params.lyricId, 'Lyric ID is required', { status: 400 })
 

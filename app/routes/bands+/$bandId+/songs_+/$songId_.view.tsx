@@ -1,6 +1,6 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
-import { Form, Link, useFetcher, useLoaderData, useParams, useSubmit } from '@remix-run/react'
+import { Form, Link, useFetcher, useLoaderData, useParams, useRevalidator, useSubmit } from '@remix-run/react'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
@@ -65,6 +65,7 @@ export default function SongDetails() {
   const submit = useSubmit()
   const params = useParams()
   const { song, lyricHtml, pdfUrl } = useLoaderData<typeof loader>()
+  const revalidator = useRevalidator()
 
   return (
     <div className="max-w-3xl">
@@ -191,6 +192,8 @@ export default function SongDetails() {
                   navigate: false,
                   fetcherKey: 'lyric',
                 })
+
+                revalidator.revalidate()
               }}
               className={cn('rounded-md border border-border bg-background p-2 text-body-sm')}
             />

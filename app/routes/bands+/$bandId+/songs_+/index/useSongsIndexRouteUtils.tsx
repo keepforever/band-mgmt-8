@@ -49,11 +49,10 @@ export const useSongsIndexRouteUtils = () => {
       title: 'Artist',
       dataIndex: 'artist',
     },
-
-    // {
-    //   title: 'Rating',
-    //   dataIndex: 'rating',
-    // },
+    {
+      title: 'Rating',
+      dataIndex: 'rating',
+    },
     // {
     //   title: 'YouTube',
     //   dataIndex: 'youtubeUrl',

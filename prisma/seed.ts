@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { promiseHash } from 'remix-utils/promise'
 import { prisma } from '#app/utils/db.server.ts'
 import { cleanupDb, createPassword, createUser, getUserImages, img } from '#tests/db-utils.ts'
-import { dummyVenueNames, dummyEventNames } from './seed-utils/constants'
+import { dummyVenueNames, dummyEventNames, dummyServiceTypes } from './seed-utils/constants'
 
 function getFutureDate() {
   const tempDate = faker.date.future({
@@ -84,6 +84,25 @@ async function seed() {
     },
   })
   console.timeEnd(`🎸 Created ${createdBand.name}  band...`)
+
+  console.time('🛠️ Created service types...')
+
+  for (let index = 0; index < dummyServiceTypes.length; index++) {
+    const { name, description } = dummyServiceTypes[index]
+    await prisma.serviceType
+      .create({
+        data: {
+          name,
+          description,
+        },
+      })
+      .catch(e => {
+        console.error('Error creating service type:', e)
+        return null
+      })
+  }
+
+  console.timeEnd('🛠️ Created service types...')
 
   console.time('👑 Created roles...')
   await prisma.role.create({
