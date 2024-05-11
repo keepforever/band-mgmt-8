@@ -8,11 +8,14 @@ import {
 } from '@remix-run/node'
 import { Form, Link, useParams, useRouteError } from '@remix-run/react'
 import { parse } from 'csv-parse'
+import Papa from 'papaparse'
+import { useRef, useState } from 'react'
+import { type Column, TableGeneric } from '#app/components/table-generic.js'
+import { Button } from '#app/components/ui/button.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { MAX_SONG_COUNT } from '#app/constants/entity-allowances'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
-import { cn } from '#app/utils/misc'
 
 type SongData = {
   title: string
@@ -100,23 +103,77 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BulkUploadSongs() {
+  const fileUploadRef = useRef<HTMLInputElement>(null)
+  const [previewData, setPreviewData] = useState<SongData[]>([])
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null
+    if (!file) return
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: results => {
+        setPreviewData(results.data as SongData[])
+      },
+      error: error => {
+        console.error('Error parsing CSV:', error)
+      },
+    })
+  }
+
+  const columns: Column<SongData>[] = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+    },
+    {
+      title: 'Artist',
+      dataIndex: 'artist',
+    },
+    {
+      title: 'Rating',
+      dataIndex: 'rating',
+      render: value => value?.toString() || 'N/A',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+  ]
+
   return (
-    <div className="mx-auto max-w-md">
-      <h1 className="text-center text-body-lg font-bold">New Song Route</h1>
+    <div className="max-w-3xl">
+      <h1 className="text-body-lg font-bold">Bulk Song Upload</h1>
       <Form method="POST" encType="multipart/form-data" className="mt-6 flex flex-col gap-2">
         <input
+          ref={fileUploadRef}
           type="file"
           name="songsCsv"
           accept=".csv"
-          className={cn(
-            'rounded-md border border-gray-300 p-2',
-            'focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500',
-            'hover:border-blue-500 hover:ring hover:ring-blue-500',
-          )}
+          onChange={handleFileChange}
+          className="hidden"
         />
-        <StatusButton className="mt-4 w-full" status={'idle'} type="submit">
-          Upload
-        </StatusButton>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button type="button" onClick={() => fileUploadRef.current?.click()} variant="outline">
+            Choose CSV
+          </Button>
+          <StatusButton className="" status={'idle'} type="submit">
+            Upload
+          </StatusButton>
+        </div>
+
+        <h6 className="text-h6">
+          You are about to upload {previewData.length} {previewData.length === 1 ? 'song' : 'songs'}
+        </h6>
+
+        <p className="text-body-sm">
+          Click Upload to complete the process. You will be redirected to the song list page once the upload is
+          complete.
+        </p>
+
+        {previewData.length > 0 && <TableGeneric columns={columns} data={previewData} />}
+
         <br />
       </Form>
     </div>
@@ -137,3 +194,31 @@ export function ErrorBoundary() {
     </div>
   )
 }
+
+// TODO:BAC - maybe use this as basis for allowing user to edit the data before submitting
+// {
+//   previewData.length > 0 && (
+//     <div className="mt-4">
+//       <table className="w-full">
+//         <thead>
+//           <tr>
+//             <th>Title</th>
+//             <th>Artist</th>
+//             <th>Rating</th>
+//             <th>Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {previewData.map((song, index) => (
+//             <tr key={index}>
+//               <td>{song.title}</td>
+//               <td>{song.artist}</td>
+//               <td>{song.rating}</td>
+//               <td>{song.status}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   )
+// }

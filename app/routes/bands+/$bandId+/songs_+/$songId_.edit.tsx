@@ -16,6 +16,7 @@ import {
 import { useState, useEffect, useRef } from 'react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
+import { Button } from '#app/components/ui/button.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
@@ -223,6 +224,7 @@ export default function CreateSongRoute() {
         ref={fileInputRef}
         type="file"
         name="lyricsFile"
+        className="hidden"
         accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         onChange={async e => {
           const formData = new FormData()
@@ -244,8 +246,17 @@ export default function CreateSongRoute() {
 
           fileInputRef.current!.value = ''
         }}
-        className="col-span-2 rounded-md border border-border bg-background p-2 text-body-sm sm:col-span-1"
       />
+
+      <Button
+        onClick={() => fileInputRef.current?.click()}
+        type="button"
+        variant="default"
+        size="sm"
+        className="col-span-2 rounded-md border p-2 text-body-sm sm:col-span-1"
+      >
+        Upload Lyrics
+      </Button>
 
       {pdfUrl && <iframe title="pdf-viewer" src={pdfUrl} className="h-[600px] w-full border-none" />}
 

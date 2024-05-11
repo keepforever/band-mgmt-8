@@ -38,7 +38,9 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames }: Table
               {data.map((record, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className="cursor-pointer hover:bg-muted"
+                  className={cn({
+                    'cursor-pointer hover:bg-muted': !!onRowClick,
+                  })}
                   tabIndex={0}
                   onClick={() => onRowClick?.(record)}
                   onKeyDown={e => handleKeyDown(e, record)}

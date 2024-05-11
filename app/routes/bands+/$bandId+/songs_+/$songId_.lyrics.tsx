@@ -1,7 +1,7 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData, useParams, useRouteError } from '@remix-run/react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '#app/components/ui/tabs.js'
+import { LyricsViewer } from '#app/components/lyric-viewer.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { getSongLyric } from '#app/utils/song.server.js'
@@ -61,24 +61,7 @@ export default function CreateSongRoute() {
     <div className="mx-auto max-w-full">
       <h1 className="mb-3 text-body-lg font-bold">{loaderData.song?.title}</h1>
 
-      <Tabs defaultValue="mode2">
-        <TabsList>
-          <TabsTrigger value="mode1">Mode 1</TabsTrigger>
-          <TabsTrigger value="mode2">Mode 2</TabsTrigger>
-          <TabsTrigger value="mode3">Mode 3</TabsTrigger>
-        </TabsList>
-        <TabsContent value="mode1" className="">
-          <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">{lyricHtml}</pre>
-        </TabsContent>
-        <TabsContent value="mode2" className="">
-          <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-            {lyricHtml.split('\n').reduce((acc, line, index) => `${acc}${index % 2 === 0 ? '' : '\n'}${line}`, '')}
-          </pre>
-        </TabsContent>
-        <TabsContent value="mode3" className="">
-          <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">{lyricHtml.replace(/\n/g, '')}</pre>
-        </TabsContent>
-      </Tabs>
+      <LyricsViewer lyricHtml={lyricHtml} />
 
       {pdfUrl && <iframe title="pdf-viewer" src={pdfUrl} className="h-[600px] w-full border-none" />}
     </div>

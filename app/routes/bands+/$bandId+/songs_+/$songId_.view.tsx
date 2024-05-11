@@ -1,10 +1,11 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Form, Link, useFetcher, useLoaderData, useParams, useRevalidator, useSubmit } from '@remix-run/react'
+import { useRef } from 'react'
+import { LyricsViewer } from '#app/components/lyric-viewer.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '#app/components/ui/tabs.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, useDoubleCheck } from '#app/utils/misc.js'
@@ -66,6 +67,7 @@ export default function SongDetails() {
   const params = useParams()
   const { song, lyricHtml, pdfUrl } = useLoaderData<typeof loader>()
   const revalidator = useRevalidator()
+  const lyricUploadRef = useRef<HTMLInputElement>(null)
 
   return (
     <div className="max-w-3xl">
@@ -139,39 +141,16 @@ export default function SongDetails() {
 
           {/* Lyrics */}
 
-          {lyricHtml && (
-            <Tabs defaultValue="mode2">
-              <TabsList>
-                <TabsTrigger value="mode1">Mode 1</TabsTrigger>
-                <TabsTrigger value="mode2">Mode 2</TabsTrigger>
-                <TabsTrigger value="mode3">Mode 3</TabsTrigger>
-              </TabsList>
-              <TabsContent value="mode1" className="pt-2">
-                <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">{lyricHtml}</pre>
-              </TabsContent>
-              <TabsContent value="mode2" className="pt-2">
-                <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                  {lyricHtml
-                    .split('\n')
-                    .reduce((acc, line, index) => `${acc}${index % 2 === 0 ? '' : '\n'}${line}`, '')}
-                </pre>
-              </TabsContent>
-              <TabsContent value="mode3" className="pt-2">
-                <pre className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                  {lyricHtml.replace(/\n/g, '')}
-                </pre>
-              </TabsContent>
-            </Tabs>
-          )}
+          {lyricHtml && <LyricsViewer lyricHtml={lyricHtml} />}
 
           {!lyricHtml && pdfUrl && <iframe title="pdf-viewer" src={pdfUrl} className="h-[600px] w-full border-none" />}
         </>
       ) : (
         <>
           <div className="fl mb-6 flex flex-wrap items-center gap-3">
-            <h2 className="text-body-sm">Add Lyrics</h2>
-
             <input
+              ref={lyricUploadRef}
+              className="hidden"
               type="file"
               name="lyricsFile"
               accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -195,8 +174,16 @@ export default function SongDetails() {
 
                 revalidator.revalidate()
               }}
-              className={cn('rounded-md border border-border bg-background p-2 text-body-sm')}
             />
+            <Button
+              onClick={() => lyricUploadRef.current?.click()}
+              type="button"
+              variant="default"
+              size="sm"
+              className="w-40"
+            >
+              Upload Lyrics
+            </Button>
           </div>
         </>
       )}
