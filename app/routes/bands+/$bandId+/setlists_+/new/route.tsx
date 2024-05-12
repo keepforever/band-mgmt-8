@@ -4,6 +4,13 @@ import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { Field, SelectField } from '#app/components/forms'
 import { SongSelector } from '#app/components/song-selector.js'
 import { Button } from '#app/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '#app/components/ui/dropdown-menu.js'
 import { Icon } from '#app/components/ui/icon'
 import { type SongSelectorItem } from '#app/interfaces/song.js'
 import { cn } from '#app/utils/misc'
@@ -35,15 +42,40 @@ export default function CreateSetlistRoute() {
     <Form method="POST">
       {/* Action buttons */}
 
-      <div className="flex justify-end gap-2">
-        <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
-          Submit
-        </Button>
-        <Button size="xs" type="button" onClick={() => seedSets(3, songs)}>
-          Seed Sets
-        </Button>
-        <Button type="button" size="xs" onClick={addColumn} variant="secondary">
+      <div className="mb-4 flex items-center justify-end gap-2">
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="default" type="button">
+              Seed Sets
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent sideOffset={5} alignOffset={0} align="start">
+              <DropdownMenuItem onSelect={() => seedSets(1, songs)} asChild>
+                <Button type="button" variant="ghost">
+                  Seed One Set
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => seedSets(2, songs)} asChild>
+                <Button type="button" variant="ghost">
+                  Seed Two Sets
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => seedSets(3, songs)} asChild>
+                <Button type="button" variant="ghost">
+                  Seed Three Sets
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+
+        <Button type="button" onClick={addColumn} variant="secondary">
           Add Set
+        </Button>
+
+        <Button type="submit" className="bg-status-success text-status-success-foreground">
+          Submit
         </Button>
       </div>
 

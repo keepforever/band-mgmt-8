@@ -355,7 +355,7 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
               'flex h-10 w-full max-w-xl rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid]:border-input-invalid',
             )}
           >
-            <option value="">Ass. to eventDetails</option>
+            <option value="">Assign to event</option>
             {events?.map(event => (
               <option key={event.id} value={event.id}>
                 {event.name}: {formatDate(event.date)}
@@ -365,7 +365,7 @@ const AssociateSetlistToEvent = ({ setlistId, events }: { setlistId: string; eve
         </div>
 
         <Button className="flex-1" type="submit">
-          Add
+          Assign
         </Button>
       </div>
     </Form>
