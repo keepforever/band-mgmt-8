@@ -1,5 +1,6 @@
 import { type Connection, type Password, type User } from '@prisma/client'
 import { redirect } from '@remix-run/node'
+import { type Params } from '@remix-run/react'
 import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
 import { safeRedirect } from 'remix-utils/safe-redirect'
@@ -48,6 +49,26 @@ export async function requireUserId(request: Request, { redirectTo }: { redirect
     throw redirect(loginRedirect)
   }
   return userId
+}
+
+export async function requireUserBelongToBand(request: Request, params: Params) {
+  const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
+  const bandId = params.bandId
+
+  // if there's no bandId, we don't need to check if the user belongs to the band
+  if (!bandId) return
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { bands: { where: { bandId } } },
+  })
+
+  if (!user?.bands.length) {
+    throw redirect('/')
+  }
+
+  return
 }
 
 export async function requireAnonymous(request: Request) {
