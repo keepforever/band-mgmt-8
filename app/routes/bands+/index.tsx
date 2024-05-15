@@ -1,7 +1,7 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json } from '@remix-run/react'
 import { BandSummary } from '#app/components/band-summary.js'
-import { BandsEmptyState } from '#app/components/bands-empty-state.js'
+import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { Button } from '#app/components/ui/button'
 import { requireUserId } from '#app/utils/auth.server'
 import { cn } from '#app/utils/misc.js'
@@ -16,7 +16,16 @@ export default function BandsIndex() {
   const user = useOptionalUser()
   const userHasBand = (user?.bands?.length || 0) > 0
 
-  if (!userHasBand) return <BandsEmptyState />
+  if (!userHasBand)
+    return (
+      <EmptyStateGeneric
+        title="You don't have any bands yet."
+        messages={['Create a band to get started']}
+        iconNames={['rocket']}
+        linkTo="new"
+        buttonTitle="Create Band"
+      />
+    )
 
   return (
     <div className="max-w-2xl">
