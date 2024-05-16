@@ -3,12 +3,14 @@ import { Link, json } from '@remix-run/react'
 import { BandSummary } from '#app/components/band-summary.js'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { Button } from '#app/components/ui/button'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserId, requireUserBelongToBand } from '#app/utils/auth.server'
 import { cn } from '#app/utils/misc.js'
 import { useOptionalUser } from '#app/utils/user'
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
+
   return json({ userId })
 }
 

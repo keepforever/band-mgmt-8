@@ -5,13 +5,14 @@ import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { Button } from '#app/components/ui/button.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   invariantResponse(userId, 'Unauthorized access')
   const techId = params.techId
 

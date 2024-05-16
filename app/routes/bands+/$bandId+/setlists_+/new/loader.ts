@@ -1,9 +1,10 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const clonedSetlistId = new URL(request.url).searchParams.get('clonedSetlistId')
 
   let clonedSetlist

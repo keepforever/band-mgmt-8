@@ -7,7 +7,7 @@ import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const VenueSchema = z.object({
@@ -18,6 +18,7 @@ const VenueSchema = z.object({
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   invariantResponse(userId, 'You must be logged in to manage a venue')
 
@@ -44,6 +45,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const venue = await prisma.venue.findUnique({
     where: {

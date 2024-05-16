@@ -6,7 +6,7 @@ import { LyricsViewer } from '#app/components/lyric-viewer.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, useDoubleCheck } from '#app/utils/misc.js'
 import { getSongLyric } from '#app/utils/song.server.js'
@@ -14,6 +14,7 @@ import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const songId = params.songId
 
   // If either userId or songId is missing, terminate the request with an error.

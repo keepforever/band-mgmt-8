@@ -2,12 +2,13 @@ import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate } from '@remix-run/react'
 import { BandMemberCard, BandMemberPlaceholderCard } from '#app/components/band-member-card.js'
 import { bandSubNavigation } from '#app/constants/navigation.js'
-import { requireUserId } from '#app/utils/auth.server.js'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 import { cn, removeLeadingSlash } from '#app/utils/misc'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   const band = await prisma.band.findUnique({
     where: {

@@ -2,12 +2,13 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData, useParams, useRouteError } from '@remix-run/react'
 import { LyricsViewer } from '#app/components/lyric-viewer.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { getSongLyric } from '#app/utils/song.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const songId = params.songId
 
   invariantResponse(userId, 'You must be logged in to create a song')

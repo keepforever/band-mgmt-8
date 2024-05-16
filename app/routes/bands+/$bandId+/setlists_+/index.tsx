@@ -6,7 +6,7 @@ import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
-import { requireUserId } from '#app/utils/auth.server.js'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
 export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'id' | 'updatedAt'>> & {
@@ -18,6 +18,7 @@ export type Setlist = SerializeFrom<Pick<SetlistModel, 'name' | 'createdAt' | 'i
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const bandId = params.bandId
   const setlists = await prisma.setlist.findMany({

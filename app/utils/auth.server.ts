@@ -53,7 +53,6 @@ export async function requireUserId(request: Request, { redirectTo }: { redirect
 
 export async function requireUserBelongToBand(request: Request, params: Params) {
   const userId = await requireUserId(request)
-  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
 
   // if there's no bandId, we don't need to check if the user belongs to the band
@@ -65,6 +64,7 @@ export async function requireUserBelongToBand(request: Request, params: Params) 
   })
 
   if (!user?.bands.length) {
+    console.error('\n', `User ${userId} does not belong to band ${bandId}`, '\n')
     throw redirect('/')
   }
 

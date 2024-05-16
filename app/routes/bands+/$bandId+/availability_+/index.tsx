@@ -3,13 +3,14 @@ import { type LoaderFunctionArgs } from '@remix-run/node'
 import { json, useLoaderData, useNavigate } from '@remix-run/react'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { getMonths } from '#app/constants/months'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { getEventsByBandId } from '#app/utils/events.server'
 import { cn } from '#app/utils/misc'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   invariantResponse(bandId, 'Band ID is required')
   const events = await getEventsByBandId(bandId)

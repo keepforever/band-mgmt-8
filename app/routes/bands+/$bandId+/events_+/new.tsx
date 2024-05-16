@@ -9,7 +9,7 @@ import { z } from 'zod'
 import { Field, ErrorList, CheckboxField, TextareaField, SelectField } from '#app/components/forms.tsx'
 
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 export const TechIdsSchema = z.array(z.string())
@@ -29,6 +29,7 @@ const EventSchema = z.object({
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   invariantResponse(userId, 'You must be logged in to create an event')
 
@@ -86,8 +87,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return redirect(`/bands/${bandId}/events`)
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const techs = await prisma.tech.findMany({
     select: {

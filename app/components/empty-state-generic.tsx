@@ -9,9 +9,20 @@ interface EmptyStateProps {
   messages?: string[]
   linkTo?: string
   buttonTitle?: string
+
+  secondaryButtonTitle?: string
+  secondaryLinkTo?: string
 }
 
-export function EmptyStateGeneric({ iconNames, title, messages, linkTo, buttonTitle }: EmptyStateProps) {
+export function EmptyStateGeneric({
+  iconNames,
+  title,
+  messages,
+  linkTo,
+  buttonTitle,
+  secondaryButtonTitle,
+  secondaryLinkTo,
+}: EmptyStateProps) {
   return (
     <Card className="mx-auto w-full max-w-lg bg-muted text-muted-foreground">
       <CardContent className="flex flex-col items-center gap-4 p-10">
@@ -30,6 +41,15 @@ export function EmptyStateGeneric({ iconNames, title, messages, linkTo, buttonTi
           <div className="flex w-full">
             <Link className="w-full" to={linkTo}>
               <Button className="w-full">{buttonTitle}</Button>
+            </Link>
+          </div>
+        )}
+        {secondaryLinkTo && (
+          <div className="flex w-full">
+            <Link className="w-full" to={secondaryLinkTo}>
+              <Button className="w-full" variant="secondary">
+                {secondaryButtonTitle}
+              </Button>
             </Link>
           </div>
         )}

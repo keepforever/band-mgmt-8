@@ -5,13 +5,14 @@ import { Button } from '#app/components/ui/button.js'
 import { Card, CardContent, CardTitle } from '#app/components/ui/card.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { UserCard } from '#app/components/user-card.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { getEventsByDateAndBandId } from '#app/utils/events.server'
 import { formatDate } from '#app/utils/misc.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   const dateParam = params.date
 

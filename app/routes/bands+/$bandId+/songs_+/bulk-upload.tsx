@@ -14,7 +14,7 @@ import { type Column, TableGeneric } from '#app/components/table-generic.js'
 import { Button } from '#app/components/ui/button.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { MAX_SONG_COUNT } from '#app/constants/entity-allowances'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 type SongData = {
@@ -26,6 +26,7 @@ type SongData = {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
 
   invariantResponse(userId, 'You must be logged in to create a song')

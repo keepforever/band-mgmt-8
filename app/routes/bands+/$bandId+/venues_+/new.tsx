@@ -7,7 +7,7 @@ import { Form, useActionData } from '@remix-run/react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const VenueSchema = z
@@ -38,6 +38,7 @@ const VenueSchema = z
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const bandId = params.bandId
   invariantResponse(userId, 'You must be logged in to create a venue')
@@ -89,6 +90,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   return json({})
 }

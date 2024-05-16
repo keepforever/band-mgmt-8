@@ -1,11 +1,12 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type Song } from '@prisma/client'
 import { redirect, type ActionFunctionArgs } from '@remix-run/node'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   invariantResponse(userId, 'You must be logged in to create a setlist')
 

@@ -1,4 +1,5 @@
 import { Link } from '@remix-run/react'
+import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric } from '#app/components/table-generic'
@@ -8,6 +9,21 @@ export { loader } from './utils'
 
 export default function SongsIndexRoute() {
   const { columns, navigate, params, songs, songCount } = useSongsIndexRouteUtils()
+
+  if (!songs.length)
+    return (
+      <EmptyStateGeneric
+        iconNames={['rocket']}
+        title="No Songs"
+        messages={['Create a song to get started.', 'Or, upload a bunch of songs at once with a CSV!']}
+        // primary
+        linkTo="new"
+        buttonTitle="Add Song"
+        // secondary
+        secondaryLinkTo="bulk-upload"
+        secondaryButtonTitle="Bulk Upload"
+      />
+    )
 
   return (
     <div>

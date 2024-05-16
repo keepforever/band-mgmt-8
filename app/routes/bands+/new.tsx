@@ -6,17 +6,19 @@ import { Form, useActionData } from '@remix-run/react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const BandSchema = z.object({
   name: z.string().min(1, 'Band name is required'),
 })
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const formData = await request.formData()
-  const submission = await parseWithZod(formData, { schema: BandSchema })
+  await requireUserBelongToBand(request, params)
+
+  const submission = parseWithZod(formData, { schema: BandSchema })
   if (submission.status !== 'success') {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }

@@ -12,7 +12,7 @@ import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
 import { type SongSelectorItem } from '#app/interfaces/song.js'
 import { type loader as songSearchLoader } from '#app/routes/resources+/song-search.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, formatDate } from '#app/utils/misc'
 
@@ -20,6 +20,7 @@ export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist'>>
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const songs = await prisma.song.findMany({
     select: {
@@ -99,6 +100,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData()
 
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   const setlistId = params.setlistId
 

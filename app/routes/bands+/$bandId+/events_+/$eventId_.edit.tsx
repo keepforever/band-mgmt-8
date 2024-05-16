@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { Field, ErrorList, CheckboxField, TextareaField, SelectField } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { TechIdsSchema } from './new'
 
@@ -23,6 +23,7 @@ const EventSchema = z.object({
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   const eventId = params.eventId
 
@@ -89,6 +90,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const venues = await prisma.venue.findMany({
     where: {
       bands: {

@@ -3,6 +3,7 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { invariantResponse } from '@epic-web/invariant'
 import {
+  type LoaderFunctionArgs,
   json,
   redirect,
   type ActionFunctionArgs,
@@ -14,9 +15,14 @@ import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { MAX_SONG_COUNT } from '#app/constants/entity-allowances'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn } from '#app/utils/misc'
+
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  await requireUserBelongToBand(request, params)
+  return null
+}
 
 const SongSchema = z.object({
   artist: z.string().min(1, 'Artist name is required'),

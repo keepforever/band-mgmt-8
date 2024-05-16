@@ -1,10 +1,11 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/react'
-import { requireUserId } from '#app/utils/auth.server.js'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const bandId = params.bandId
 

@@ -4,12 +4,13 @@ import { Form, Link, Outlet, redirect, useFetcher, useLoaderData, useParams } fr
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { formatDate, useDoubleCheck } from '#app/utils/misc'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   invariantResponse(userId, 'Unauthorized access')
   const venueId = params.venueId
 
@@ -55,6 +56,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const bandId = params.bandId
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   invariantResponse(userId, 'Unauthorized access')
 
   const formData = await request.formData()

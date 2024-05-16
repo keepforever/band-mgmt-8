@@ -18,7 +18,7 @@ import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const SongSchema = z.object({
@@ -31,6 +31,7 @@ const SongSchema = z.object({
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const songId = params.songId
 
   invariantResponse(userId, 'You must be logged in to create a song')
@@ -62,6 +63,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const formData = await request.formData()
   const bandId = params.bandId
   const songId = params.songId

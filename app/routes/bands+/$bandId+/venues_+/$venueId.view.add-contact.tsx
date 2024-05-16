@@ -8,7 +8,7 @@ import { Fragment } from 'react'
 import { z } from 'zod'
 import { Field } from '#app/components/forms.js'
 import { Button } from '#app/components/ui/button.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const ContactSchema = z.object({
@@ -21,6 +21,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData()
 
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   invariantResponse(userId, 'You must be logged in to create a venue')
 
   const bandId = params.bandId

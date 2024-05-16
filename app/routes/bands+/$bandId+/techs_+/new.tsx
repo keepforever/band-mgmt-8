@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { Field, ErrorList, SelectField } from '#app/components/forms.tsx'
 
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const TechSchema = z.object({
@@ -22,6 +22,7 @@ const TechSchema = z.object({
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
 
   invariantResponse(userId, 'You must be logged in to create a tech')
@@ -55,8 +56,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return redirect(`/bands/${bandId}/techs`)
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const serviceTypes = await prisma.serviceType.findMany({
     select: { id: true, name: true },
   })

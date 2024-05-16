@@ -4,7 +4,7 @@ import { Form, Link, redirect, useFetcher, useLoaderData, useParams } from '@rem
 import { DownloadCSVButton } from '#app/components/download-csv-button.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon.js'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { cn, formatDate, useDoubleCheck } from '#app/utils/misc.js'
 
@@ -33,6 +33,7 @@ const prepareCSVData = (setlist: any): string[][] => {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const setlistId = params.setlistId
 
@@ -127,6 +128,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
 
   const formData = await request.formData()
   const intent = formData.get('intent')

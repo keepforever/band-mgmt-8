@@ -3,11 +3,12 @@ import { Link, json, useLoaderData } from '@remix-run/react'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { InvitationsEmptyState } from '#app/components/invitations-empty-state.js'
 import { Button } from '#app/components/ui/button'
-import { requireUserId } from '#app/utils/auth.server.js'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   const bandId = params.bandId
   const invitations = await prisma.invitation.findMany({
     where: {

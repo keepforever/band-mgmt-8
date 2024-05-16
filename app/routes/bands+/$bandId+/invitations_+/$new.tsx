@@ -6,7 +6,7 @@ import { Form, useActionData, useParams } from '@remix-run/react'
 import { z } from 'zod'
 import { Field, ErrorList } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server'
+import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 
 const InvitationSchema = z.object({
@@ -14,8 +14,9 @@ const InvitationSchema = z.object({
   bandId: z.string().min(1, 'Band is required'),
 })
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
+  await requireUserBelongToBand(request, params)
   invariantResponse(userId, 'You must be logged in to create an invitation')
 
   const formData = await request.formData()
