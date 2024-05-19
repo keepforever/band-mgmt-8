@@ -1,54 +1,63 @@
-<div align="center">
-  <h1 align="center"><a href="https://www.epicweb.dev/epic-stack">The Epic Stack 🚀</a></h1>
-  <strong align="center">
-    Ditch analysis paralysis and start shipping Epic Web apps.
-  </strong>
-  <p>
-    This is an opinionated project starter and reference that allows teams to
-    ship their ideas to production faster and on a more stable foundation based
-    on the experience of <a href="https://kentcdodds.com">Kent C. Dodds</a> and
-    <a href="https://github.com/epicweb-dev/epic-stack/graphs/contributors">contributors</a>.
-  </p>
-</div>
+# Band Management Application
+
+The Band Management Application is intended to help cover bands organize and manage common information. It allows band
+members to manage songs, set lists, events, venues and associated contacts.
+
+## Features
+
+- **Songs Management**: Organize and manage your band's repertoire, upload lyrics.
+- **Set Lists**: Create and manage set lists for different events.
+- **Event Venues**: Keep track of the venues you play at and store contact information.
+- **Availability Calendar**: Band members can input their availability, making it easier to schedule events.
+- **Technicians**: Info about common technicians and their contact information.
+
+## Getting Started
+
+#### Install the dependencies
 
 ```sh
-npx create-epic-app@latest
+npm install
 ```
 
-[![The Epic Stack](https://github-production-user-asset-6210df.s3.amazonaws.com/1500684/246885449-1b00286c-aa3d-44b2-9ef2-04f694eb3592.png)](https://www.epicweb.dev/epic-stack)
+#### Create a `.env` file in the root of the project and add the environment variables based on the `.env.example` file.
 
-[The Epic Stack](https://www.epicweb.dev/epic-stack)
+```sh
+# You can just copy the contents of the `.env.example` file and paste it into the newly created `.env` file.
+```
 
-<hr />
+#### Run setup script to create the database and seed it with initial data
 
-## Watch Kent's Introduction to The Epic Stack
+```sh
+npm run setup
+```
 
-[![Epic Stack Talk slide showing Flynn Rider with knives, the text "I've been around and I've got opinions" and Kent speaking in the corner](https://github-production-user-asset-6210df.s3.amazonaws.com/1500684/277818553-47158e68-4efc-43ae-a477-9d1670d4217d.png)](https://www.epicweb.dev/talks/the-epic-stack)
+#### Start the development server
 
-["The Epic Stack" by Kent C. Dodds](https://www.epicweb.dev/talks/the-epic-stack)
+```sh
+npm run dev
+```
 
-## Docs
+#### Open your browser and go to `http://localhost:3000` to see the application running.
 
-[Read the docs](https://github.com/epicweb-dev/epic-stack/blob/main/docs)
-(please 🙏).
+## Current Seeded User Credentials to login
 
-## Support
+- **Username**: `kody` | **Password**: `tacobell`
 
-- 🆘 Join the
-  [discussion on GitHub](https://github.com/epicweb-dev/epic-stack/discussions)
-  and the [KCD Community on Discord](https://kcd.im/discord).
-- 💡 Create an
-  [idea discussion](https://github.com/epicweb-dev/epic-stack/discussions/new?category=ideas)
-  for suggestions.
-- 🐛 Open a [GitHub issue](https://github.com/epicweb-dev/epic-stack/issues) to
-  report a bug.
+## Wiping Data and Starting Fresh
 
-## Branding
+If you want to wipe the data and start fresh, you can run the following command:
 
-Want to talk about the Epic Stack in a blog post or talk? Great! Here are some
-assets you can use in your material:
-[EpicWeb.dev/brand](https://epicweb.dev/brand)
+```sh
+npx prisma migrate reset
+```
 
-## Thanks
+## Attribution
 
-You rock 🪨
+This project was bootstrapped using [The Epic Stack](https://www.epicweb.dev/epic-stack), an opinionated project starter
+and reference created by [Kent C. Dodds](https://kentcdodds.com) and
+[contributors](https://github.com/epicweb-dev/epic-stack/graphs/contributors).
+
+## Deployment
+
+You'll need to consult the documentation for [The Epic Stack](https://www.epicweb.dev/epic-stack) to learn how to deploy
+this application. It's pretty complex and that's one of the reasons why starting with the boilerplate is so helpful.
