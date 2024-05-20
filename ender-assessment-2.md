@@ -1,5 +1,7 @@
 ```JavaScript
-// This is a function called transform. As input you are given a hashmap where the keys are of type A and the values are another Hashmap from B to C.  Your goal is to swap the keys so that B is on the outside and the inner maps are from A to C.
+// This is a function called transform. As input you are given a hashmap where the
+// keys are of type A and the values are another Hashmap from B to C.
+// Your goal is to swap the keys so that B is on the outside and the inner maps are from A to C.
 
 // {
 //   "Whole Foods": {
@@ -29,18 +31,14 @@ const after = {
   Cheese: {
     "Whole Foods": 6.0,
     HEB: 3.0
-
   },
   Salmon: {
     HEB: 20.0,
   },
 };
 
-
 function transform(before) {
   const stores = Object.entries(before);
-
-  console.log(stores);
 
   const payload = {};
 
