@@ -3,6 +3,13 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { Form, Link, redirect, useFetcher, useLoaderData, useParams } from '@remix-run/react'
 import { DownloadCSVButton } from '#app/components/download-csv-button.js'
 import { Button } from '#app/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '#app/components/ui/dropdown-menu.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
@@ -204,7 +211,10 @@ export default function SetlistDetailViewRoute() {
   return (
     <div className="flex flex-col gap-4">
       <div className="mb-4 flex flex-wrap sm:justify-between">
-        <h1 className="mb-4 text-body-lg font-bold">{setlist.name}</h1>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <h1 className="text-body-lg font-bold">{setlist.name}</h1>
+          <AssociatedEventsDropdownMenu />
+        </div>
 
         <div className="hidden flex-wrap items-end gap-3 sm:flex sm:items-start">
           <Link relative="path" to="../edit">
@@ -305,38 +315,6 @@ export default function SetlistDetailViewRoute() {
           </div>
         ))}
       </div>
-
-      {/* Events */}
-
-      {setlist.events.length > 0 && (
-        <>
-          <h2 className="text-h5">Events</h2>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {setlist?.events?.map(event => {
-              return (
-                <div className="flex flex-col border-2 border-foreground px-2 py-1" key={event.name}>
-                  <Link
-                    to={`/bands/${params.bandId}/events/${event?.id}/view`}
-                    className="flex items-center gap-1 hover:text-muted-foreground hover:underline"
-                  >
-                    <span className="text-xl font-bold text-muted-foreground">{event?.name}</span>
-                  </Link>
-                  <Link
-                    to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
-                    className="flex items-center gap-1 hover:text-muted-foreground hover:underline"
-                  >
-                    <div className="flex gap-1">
-                      &#64; <span>{event?.venue?.name}</span>, <span>{event?.location}</span>
-                    </div>
-                  </Link>
-                  <span className="text-foreground">{formatDate(event?.date || '')}</span>
-                </div>
-              )
-            })}
-          </div>
-        </>
-      )}
     </div>
   )
 }
@@ -393,5 +371,60 @@ function DeleteSetlist() {
       </Button>
       <input type="hidden" name="intent" value="deleteSetlist" />
     </fetcher.Form>
+  )
+}
+
+function AssociatedEventsDropdownMenu() {
+  const { setlist } = useLoaderData<typeof loader>()
+  const params = useParams()
+
+  const currentlyAssignedEvents = setlist.events
+
+  // return all here if there are no currently assigned events
+
+  if (!currentlyAssignedEvents?.length) return null
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" size="sm">
+          {currentlyAssignedEvents.length > 0
+            ? `${currentlyAssignedEvents.length} Associated Events`
+            : `No Associated Events`}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent
+          sideOffset={8}
+          alignOffset={-20}
+          align="start"
+          className="flex max-w-[98vw] flex-col flex-wrap gap-3"
+        >
+          {currentlyAssignedEvents.map(event => (
+            <DropdownMenuItem key={event.id} asChild className="flex flex-wrap">
+              <Link
+                to={`/bands/${params.bandId}/events/${event?.id}/view`}
+                className="flex flex-col border-2 border-foreground p-2"
+                key={event.name}
+              >
+                <Link
+                  to={`/bands/${params.bandId}/events/${event?.id}/view`}
+                  className="hover:text-muted-foreground hover:underline"
+                >
+                  <span className="text-2xl font-bold">{event?.name}</span>
+                </Link>
+                <Link
+                  to={`/bands/${params.bandId}/venues/${event?.venue?.id}/view`}
+                  className="flex items-center gap-1 text-lg hover:text-muted-foreground hover:underline"
+                >
+                  <span className="text-muted-foreground">@{event?.venue?.name}</span>
+                </Link>
+                <span className="text-sm text-foreground">{formatDate(event?.date || '')}</span>
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   )
 }
