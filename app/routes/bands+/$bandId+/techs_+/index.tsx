@@ -54,6 +54,16 @@ export default function TechsIndexRoute() {
     {
       title: 'Contact Info',
       dataIndex: 'contactInfo',
+      render(value) {
+        return (
+          <div className="flex max-h-[200px] max-w-[300px] break-before-all flex-wrap whitespace-normal break-words">
+            <details onClick={e => e.stopPropagation()}>
+              <summary>{value.slice(0, 20)}...</summary>
+              {value}
+            </details>
+          </div>
+        )
+      },
     },
   ]
 

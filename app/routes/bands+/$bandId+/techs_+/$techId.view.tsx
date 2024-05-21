@@ -7,7 +7,7 @@ import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
-import { formatDollars, useDoubleCheck } from '#app/utils/misc'
+import { cn, formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -102,6 +102,11 @@ export default function TechDetails() {
                 </li>
               </ul>
             </dd>
+          </div>
+
+          <div className={cn('px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0', { hidden: !tech?.contactInfo })}>
+            <dt className="text-sm font-medium leading-6">Notes</dt>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">{tech?.contactInfo}</dd>
           </div>
         </dl>
       </div>
