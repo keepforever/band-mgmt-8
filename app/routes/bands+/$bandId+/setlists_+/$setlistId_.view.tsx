@@ -24,7 +24,10 @@ const prepareCSVData = (setlist: any): string[][] => {
   ]
 
   const setNames: string[] = setlist.sets.map((_: any, index: number) => `Set ${index + 1}`)
-  const songsInSets: string[][] = setlist.sets.map((set: any) => set.setSongs.map((song: any) => song.song.title))
+
+  const songsInSets: string[][] = setlist.sets.map((set: any) =>
+    set.setSongs.sort((a: any, b: any) => a.order - b.order).map((song: any) => song.song.title),
+  )
 
   const maxLength = Math.max(...songsInSets.map(set => set.length))
   const songsRows: string[][] = Array.from({ length: maxLength }, () => Array(setlist.sets.length).fill(''))
