@@ -11,6 +11,7 @@ import { cn } from '#app/utils/misc'
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   await requireUserBelongToBand(request, params)
+
   const bandId = params.bandId
   invariantResponse(bandId, 'Band ID is required')
   const events = await getEventsByBandId(bandId)
@@ -42,7 +43,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     })),
   )
 
-  return json({ events, bandMembers, allBlackoutDates })
+  const payload = { events, bandMembers, allBlackoutDates }
+
+  return json(payload)
 }
 
 interface DayComponentProps {

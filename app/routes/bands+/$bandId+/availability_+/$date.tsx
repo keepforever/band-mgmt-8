@@ -24,7 +24,16 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   endDate.setDate(searchDate.getDate() + 1)
 
   const blackoutDates = await prisma.blackoutDate.findMany({
-    where: { date: searchDate },
+    where: {
+      date: searchDate,
+      user: {
+        bands: {
+          some: {
+            bandId: bandId,
+          },
+        },
+      },
+    },
     select: {
       date: true,
       user: {
@@ -44,7 +53,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const events = await getEventsByDateAndBandId({ date: searchDate, bandId })
 
-  return json({ blackoutDates, events })
+  const payload = { blackoutDates, events }
+
+  return json(payload)
 }
 
 export default function DateDetailView() {
@@ -123,7 +134,7 @@ export default function DateDetailView() {
           <ul className="flex flex-wrap gap-4">
             {blackoutDates.map(blackout => (
               <UserCard
-                instrument={blackout.user.bands[0].instrument || 'Unknown'}
+                instrument={blackout?.user?.bands?.[0]?.instrument || 'Unknown'}
                 key={blackout.user.id}
                 imageId={String(blackout.user.image?.id)}
                 name={blackout.user.name}
