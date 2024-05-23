@@ -76,7 +76,7 @@ export const DayComponent: React.FC<DayComponentProps> = ({
       className={cn('bg-muted py-1', {
         'bg-status-warning text-foreground hover:bg-status-warning-foreground focus:z-10':
           isBlackoutForUser && !isBlackoutForCurrentUser,
-        'bg-status-info text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
+        'bg-status-warning text-secondary-foreground hover:bg-status-info-foreground hover:text-primary focus:z-10':
           isBlackoutForUser,
         'bg-status-error text-foreground hover:bg-status-error-foreground focus:z-10': isBlackoutForCurrentUser,
         'bg-status-success': isEventDay,

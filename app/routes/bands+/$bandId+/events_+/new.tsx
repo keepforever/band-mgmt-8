@@ -94,13 +94,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const bandId = params.bandId
   invariantResponse(bandId, 'Band ID is required')
 
-  const techs = await prisma.tech.findMany({
+  const techs = await prisma.bandTech.findMany({
+    where: {
+      bandId,
+    },
     select: {
-      id: true,
-      name: true,
-      serviceType: {
+      tech: {
         select: {
+          id: true,
           name: true,
+          serviceType: {
+            select: {
+              name: true,
+              description: true,
+              id: true,
+            },
+          },
         },
       },
     },
@@ -117,7 +126,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   return json({
     venues: venues.map(v => v.venue),
-    techs,
+    techs: techs.map(t => t.tech),
   })
 }
 
