@@ -90,19 +90,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
+  const bandId = params.bandId
   await requireUserBelongToBand(request, params)
-  const venues = await prisma.venue.findMany({
+
+  invariantResponse(userId, 'You must be logged in to view this page')
+  invariantResponse(bandId, 'Missing band ID')
+
+  const venues = await prisma.bandVenue.findMany({
     where: {
-      bands: {
-        none: {
-          bandId: userId,
-        },
-      },
+      bandId: params.bandId,
     },
-    select: {
-      id: true,
-      name: true,
-      location: true,
+    include: {
+      venue: true,
     },
   })
 
@@ -147,7 +146,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
-  return json({ venues, event, techs })
+  return json({ venues: venues.map(venue => venue.venue), event, techs })
 }
 
 export default function EditEventRoute() {
