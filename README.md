@@ -1,4 +1,4 @@
-# Band Management Application
+# Band Management Application TL;DR
 
 The Band Management Application is intended to help cover bands organize and manage common information. It allows band
 members to manage songs, set lists, events, venues and associated contacts.
@@ -61,3 +61,59 @@ and reference created by [Kent C. Dodds](https://kentcdodds.com) and
 
 You'll need to consult the documentation for [The Epic Stack](https://www.epicweb.dev/epic-stack) to learn how to deploy
 this application. It's pretty complex and that's one of the reasons why starting with the boilerplate is so helpful.
+
+# Longer Explanation
+
+## Overview
+
+This application is designed to streamline band management tasks, such as booking shows, tracking venues, creating set
+lists, and managing song information. It facilitates efficient coordination among band members and ensures seamless
+event planning.
+
+## Features
+
+### User Management
+
+- **User Signup/Login:** Users can create accounts and log in to the application.
+- **Profile Management:** Users can upload profile pictures and manage their profile information.
+
+### Band Management
+
+- **Band Creation:** Users can create a band and invite other users to join.
+- **Role Assignment:** Assign roles to band members (e.g., lead vocals, lead guitar).
+
+### Song Management
+
+- **Individual Song Upload:** Add songs individually with relevant details.
+- **Bulk Song Upload:** Upload multiple songs at once via CSV file.
+- **Lyrics Upload:** Upload and display song lyrics in PDF or Word format.
+
+### Venue Management
+
+- **Venue Creation:** Add venues with details such as location, capacity, and contact information.
+- **Contact Management:** Add and manage contacts for each venue.
+
+### Event Management
+
+- **Event Creation:** Create events with details like venue, start and end times, payment, and notes.
+- **Technician Management:** Add and associate sound or lighting technicians with events.
+- **Event Calendar:** View and manage events in a calendar view.
+
+### Set List Management
+
+- **Set List Creation:** Create set lists and associate them with events.
+- **Song Management:** Drag and drop songs into set lists, and search for songs easily.
+- **Set List Cloning:** Clone existing set lists for reuse in different events.
+
+### Availability Management
+
+- **Blackout Dates:** Band members can set their availability and blackout dates.
+- **Availability Calendar:** View band availability and manage booking schedules.
+
+### Quality of Life Features
+
+- **YouTube Integration:** Quick links to YouTube searches for songs.
+- **Google Maps Integration:** Quick links to venue locations on Google Maps.
+
+This application aims to provide comprehensive tools for band management, enhancing coordination and efficiency in
+planning and executing events.
