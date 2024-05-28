@@ -8,14 +8,22 @@ import {
   type LinksFunction,
   type MetaFunction,
 } from '@remix-run/node'
-import { Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useMatches } from '@remix-run/react'
+import {
+  Link,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData /* , useMatches */,
+} from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { LayoutAuthenticated } from './components/layout-authenticated.tsx'
 import { Logo } from './components/logo.tsx'
 import { EpicProgress } from './components/progress-bar.tsx'
-import { SearchBar } from './components/search-bar.tsx'
+// import { SearchBar } from './components/search-bar.tsx'
 import { ThemeSwitch } from './components/theme-switch.tsx'
 import { useToast } from './components/toaster.tsx'
 import { Button } from './components/ui/button.tsx'
@@ -257,9 +265,9 @@ function App() {
   const nonce = useNonce()
   const user = useOptionalUser()
   const theme = useTheme()
-  const matches = useMatches()
-  const isOnSearchPage = matches.find(m => m.id === 'routes/users+/index')
-  const searchBar = isOnSearchPage ? null : <SearchBar status="idle" />
+  // const matches = useMatches()
+  // const isOnSearchPage = matches.find(m => m.id === 'routes/users+/index')
+  // const searchBar = isOnSearchPage ? null : <SearchBar status="idle" />
   const allowIndexing = data.ENV.ALLOW_INDEXING !== 'false'
   useToast(data.toast)
 
@@ -275,7 +283,7 @@ function App() {
             <nav className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap md:gap-8">
               <Logo />
 
-              <div className="ml-auto hidden max-w-sm flex-1 sm:block">{searchBar}</div>
+              {/* <div className="ml-auto hidden max-w-sm flex-1 sm:block">{searchBar}</div> */}
 
               <div className="flex items-center gap-10">
                 {user ? (
@@ -287,7 +295,7 @@ function App() {
                 )}
               </div>
 
-              <div className="block w-full sm:hidden">{searchBar}</div>
+              {/* <div className="block w-full sm:hidden">{searchBar}</div> */}
             </nav>
           </header>
 
