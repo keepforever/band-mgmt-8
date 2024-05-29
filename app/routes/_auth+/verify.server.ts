@@ -17,6 +17,7 @@ import { handleVerification as handleResetPasswordVerification } from './reset-p
 import {
   VerifySchema,
   codeQueryParam,
+  otpQueryParam,
   redirectToQueryParam,
   targetQueryParam,
   typeQueryParam,
@@ -34,15 +35,20 @@ export function getRedirectToUrl({
   type,
   target,
   redirectTo,
+  otp,
 }: {
   request: Request
   type: VerificationTypes
   target: string
   redirectTo?: string
+  otp?: string
 }) {
   const redirectToUrl = new URL(`${getDomainUrl(request)}/verify`)
   redirectToUrl.searchParams.set(typeQueryParam, type)
   redirectToUrl.searchParams.set(targetQueryParam, target)
+  if (otp) {
+    redirectToUrl.searchParams.set(otpQueryParam, otp)
+  }
   if (redirectTo) {
     redirectToUrl.searchParams.set(redirectToQueryParam, redirectTo)
   }
@@ -78,9 +84,6 @@ export async function prepareVerification({
   type: VerificationTypes
   target: string
 }) {
-  const verifyUrl = getRedirectToUrl({ request, type, target })
-  const redirectTo = new URL(verifyUrl.toString())
-
   const { otp, ...verificationConfig } = generateTOTP({
     algorithm: 'SHA256',
     // Leaving off 0 and O on purpose to avoid confusing users.
@@ -98,6 +101,9 @@ export async function prepareVerification({
     create: verificationData,
     update: verificationData,
   })
+
+  const verifyUrl = getRedirectToUrl({ request, type, target, otp })
+  const redirectTo = new URL(verifyUrl.toString())
 
   // add the otp to the url we'll email the user.
   verifyUrl.searchParams.set(codeQueryParam, otp)

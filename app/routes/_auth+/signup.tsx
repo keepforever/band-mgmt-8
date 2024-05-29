@@ -28,12 +28,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const SIGNUP_MAGIC_WORD = process.env.SIGNUP_MAGIC_WORD
   const isMagicWordCorrect = magicWord === SIGNUP_MAGIC_WORD
 
-  console.log('\n', `############################ `, '\n')
-  console.log('\n', `magicWord = `, magicWord, '\n')
-  console.log('\n', `SIGNUP_MAGIC_WORD = `, SIGNUP_MAGIC_WORD, '\n')
-  console.log('\n', `isMagicWordCorrect = `, isMagicWordCorrect, '\n')
-  console.log('\n', `############################ `, '\n')
-
   checkHoneypot(formData)
 
   const submission = await parseWithZod(formData, {
@@ -139,14 +133,39 @@ export default function SignupRoute() {
     shouldRevalidate: 'onBlur',
   })
 
-  console.log('\n', `actionData = `, actionData, '\n')
-
   return (
     <div className="container flex flex-col justify-center pb-32 pt-8">
       <div className="text-center">
         <h1 className="text-h3">Get ready to rock!</h1>
         <p className="mt-3 text-body-sm text-muted-foreground">Please enter your email.</p>
       </div>
+
+      {/* Warning that you need to know the magic word and contact me on linkedin to get that magic word if you'd like to try out the app */}
+
+      <div className="mx-auto mt-8 rounded-md bg-destructive p-3 text-center text-destructive-foreground">
+        <p className="text-body-sm">
+          You can DM me on{' '}
+          <a
+            href="https://x.com/KeepForeverr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline"
+          >
+            X
+          </a>{' '}
+          or{' '}
+          <a
+            href="https://www.linkedin.com/in/brian-cilenti-65754749"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline"
+          >
+            LinkedIn
+          </a>{' '}
+          to get the magic word.
+        </p>
+      </div>
+
       <div className="mx-auto mt-16 min-w-full max-w-sm sm:min-w-[368px]">
         <Form method="POST" {...getFormProps(form)}>
           <HoneypotInputs />
@@ -170,7 +189,7 @@ export default function SignupRoute() {
             }}
             inputProps={{
               ...getInputProps(fields.magicWord, { type: 'text' }),
-              autoFocus: true,
+              autoFocus: false,
             }}
             errors={fields.magicWord.errors}
           />

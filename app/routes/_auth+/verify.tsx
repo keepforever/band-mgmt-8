@@ -12,6 +12,7 @@ import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
 import { validateRequest } from './verify.server.ts'
 
+export const otpQueryParam = 'otp'
 export const codeQueryParam = 'code'
 export const targetQueryParam = 'target'
 export const typeQueryParam = 'type'
@@ -67,7 +68,7 @@ export default function VerifyRoute() {
       return parseWithZod(formData, { schema: VerifySchema })
     },
     defaultValue: {
-      code: searchParams.get(codeQueryParam),
+      code: searchParams.get(codeQueryParam) || searchParams.get(otpQueryParam),
       type: type,
       target: searchParams.get(targetQueryParam),
       redirectTo: searchParams.get(redirectToQueryParam),
