@@ -16,14 +16,22 @@ import { useIsPending } from '#app/utils/misc.tsx'
 import { EmailSchema } from '#app/utils/user-validation.ts'
 import { prepareVerification } from './verify.server.ts'
 
+const theMagicWord = process.env.SIGNUP_MAGIC_WORD
+
 const SignupSchema = z.object({
   email: EmailSchema,
+  magicWord: z.string().refine(value => value === theMagicWord, { message: 'Incorrect magic word' }),
 })
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
 
+  const magicWord = formData.get('magicWord')
+
+  console.log('\n', `magicWord = `, magicWord, '\n')
+
   checkHoneypot(formData)
+  // return json({ result: 'nope' }, { status: 400 })
 
   const submission = await parseWithZod(formData, {
     schema: SignupSchema.superRefine(async (data, ctx) => {
@@ -42,10 +50,13 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
     async: true,
   })
+
   if (submission.status !== 'success') {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
+
   const { email } = submission.value
+
   const { verifyUrl, redirectTo, otp } = await prepareVerification({
     period: 10 * 60,
     request,
@@ -115,6 +126,8 @@ export default function SignupRoute() {
     shouldRevalidate: 'onBlur',
   })
 
+  console.log('\n', `actionData = `, actionData, '\n')
+
   return (
     <div className="container flex flex-col justify-center pb-32 pt-8">
       <div className="text-center">
@@ -136,7 +149,21 @@ export default function SignupRoute() {
             }}
             errors={fields.email.errors}
           />
+
+          <Field
+            labelProps={{
+              htmlFor: fields.magicWord.id,
+              children: 'The Magic Word',
+            }}
+            inputProps={{
+              ...getInputProps(fields.magicWord, { type: 'text' }),
+              autoFocus: true,
+            }}
+            errors={fields.magicWord.errors}
+          />
+
           <ErrorList errors={form.errors} id={form.errorId} />
+
           <StatusButton
             className="w-full"
             status={isPending ? 'pending' : form.status ?? 'idle'}
@@ -146,6 +173,7 @@ export default function SignupRoute() {
             Submit
           </StatusButton>
         </Form>
+
         {/* <ul className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
           {providerNames.map(providerName => (
             <li key={providerName}>
