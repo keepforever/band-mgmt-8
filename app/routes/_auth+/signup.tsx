@@ -16,22 +16,25 @@ import { useIsPending } from '#app/utils/misc.tsx'
 import { EmailSchema } from '#app/utils/user-validation.ts'
 import { prepareVerification } from './verify.server.ts'
 
-const theMagicWord = process.env.SIGNUP_MAGIC_WORD
-
 const SignupSchema = z.object({
   email: EmailSchema,
-  magicWord: z.string().refine(value => value === theMagicWord, { message: 'Incorrect magic word' }),
+  magicWord: z.string(),
 })
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
 
   const magicWord = formData.get('magicWord')
+  const SIGNUP_MAGIC_WORD = process.env.SIGNUP_MAGIC_WORD
+  const isMagicWordCorrect = magicWord === SIGNUP_MAGIC_WORD
 
+  console.log('\n', `############################ `, '\n')
   console.log('\n', `magicWord = `, magicWord, '\n')
+  console.log('\n', `SIGNUP_MAGIC_WORD = `, SIGNUP_MAGIC_WORD, '\n')
+  console.log('\n', `isMagicWordCorrect = `, isMagicWordCorrect, '\n')
+  console.log('\n', `############################ `, '\n')
 
   checkHoneypot(formData)
-  // return json({ result: 'nope' }, { status: 400 })
 
   const submission = await parseWithZod(formData, {
     schema: SignupSchema.superRefine(async (data, ctx) => {
@@ -39,11 +42,21 @@ export async function action({ request }: ActionFunctionArgs) {
         where: { email: data.email },
         select: { id: true },
       })
+
       if (existingUser) {
         ctx.addIssue({
           path: ['email'],
           code: z.ZodIssueCode.custom,
           message: 'A user already exists with this email',
+        })
+        return
+      }
+
+      if (!isMagicWordCorrect) {
+        ctx.addIssue({
+          path: ['magicWord'],
+          code: z.ZodIssueCode.custom,
+          message: 'The magic word is incorrect',
         })
         return
       }
