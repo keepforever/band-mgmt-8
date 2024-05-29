@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 import 'dotenv/config'
 
 const PORT = process.env.PORT || '3000'
+const SIGNUP_MAGIC_WORD = process.env.SIGNUP_MAGIC_WORD || 'pretty-please'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -36,6 +37,7 @@ export default defineConfig({
     stderr: 'pipe',
     env: {
       PORT,
+      SIGNUP_MAGIC_WORD,
     },
   },
 })
