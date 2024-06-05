@@ -95,7 +95,7 @@ export function LayoutAuthenticated({
                 >
                   <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
                     <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
-                      <span className="sr-only">Close Sidebar</span>
+                      <span className="sr-only">Close sidebar</span>
 
                       <Icon name="cross-1" className="h-6 w-6" aria-hidden="true" />
                     </button>
