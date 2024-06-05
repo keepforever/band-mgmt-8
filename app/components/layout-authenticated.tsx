@@ -10,13 +10,19 @@ import { useUser } from '#app/utils/user.js'
 import { Breadcrumbs } from './breadcrumbs'
 import { LogoutButton } from './logout-button'
 
-const getLinkCss = (isActive: boolean) =>
+type LinkCssOptions = {
+  isActive?: boolean
+  className?: string
+}
+
+const getLinkCss = ({ isActive = false, className }: LinkCssOptions) =>
   cn(
     'inline-flex items-center rounded-md px-2 py-1 text-button font-semibold hover:bg-status-info hover:text-status-info-foreground',
     {
       'rounded-bl-none rounded-br-none border-b-2 border-border dark:border-accent-two': isActive,
       'text-foreground': !isActive,
     },
+    className,
   )
 
 export function LayoutAuthenticated({
@@ -97,7 +103,7 @@ export function LayoutAuthenticated({
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
 
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-muted px-6 pb-2">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto border border-r-primary px-6 pb-2">
                   <div className="flex items-center gap-2 pt-3">
                     <img
                       className="h-8 w-8 rounded-full object-cover"
@@ -211,13 +217,7 @@ export function LayoutAuthenticated({
                 <NavLink
                   key={item.name}
                   to={`${band.to}${item.to}`}
-                  // className={({ isActive }) =>
-                  //   cn('flex items-center gap-1.5 text-body-2xs hover:underline', {
-                  //     'tracking-widest underline': isActive,
-                  //     'text-foreground hover:text-hyperlink-hover': !isActive,
-                  //   })
-                  // }
-                  className={({ isActive }) => cn(getLinkCss(isActive))}
+                  className={({ isActive }) => cn(getLinkCss({ isActive }))}
                 >
                   {item.name}
                 </NavLink>
@@ -251,7 +251,7 @@ const UserBands = () => {
       <ul className="-mx-2 mt-2 space-y-1">
         {userBands.map(band => (
           <li key={band.name}>
-            <NavLink to={band.to} className={({ isActive }) => getLinkCss(isActive)}>
+            <NavLink to={band.to} className={({ isActive }) => getLinkCss({ isActive, className: 'text-body-sm' })}>
               <span className="truncate">{band.name}</span>
             </NavLink>
 
@@ -262,7 +262,7 @@ const UserBands = () => {
                     <NavLink
                       title={`Navigate to ${item.name} list`}
                       to={`${band.to}${item.to}`}
-                      className={({ isActive }) => getLinkCss(isActive)}
+                      className={({ isActive }) => getLinkCss({ isActive, className: 'text-body-xs' })}
                     >
                       {item.name}
                     </NavLink>
@@ -294,7 +294,7 @@ const UserSettings = () => {
       <ul className="ml-2 mt-2 space-y-1">
         {settingsNavigation.map(item => (
           <li key={item.name}>
-            <NavLink to={item.to} className={({ isActive }) => getLinkCss(isActive)}>
+            <NavLink to={item.to} className={({ isActive }) => getLinkCss({ isActive })}>
               <span className="truncate">{item.name}</span>
             </NavLink>
           </li>
