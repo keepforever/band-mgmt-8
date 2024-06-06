@@ -1,7 +1,7 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import { json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from '@remix-run/node'
-import { Form, useActionData, useLoaderData, useSearchParams } from '@remix-run/react'
+import { Form, Link, useActionData, useLoaderData, useSearchParams } from '@remix-run/react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { safeRedirect } from 'remix-utils/safe-redirect'
 import { z } from 'zod'
@@ -172,7 +172,19 @@ export default function SignupRoute() {
           <CheckboxField
             labelProps={{
               htmlFor: fields.agreeToTermsOfServiceAndPrivacyPolicy.id,
-              children: 'Do you agree to our Terms of Service and Privacy Policy?',
+              children: (
+                <p>
+                  Do you agree to our{' '}
+                  <Link className="text-hyperlink underline hover:text-hyperlink-hover" to="/tos" target="_blank">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link className="text-hyperlink underline hover:text-hyperlink-hover" to="/privacy" target="_blank">
+                    Privacy Policy
+                  </Link>
+                  ?
+                </p>
+              ),
             }}
             buttonProps={getInputProps(fields.agreeToTermsOfServiceAndPrivacyPolicy, { type: 'checkbox' })}
             errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
