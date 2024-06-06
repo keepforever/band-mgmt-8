@@ -12,17 +12,34 @@ export default function SongsIndexRoute() {
 
   if (!songs.length)
     return (
-      <EmptyStateGeneric
-        iconNames={['rocket']}
-        title="No Songs"
-        messages={['Create a song to get started.', 'Or, upload a bunch of songs at once with a CSV!']}
-        // primary
-        linkTo="new"
-        buttonTitle="Add Song"
-        // secondary
-        secondaryLinkTo="bulk-upload"
-        secondaryButtonTitle="Bulk Upload"
-      />
+      <>
+        <EmptyStateGeneric
+          iconNames={['rocket']}
+          title="No Songs"
+          messages={['Create a song to get started.', 'Or, upload a bunch of songs at once with a CSV!']}
+          // primary
+          linkTo="new"
+          buttonTitle="Add Song"
+          // secondary
+          secondaryLinkTo="bulk-upload"
+          secondaryButtonTitle="Bulk Upload"
+          extra={
+            <>
+              {/* Anchor tag that downloads a csv from the /public dir */}
+
+              <p className="mt-6">
+                You can download a demo CSV file to see how to format your bulk upload file. Or, simply use the provided
+                songs to get started and test out the app.
+              </p>
+              <Button asChild variant="secondary" size="sm">
+                <a href="/bulk-song-upload-demo.csv" download>
+                  Download Demo Bulk Upload CSV
+                </a>
+              </Button>
+            </>
+          }
+        />
+      </>
     )
 
   return (

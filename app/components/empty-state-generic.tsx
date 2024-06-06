@@ -12,6 +12,7 @@ interface EmptyStateProps {
 
   secondaryButtonTitle?: string
   secondaryLinkTo?: string
+  extra?: React.ReactNode
 }
 
 export function EmptyStateGeneric({
@@ -22,6 +23,7 @@ export function EmptyStateGeneric({
   buttonTitle,
   secondaryButtonTitle,
   secondaryLinkTo,
+  extra,
 }: EmptyStateProps) {
   return (
     <Card className="mx-auto w-full max-w-lg bg-muted text-muted-foreground">
@@ -53,6 +55,8 @@ export function EmptyStateGeneric({
             </Link>
           </div>
         )}
+
+        {extra}
       </CardContent>
     </Card>
   )

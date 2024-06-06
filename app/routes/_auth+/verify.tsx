@@ -44,7 +44,12 @@ export default function VerifyRoute() {
   const checkEmail = (
     <>
       <h1 className="text-h3">Check your email</h1>
-      <p className="mt-3 text-body-sm text-muted-foreground">We've sent you a code to verify your email address.</p>
+      {/* <p className="mt-3 text-body-sm text-muted-foreground">We've sent you a code to verify your email address.</p> */}
+      <p className="mt-3 text-body-md text-foreground">
+        For demo purposes the code is pre-filled. <br /> This app sends no emails. <br />{' '}
+      </p>
+
+      <strong className="text-body-lg text-hyperlink">Simply hit submit to continue.</strong>
     </>
   )
 
