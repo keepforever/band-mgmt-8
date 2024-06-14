@@ -27,6 +27,18 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       date: true,
       location: true,
       payment: true,
+      EventTech: {
+        select: {
+          tech: {
+            select: {
+              id: true,
+              name: true,
+              serviceType: true,
+            },
+          },
+        },
+      },
+      requiresPASystem: true,
       setlist: {
         include: {
           BandSetlist: {
@@ -71,6 +83,22 @@ export default function EventsRoute() {
             >
               <Icon name="pencil-2" className="h-4 w-4" onClick={e => e.stopPropagation()} />
             </Link>
+
+            {/* If requires PA system and missing a tech show icon */}
+
+            {record.requiresPASystem && !record.EventTech.length && (
+              <span title="Requires PA system, but no tech assigned">
+                <Icon name="avatar" className="h-5 w-5 text-destructive" onClick={e => e.stopPropagation()} />
+              </span>
+            )}
+
+            {record.requiresPASystem && !!record.EventTech.length && (
+              <span
+                title={`Techs: ${record.EventTech.map(tech => tech.tech.name + ': ' + tech.tech.serviceType.name).join(', ')}`}
+              >
+                <Icon name="avatar" className="h-4 w-4" onClick={e => e.stopPropagation()} />
+              </span>
+            )}
           </div>
         )
       },
