@@ -51,7 +51,6 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       name: t.tech.name,
       serviceType: t.tech.serviceType.name,
       contactInfo: t.tech.contactInfo,
-      // map event to single string of event name and venue name
       events: t.tech.events.map(e => `${e.event.name} (${e.event.venue?.name})`),
     })),
   })
@@ -93,13 +92,12 @@ export default function TechsIndexRoute() {
       dataIndex: 'name',
       render(v, record) {
         const preview = record?.events?.join?.(', ')
-
         return preview ? (
           <details onClick={e => e.stopPropagation()}>
-            <summary title={preview.slice(0, 20)}>Events</summary>
+            <summary title={preview.slice(0, 20)}>Events ({record?.events?.length})</summary>
             <div className="flex flex-col gap-2 pt-2">
-              {record.events.map((event, i) => (
-                <div key={i}>{event}</div>
+              {record.events.map(event => (
+                <div key={event}>{event}</div>
               ))}
             </div>
           </details>

@@ -7,7 +7,7 @@ import { Icon } from '#app/components/ui/icon.js'
 import { StatusButton } from '#app/components/ui/status-button.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
-import { cn, formatDollars, useDoubleCheck } from '#app/utils/misc'
+import { cn, formatDate, formatDollars, useDoubleCheck } from '#app/utils/misc'
 import { redirectWithToast } from '#app/utils/toast.server.js'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -22,6 +22,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       serviceType: {
         select: {
           name: true,
+        },
+      },
+      events: {
+        select: {
+          event: {
+            select: {
+              id: true,
+              date: true,
+              name: true,
+              venue: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       },
       bands: {
@@ -77,6 +93,28 @@ export default function TechDetails() {
             <dt className="text-sm font-medium leading-6">Rate</dt>
             <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
               {formatDollars(tech?.rate)}
+            </dd>
+          </div>
+
+          {/* Events */}
+
+          <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt className="text-sm font-medium leading-6">Events</dt>
+            <dd className="mt-1 text-sm leading-6 text-foreground sm:col-span-2 sm:mt-0">
+              <ul className="divide-y divide-border">
+                {tech?.events.map(e => (
+                  <li key={e.event.name} className="py-1">
+                    <Link
+                      relative="path"
+                      to={`../../../events/${e?.event.id}/view`}
+                      className="mt-1 text-sm leading-6 text-hyperlink hover:underline sm:col-span-2 sm:mt-0"
+                    >
+                      <strong>{e.event.name}</strong> @ {e.event.venue?.name ?? 'No Venue'},{' '}
+                      {formatDate(e.event.date, { year: 'numeric', month: 'numeric', day: '2-digit' })}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </dd>
           </div>
 
