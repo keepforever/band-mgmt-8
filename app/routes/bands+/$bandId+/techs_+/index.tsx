@@ -92,11 +92,16 @@ export default function TechsIndexRoute() {
       title: 'Events',
       dataIndex: 'name',
       render(v, record) {
-        const payload = record?.events?.join?.(', ')
-        return payload ? (
+        const preview = record?.events?.join?.(', ')
+
+        return preview ? (
           <details onClick={e => e.stopPropagation()}>
-            <summary>{payload.slice(0, 20)}...</summary>
-            <div>{payload}</div>
+            <summary title={preview.slice(0, 20)}>Events</summary>
+            <div className="flex flex-col gap-2 pt-2">
+              {record.events.map((event, i) => (
+                <div key={i}>{event}</div>
+              ))}
+            </div>
           </details>
         ) : (
           <div>N/A</div>
