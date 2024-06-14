@@ -92,9 +92,9 @@ export default function EventsRoute() {
               </span>
             )}
 
-            {record.requiresPASystem && !!record.EventTech.length && (
+            {!!record.EventTech.length && (
               <span
-                title={`Techs: ${record.EventTech.map(tech => tech.tech.name + ': ' + tech.tech.serviceType.name).join(', ')}`}
+                title={`Assigned Techs: ${record.EventTech.map(tech => `${tech.tech.name} (${tech.tech.serviceType.name})`).join(', ')}`}
               >
                 <Icon name="avatar" className="h-4 w-4" onClick={e => e.stopPropagation()} />
               </span>
