@@ -58,3 +58,5 @@ In this setup:
 
 These changes should align the schema with your requirement that a setlist can be reused across different events without
 altering the constraint that each event should only have one setlist.
+
+## Band Techs and Events List

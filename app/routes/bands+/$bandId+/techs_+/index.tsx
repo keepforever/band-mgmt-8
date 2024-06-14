@@ -16,10 +16,31 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     where: {
       bandId,
     },
-    include: {
+    select: {
       tech: {
-        include: {
-          serviceType: true,
+        select: {
+          id: true,
+          name: true,
+          contactInfo: true,
+          events: {
+            select: {
+              event: {
+                select: {
+                  name: true,
+                  venue: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          serviceType: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },
@@ -30,11 +51,13 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       name: t.tech.name,
       serviceType: t.tech.serviceType.name,
       contactInfo: t.tech.contactInfo,
+      // map event to single string of event name and venue name
+      events: t.tech.events.map(e => `${e.event.name} (${e.event.venue?.name})`),
     })),
   })
 }
 
-type TechInfo = Pick<Tech, 'id' | 'name' | 'contactInfo'> & { serviceType: string }
+type TechInfo = Pick<Tech, 'id' | 'name' | 'contactInfo'> & { serviceType: string; events: string[] }
 
 export default function TechsIndexRoute() {
   const { techs } = useLoaderData<typeof loader>()
@@ -62,6 +85,21 @@ export default function TechsIndexRoute() {
               {value}
             </details>
           </div>
+        )
+      },
+    },
+    {
+      title: 'Events',
+      dataIndex: 'name',
+      render(v, record) {
+        const payload = record?.events?.join?.(', ')
+        return payload ? (
+          <details onClick={e => e.stopPropagation()}>
+            <summary>{payload.slice(0, 20)}...</summary>
+            <div>{payload}</div>
+          </details>
+        ) : (
+          <div>N/A</div>
         )
       },
     },
