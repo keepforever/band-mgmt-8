@@ -13,7 +13,7 @@ export const navigation = [{ iconName: 'sun', name: 'Your Bands', to: '/bands' }
 export const bandSubNavigation = [
   {
     name: 'Events',
-    to: '/events',
+    to: '/events?futureOnly=true',
     toCreate: true,
     icon: TempIcon,
     current: false,
