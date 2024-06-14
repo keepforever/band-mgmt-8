@@ -1,9 +1,10 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
-import { Link, json, useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import { Link, json, useLoaderData, useNavigate, useParams, useSearchParams } from '@remix-run/react'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { Checkbox } from '#app/components/ui/checkbox.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
@@ -13,6 +14,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
   await requireUserBelongToBand(request, params)
   const bandId = params.bandId
+  const url = new URL(request.url)
+  const futureOnly = url.searchParams.get('futureOnly') === 'true'
+  const now = new Date()
+
   const events = await prisma.event.findMany({
     where: {
       bands: {
@@ -20,6 +25,11 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
           bandId,
         },
       },
+      ...(futureOnly && {
+        date: {
+          gte: now,
+        },
+      }),
     },
     select: {
       id: true,
@@ -59,6 +69,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       date: 'asc',
     },
   })
+
   return json({ events })
 }
 
@@ -66,6 +77,7 @@ export default function EventsRoute() {
   const { events } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const bandId = useParams().bandId
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const columns: Column<(typeof events)[0]>[] = [
     {
@@ -176,6 +188,24 @@ export default function EventsRoute() {
       </HeaderWithActions>
 
       <div className="max-w-3xl">
+        {/* Future Only Toggle */}
+
+        <div className="flex gap-2 pl-3">
+          <span className="text-sm font-semibold">Show Future Only</span>
+          <label className="switch">
+            <Checkbox
+              defaultChecked={searchParams.get('futureOnly') === 'true'}
+              onCheckedChange={state => {
+                const params = new URLSearchParams()
+                params.set('futureOnly', state.valueOf() ? 'true' : 'false')
+                setSearchParams(params, {
+                  preventScrollReset: true,
+                })
+              }}
+            />
+          </label>
+        </div>
+
         <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
       </div>
     </>
