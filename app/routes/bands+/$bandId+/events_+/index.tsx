@@ -81,13 +81,28 @@ export default function EventsRoute() {
 
   const columns: Column<(typeof events)[0]>[] = [
     {
-      title: 'Name/Venue',
+      title: 'Date',
+      dataIndex: 'date',
+      render: date => {
+        return (
+          <span className="tracking-wide" title={formatDate(date, { year: 'numeric', month: 'long', day: '2-digit' })}>
+            {formatDate(date, {
+              year: '2-digit',
+              month: 'numeric',
+              day: '2-digit',
+            })}
+          </span>
+        )
+      },
+    },
+    {
+      title: 'Venue',
       dataIndex: 'venue',
       render: (venue, record) => {
         return (
           <div className="flex items-center gap-1">
-            <span className="capitalize">{record.name}</span>
-            <span className="text-[16px] font-bold">@{venue.name}</span>
+            {/* <span className="capitalize">{record.name}</span> */}
+            <span className="">{venue.name}</span>
             <Link
               title="Edit event"
               to={`${record.id}/edit`}
@@ -115,21 +130,7 @@ export default function EventsRoute() {
         )
       },
     },
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      render: date => {
-        return (
-          <span className="tracking-wide" title={formatDate(date, { year: 'numeric', month: 'long', day: '2-digit' })}>
-            {formatDate(date, {
-              year: 'numeric',
-              month: 'numeric',
-              day: '2-digit',
-            })}
-          </span>
-        )
-      },
-    },
+
     {
       title: 'Pay',
       dataIndex: 'payment',
