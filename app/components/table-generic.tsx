@@ -11,10 +11,11 @@ export type TableProps<T> = {
   columns: Column<T>[]
   data: T[]
   onRowClick?: (record: T) => void
+  searchQuery?: string
   classNames?: string
 }
 
-export function TableGeneric<T>({ columns, data, onRowClick, classNames }: TableProps<T>) {
+export function TableGeneric<T>({ columns, data, onRowClick, classNames, searchQuery }: TableProps<T>) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTableRowElement>, record: T) => {
     if (event.key === 'Enter') {
       onRowClick?.(record)
@@ -56,8 +57,8 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames }: Table
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="py-4 text-center font-semibold">
-                    No data available
+                  <td colSpan={columns.length} className="bg-muted py-4 text-center font-semibold">
+                    {searchQuery ? `No results found for "${searchQuery}"` : 'No data available'}
                   </td>
                 </tr>
               )}

@@ -99,6 +99,7 @@ export default function SongsIndexRoute() {
         data={songs}
         onRowClick={event => navigate(`/bands/${params?.bandId}/songs/${event.id}/view`)}
         classNames="max-w-3xl"
+        searchQuery={searchParams.get('q') || ''}
       />
     </div>
   )
