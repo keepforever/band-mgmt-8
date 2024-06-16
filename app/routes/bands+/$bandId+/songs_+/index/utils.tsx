@@ -7,7 +7,26 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
   await requireUserBelongToBand(request, params)
 
+  const url = new URL(request.url)
+  const q = url.searchParams.get('q')
   const bandId = params.bandId
+
+  const filterByQuery = q
+    ? {
+        OR: [
+          {
+            title: {
+              contains: q.toLowerCase(),
+            },
+          },
+          {
+            artist: {
+              contains: q.toLowerCase(),
+            },
+          },
+        ],
+      }
+    : {}
 
   const songCount = await prisma.song.count({
     where: {
@@ -16,12 +35,35 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
           bandId,
         },
       },
+      ...filterByQuery,
     },
   })
+
+  const bandSongFilterByQuery = q
+    ? {
+        OR: [
+          {
+            song: {
+              title: {
+                contains: q?.toLowerCase(),
+              },
+            },
+          },
+          {
+            song: {
+              artist: {
+                contains: q?.toLowerCase(),
+              },
+            },
+          },
+        ],
+      }
+    : {}
 
   const songs = await prisma.bandSong.findMany({
     where: {
       bandId,
+      ...bandSongFilterByQuery,
     },
     orderBy: {
       song: {

@@ -13,6 +13,7 @@ export type TableProps<T> = {
   onRowClick?: (record: T) => void
   classNames?: string
 }
+
 export function TableGeneric<T>({ columns, data, onRowClick, classNames }: TableProps<T>) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTableRowElement>, record: T) => {
     if (event.key === 'Enter') {
@@ -35,23 +36,31 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames }: Table
               </tr>
             </thead>
             <tbody className="divide-y divide-border text-foreground">
-              {data.map((record, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  className={cn({
-                    'cursor-pointer hover:bg-muted': !!onRowClick,
-                  })}
-                  tabIndex={0}
-                  onClick={() => onRowClick?.(record)}
-                  onKeyDown={e => handleKeyDown(e, record)}
-                >
-                  {columns.map(({ dataIndex, render }, columnIndex) => (
-                    <td key={columnIndex} className="whitespace-nowrap px-3 py-2 text-sm">
-                      {render ? render(record[dataIndex], record) : String(record[dataIndex])}
-                    </td>
-                  ))}
+              {data.length ? (
+                data.map((record, rowIndex) => (
+                  <tr
+                    key={rowIndex}
+                    className={cn({
+                      'cursor-pointer hover:bg-muted': !!onRowClick,
+                    })}
+                    tabIndex={0}
+                    onClick={() => onRowClick?.(record)}
+                    onKeyDown={e => handleKeyDown(e, record)}
+                  >
+                    {columns.map(({ dataIndex, render }, columnIndex) => (
+                      <td key={columnIndex} className="whitespace-nowrap px-3 py-2 text-sm">
+                        {render ? render(record[dataIndex], record) : String(record[dataIndex])}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} className="py-4 text-center font-semibold">
+                    No data available
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
