@@ -12,7 +12,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const formData = await request.formData()
 
   const eventId = formData.get('eventId')
-  invariantResponse(eventId, 'Event is required')
+  invariantResponse(eventId, 'Event is required', { status: 404 })
 
   const setlistId = params.setlistId
   invariantResponse(setlistId, 'Setlist is required')

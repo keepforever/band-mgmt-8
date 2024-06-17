@@ -2,6 +2,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Form, Link, redirect, useFetcher, useLoaderData, useParams } from '@remix-run/react'
 import { DownloadCSVButton } from '#app/components/download-csv-button.js'
+import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { Button } from '#app/components/ui/button'
 import {
   DropdownMenu,
@@ -429,5 +430,24 @@ function AssociatedEventsDropdownMenu() {
         </DropdownMenuContent>
       </DropdownMenuPortal>
     </DropdownMenu>
+  )
+}
+
+export function ErrorBoundary() {
+  return (
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: () => {
+          return (
+            <div className="flex flex-wrap items-center gap-2">
+              <p>You must select an event to associate the setlist with before clicking "Assign"</p>
+              <Button asChild variant="default" size="lg">
+                <Link to=".">Back</Link>
+              </Button>
+            </div>
+          )
+        },
+      }}
+    />
   )
 }
