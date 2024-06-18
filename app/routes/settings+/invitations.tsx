@@ -5,7 +5,6 @@ import { Button } from '#app/components/ui/button'
 import { Card, CardHeader, CardContent } from '#app/components/ui/card.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { Input } from '#app/components/ui/input.js'
-import { Label } from '#app/components/ui/label.js'
 import { requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 
@@ -101,43 +100,41 @@ export default function BandIdIndex() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {invitations.map((invitation, index) => (
-          <Card key={invitation.id} className="max-w-md border-2 border-border">
-            <CardHeader className="flex bg-muted">
-              <div className="flex items-center gap-4">
-                <Icon
-                  name="envelope-closed"
-                  // className="h-12 w-12 fill-foreground-destructive stroke-foreground-destructive stroke-[0.5px]"
-                  className="h-12 w-12 text-secondary-foreground"
-                />
+        {invitations.map(invitation => (
+          <Card key={invitation.id} className="max-w-md border-2 border-border shadow-lg">
+            <CardHeader className="flex items-center gap-2 rounded-t-lg bg-accent p-4">
+              {/* <div className="flex flex-wrap items-center gap-2">
+                <span className="text-right text-sm font-semibold text-muted-foreground">
+                Received: {new Date(invitation.createdAt).toLocaleDateString()}
+                </span>
+                </div> */}
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Icon name="envelope-closed" className="h-12 w-12 text-secondary-foreground" />
                 <h2 className="text-xl font-bold text-secondary-foreground">{invitation.band.name} Invites You!</h2>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 p-4">
-              <Form method="post" className="flex flex-col gap-6">
-                <p className="text-body-xs">Fill in your instrument and press Accept to join the band!</p>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex flex-1 flex-col gap-1">
-                    <Label htmlFor="instrument">Instrument</Label>
-                    <Input
-                      name="instrument"
-                      className="flex-1"
-                      id="instrument"
-                      placeholder="Enter your instrument"
-                      required
-                    />
-                  </div>
+            <CardContent className="space-y-4 p-6">
+              <Form method="post" className="space-y-4">
+                <p className="text-sm">Fill in your instrument and press Accept to join the band!</p>
+
+                <div className="space-y-1">
+                  {/* <Label htmlFor="instrument">Instrument</Label> */}
+                  <Input
+                    name="instrument"
+                    id="instrument"
+                    placeholder="Enter your instrument"
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="flex justify-end">
                   <Button type="submit" className="flex items-center space-x-2" variant="outline">
                     <Icon name="check" className="h-5 w-5 text-green-500" />
                     <span>Accept</span>
                   </Button>
-                </div>
-
-                <div className="flex justify-end">
-                  <p className="mb-2 text-muted-foreground">
-                    Sent: {new Date(invitation.createdAt).toLocaleDateString()}
-                  </p>
                 </div>
 
                 <input type="hidden" name="invitationId" value={invitation.id} />
