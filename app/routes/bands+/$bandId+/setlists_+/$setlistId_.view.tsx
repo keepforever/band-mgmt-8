@@ -1,6 +1,6 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node'
-import { Form, Link, redirect, useFetcher, useLoaderData, useParams } from '@remix-run/react'
+import { Form, Link, redirect, useFetcher, useLoaderData, useParams, useSearchParams } from '@remix-run/react'
 import { DownloadCSVButton } from '#app/components/download-csv-button.js'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { Button } from '#app/components/ui/button'
@@ -240,6 +240,7 @@ export default function SetlistDetailViewRoute() {
   const { setlist, events, unusedBandSongs } = useLoaderData<typeof loader>()
   const params = useParams()
   const csvData = prepareCSVData(setlist)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   console.group(`%c$setlistId_.view.tsx`, 'color: #00a3ff; font-size: 13px; font-weight: bold;')
   console.log('\n', `unusedBandSongs = `, unusedBandSongs, '\n')
@@ -273,84 +274,107 @@ export default function SetlistDetailViewRoute() {
       {/* Setlist Columns */}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {setlist.sets.map((set, setIndex) => (
-          // Set Columns
+        {setlist.sets.map((set, setIndex) => {
+          // if set id is in searchParams return null
+          if (searchParams.get('completeSetId')?.split(',').includes(set.id)) {
+            return null
+          }
 
-          <div key={set.id} className="rounded border border-foreground p-4 shadow">
-            <h2 className="mb-4 text-center text-xl font-bold text-muted-foreground outline outline-muted-foreground">
-              Set {setIndex + 1}
-            </h2>
-            <ul>
-              {set.setSongs
-                .sort((a, b) => a.order - b.order)
-                .map((setSong, setSongIndex) => (
-                  // Song List Item
+          return (
+            <div key={set.id} className="flex flex-col rounded border border-foreground p-4 shadow">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-2 outline outline-muted-foreground">
+                <h2 className="text-center text-xl font-bold text-muted-foreground">Set {setIndex + 1}</h2>
 
-                  <li key={setSong.song.id} className="mb-2">
-                    <div className="flex flex-col flex-wrap gap-0.5">
-                      {/* Title, Lyrics Link, YouTube Link */}
+                <Button
+                  size="xs"
+                  variant="default"
+                  className="flex items-center gap-1"
+                  onClick={() => {
+                    let existingIds = searchParams.get('completeSetId')?.split(',') || []
+                    if (!existingIds.includes(set.id)) {
+                      existingIds.push(set.id)
+                    }
+                    setSearchParams({ completeSetId: existingIds.join(',') })
+                  }}
+                >
+                  <Icon name="cross-1" className="text-success" />
+                </Button>
+              </div>
+              <ul>
+                {set.setSongs
+                  .sort((a, b) => a.order - b.order)
+                  .map((setSong, setSongIndex) => (
+                    // Song List Item
 
-                      <div className="flex items-center gap-2">
-                        <div className="h-full flex-col justify-start text-body-2xs">{setSongIndex + 1}</div>
+                    <li key={setSong.song.id} className="mb-2">
+                      <div className="flex flex-col flex-wrap gap-0.5">
+                        {/* Title, Lyrics Link, YouTube Link */}
 
-                        <Link to={`/bands/${params.bandId}/songs/${setSong.song.id}/view`}>
-                          <span className="text-sm font-bold text-primary hover:underline">{setSong.song.title}</span>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <div className="h-full flex-col justify-start text-body-2xs">{setSongIndex + 1}</div>
 
-                        {setSong.song.lyrics?.id ? (
-                          <Link
-                            to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
-                            className={cn('flex items-center text-muted-foreground')}
-                            title="Open Lyrics"
-                          >
-                            <Icon name="file-text" className="text-hyperlink hover:text-hyperlink-hover" />
+                          <Link to={`/bands/${params.bandId}/songs/${setSong.song.id}/view`}>
+                            <span className="text-sm font-bold text-primary hover:underline">{setSong.song.title}</span>
                           </Link>
-                        ) : (
+
+                          {setSong.song.lyrics?.id ? (
+                            <Link
+                              to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
+                              className={cn('flex items-center text-muted-foreground')}
+                              title="Open Lyrics"
+                            >
+                              <Icon name="file-text" className="text-hyperlink hover:text-hyperlink-hover" />
+                            </Link>
+                          ) : (
+                            <a
+                              href={
+                                setSong.song.youtubeUrl ||
+                                `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist} guitar chords`)}`
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center"
+                              title="Search Google for Chords"
+                            >
+                              <Icon
+                                name="question-mark-circled"
+                                className="text-hyperlink hover:text-hyperlink-hover"
+                              />
+                            </a>
+                          )}
+
                           <a
                             href={
                               setSong.song.youtubeUrl ||
-                              `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist} guitar chords`)}`
+                              `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist}`)}+youtube+video`
                             }
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center"
-                            title="Search Google for Chords"
+                            title="Search YouTube for Song Video"
                           >
-                            <Icon name="question-mark-circled" className="text-hyperlink hover:text-hyperlink-hover" />
+                            <Icon name="link-2" className="text-hyperlink hover:text-hyperlink-hover" />
                           </a>
-                        )}
+                        </div>
 
-                        <a
-                          href={
-                            setSong.song.youtubeUrl ||
-                            `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist}`)}+youtube+video`
-                          }
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center"
-                          title="Search YouTube for Song Video"
-                        >
-                          <Icon name="link-2" className="text-hyperlink hover:text-hyperlink-hover" />
-                        </a>
-                      </div>
+                        {/* Artist and Rating (if one exists) */}
 
-                      {/* Artist and Rating (if one exists) */}
+                        {/* <div className="flex items-center gap-1"> */}
+                        {/* <span className="text-xs text-muted-foreground">{setSong.song.artist}</span> */}
 
-                      {/* <div className="flex items-center gap-1"> */}
-                      {/* <span className="text-xs text-muted-foreground">{setSong.song.artist}</span> */}
-
-                      {/* {setSong.song.rating && (
+                        {/* {setSong.song.rating && (
                           <div className="inline-flex rounded-full bg-muted px-1 text-button text-muted-foreground">
                             {setSong.song.rating}
                           </div>
                         )} */}
-                      {/* </div> */}
-                    </div>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        ))}
+                        {/* </div> */}
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )
+        })}
 
         {/* Unused Songs Column */}
 
