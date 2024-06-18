@@ -2,7 +2,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type DropResult, DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { type Song as SongModel } from '@prisma/client'
 import { type SerializeFrom, json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from '@remix-run/node'
-import { Form, useFetcher, useLoaderData } from '@remix-run/react'
+import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react'
 import debounce from 'lodash/debounce'
 import { useState } from 'react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
@@ -372,14 +372,23 @@ export default function EditSetlistRoute() {
 
   return (
     <Form method="POST">
-      <div className="flex justify-end gap-2">
-        <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
-          Submit
-        </Button>
+      <div className="mb-2 flex justify-between gap-2">
+        <Link to="../view" relative="path">
+          <Button type="button" variant="default" size="sm">
+            <Icon name="arrow-right" className="mr-2 h-5 w-5 rotate-180" />
+            Back
+          </Button>
+        </Link>
 
-        <Button type="button" size="xs" onClick={addColumn} variant="secondary">
-          Add Set
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="submit" className="bg-green-600 text-gray-300" size="xs">
+            Submit
+          </Button>
+
+          <Button type="button" size="xs" onClick={addColumn} variant="secondary">
+            Add Set
+          </Button>
+        </div>
       </div>
 
       <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2">

@@ -96,6 +96,35 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
+  // fetch bandSongs not in setlist
+  const unusedBandSongs = await prisma.bandSong.findMany({
+    where: {
+      bandId: params.bandId,
+      NOT: {
+        songId: {
+          in: setlist?.sets.flatMap(set => set.setSongs.map(setSong => setSong.song.id)),
+        },
+      },
+    },
+    select: {
+      song: {
+        select: {
+          id: true,
+          title: true,
+          artist: true,
+          rating: true,
+          status: true,
+          youtubeUrl: true,
+          lyrics: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
   const assignedEventIds = setlist?.events.map(event => event?.id)
 
   const events = await prisma.event.findMany({
@@ -134,7 +163,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   invariantResponse(setlist, 'Setlist not found')
 
-  return json({ setlist, events } as const)
+  return json({ setlist, events, unusedBandSongs } as const)
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -208,9 +237,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SetlistDetailViewRoute() {
-  const { setlist, events } = useLoaderData<typeof loader>()
+  const { setlist, events, unusedBandSongs } = useLoaderData<typeof loader>()
   const params = useParams()
   const csvData = prepareCSVData(setlist)
+
+  console.group(`%c$setlistId_.view.tsx`, 'color: #00a3ff; font-size: 13px; font-weight: bold;')
+  console.log('\n', `unusedBandSongs = `, unusedBandSongs, '\n')
+  console.groupEnd()
 
   return (
     <div className="flex flex-col gap-4">
@@ -318,6 +351,81 @@ export default function SetlistDetailViewRoute() {
             </ul>
           </div>
         ))}
+
+        {/* Unused Songs Column */}
+
+        <div className="rounded border border-foreground p-4 shadow">
+          <h2 className="mb-4 text-center text-xl font-bold text-muted-foreground outline outline-muted-foreground">
+            EXTRA SONGS
+          </h2>
+          <ul>
+            {unusedBandSongs.map((setSong, setSongIndex) => (
+              // Song List Item
+
+              <li key={setSong.song.id} className="mb-2">
+                <div className="flex flex-col flex-wrap gap-0.5">
+                  {/* Title, Lyrics Link, YouTube Link */}
+
+                  <div className="flex items-center gap-2">
+                    <div className="h-full flex-col justify-start text-body-2xs">{setSongIndex + 1}</div>
+
+                    <Link to={`/bands/${params.bandId}/songs/${setSong.song.id}/view`}>
+                      <span className="text-sm font-bold text-primary hover:underline">{setSong.song.title}</span>
+                    </Link>
+
+                    {setSong.song.lyrics?.id ? (
+                      <Link
+                        to={`/bands/${params?.bandId}/songs/${setSong.song.id}/lyrics`}
+                        className={cn('flex items-center text-muted-foreground')}
+                        title="Open Lyrics"
+                      >
+                        <Icon name="file-text" className="text-hyperlink hover:text-hyperlink-hover" />
+                      </Link>
+                    ) : (
+                      <a
+                        href={
+                          setSong.song.youtubeUrl ||
+                          `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist} guitar chords`)}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center"
+                        title="Search Google for Chords"
+                      >
+                        <Icon name="question-mark-circled" className="text-hyperlink hover:text-hyperlink-hover" />
+                      </a>
+                    )}
+
+                    <a
+                      href={
+                        setSong.song.youtubeUrl ||
+                        `https://www.google.com/search?q=${encodeURIComponent(`${setSong.song.title} by ${setSong.song.artist}`)}+youtube+video`
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center"
+                      title="Search YouTube for Song Video"
+                    >
+                      <Icon name="link-2" className="text-hyperlink hover:text-hyperlink-hover" />
+                    </a>
+                  </div>
+
+                  {/* Artist and Rating (if one exists) */}
+
+                  {/* <div className="flex items-center gap-1"> */}
+                  {/* <span className="text-xs text-muted-foreground">{setSong.song.artist}</span> */}
+
+                  {/* {setSong.song.rating && (
+                          <div className="inline-flex rounded-full bg-muted px-1 text-button text-muted-foreground">
+                            {setSong.song.rating}
+                          </div>
+                        )} */}
+                  {/* </div> */}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   )
