@@ -422,7 +422,7 @@ export default function EditSetlistRoute() {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-6">
           {/* Set Columns */}
 
           {columns.map(col => {

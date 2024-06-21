@@ -254,7 +254,7 @@ export default function SetlistDetailViewRoute() {
           <AssociatedEventsDropdownMenu />
         </div>
 
-        <div className="hidden flex-wrap items-end gap-3 sm:flex sm:items-start">
+        <div className="flex flex-wrap items-end gap-3 sm:flex sm:items-start">
           <Link relative="path" to="../edit">
             <Button size="sm">Edit</Button>
           </Link>
