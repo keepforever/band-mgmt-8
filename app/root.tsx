@@ -135,7 +135,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         where: {
                           event: {
                             date: {
-                              gte: new Date(new Date().getFullYear(), 0, 1), // start of the current year
+                              gte: new Date(new Date().setDate(new Date().getDate() - 1)), // yesterday
                               lte: new Date(new Date().getFullYear(), 11, 31), // end of the current year
                             },
                           },

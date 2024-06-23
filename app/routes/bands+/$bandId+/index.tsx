@@ -4,12 +4,16 @@ import { BandMemberCard, BandMemberPlaceholderCard } from '#app/components/band-
 import { bandSubNavigation } from '#app/constants/navigation.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
-import { cn, removeLeadingSlash } from '#app/utils/misc'
+import { getNextThreeEventsByBandId } from '#app/utils/events.server.js'
+import { cn, formatDate, removeLeadingSlash } from '#app/utils/misc'
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
   await requireUserBelongToBand(request, params)
   const bandId = params.bandId
+
+  const nextThreeEvents = await getNextThreeEventsByBandId(String(bandId))
+
   const band = await prisma.band.findUnique({
     where: {
       id: bandId,
@@ -54,11 +58,11 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       },
     },
   })
-  return json({ band })
+  return json({ band, nextThreeEvents })
 }
 
 export default function BandIdIndex() {
-  const { band } = useLoaderData<typeof loader>()
+  const { band, nextThreeEvents } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
 
   return (
@@ -98,6 +102,25 @@ export default function BandIdIndex() {
         ))}
 
         <BandMemberPlaceholderCard />
+      </div>
+
+      {/* Upcoming Events */}
+
+      <h2 className="mb-4 text-xl font-bold">Upcoming Events</h2>
+
+      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {nextThreeEvents.map(event => {
+          return (
+            <div key={event.id} className="group cursor-pointer rounded-md border border-border p-2">
+              <Link
+                to={`events/${event.id}/view`}
+                className={cn('flex items-center gap-1 group-hover:text-hyperlink group-hover:underline')}
+              >
+                {`${formatDate(event.date)} @ ${event.venue?.name || 'TBD'}`}
+              </Link>
+            </div>
+          )
+        })}
       </div>
 
       {/* Quick Links */}

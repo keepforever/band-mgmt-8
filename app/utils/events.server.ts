@@ -90,3 +90,43 @@ export async function getEventsByDateAndBandId({ date, bandId }: { date: Date; b
 
   return events
 }
+
+export async function getNextThreeEventsByBandId(bandId: string) {
+  const now = new Date()
+  const events = await prisma.bandEvent.findMany({
+    where: {
+      bandId: bandId,
+      event: {
+        date: {
+          gt: now,
+        },
+      },
+    },
+    select: {
+      event: {
+        select: {
+          id: true,
+          name: true,
+          date: true,
+          location: true,
+          venue: {
+            select: {
+              name: true,
+              location: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      event: {
+        date: 'asc',
+      },
+    },
+    take: 3,
+  })
+
+  const flattenedEvents = events.map(event => event.event)
+
+  return flattenedEvents
+}
