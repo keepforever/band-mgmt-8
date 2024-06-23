@@ -92,13 +92,12 @@ export async function getEventsByDateAndBandId({ date, bandId }: { date: Date; b
 }
 
 export async function getNextThreeEventsByBandId(bandId: string) {
-  const now = new Date()
   const events = await prisma.bandEvent.findMany({
     where: {
       bandId: bandId,
       event: {
         date: {
-          gt: now,
+          gte: new Date(new Date().setDate(new Date().getDate() - 1)), // yesterday
         },
       },
     },
