@@ -1,5 +1,7 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams, useSearchParams } from '@remix-run/react'
+import * as d3 from 'd3'
+import { useEffect, useRef } from 'react'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
@@ -73,11 +75,106 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return json({ events })
 }
 
+const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: number }> }) => {
+  const svgRef = useRef<SVGSVGElement | null>(null)
+
+  useEffect(() => {
+    const svg = d3.select(svgRef.current)
+    const width = 800
+    const height = 400
+    const margin = { top: 20, right: 30, bottom: 60, left: 50 }
+
+    svg.attr('width', width).attr('height', height)
+
+    const x = d3
+      .scaleBand()
+      .domain(events.map(event => event.venue))
+      .range([margin.left, width - margin.right])
+      .padding(0.1)
+
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(events, event => event.payment)!])
+      .nice()
+      .range([height - margin.bottom, margin.top])
+
+    svg
+      .append('g')
+      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x))
+      .selectAll('text')
+      .attr('transform', 'rotate(-45)')
+      .style('text-anchor', 'end')
+      .attr('dy', '1em')
+      .style('font-size', '14px')
+
+    svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y))
+      .selectAll('text')
+      .style('font-size', '14px')
+
+    // Create a tooltip div and hide it initially
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .style('position', 'absolute')
+      .style('background', 'white')
+      .style('border', '1px solid #ccc')
+      .style('padding', '5px')
+      .style('display', 'none')
+      .style('pointer-events', 'none')
+
+    svg
+      .append('g')
+      .selectAll('rect')
+      .data(events)
+      .enter()
+      .append('rect')
+      .attr('x', event => x(event.venue)!)
+      .attr('y', event => y(event.payment))
+      .attr('height', event => y(0) - y(event.payment))
+      .attr('width', x.bandwidth())
+      .attr('fill', `hsl(var(--accent-two))`)
+      .on('mouseover', (event, d) => {
+        tooltip.style('display', 'block').html(`Total: ${d.payment}`)
+      })
+      .on('mousemove', event => {
+        tooltip.style('left', `${event.pageX + 5}px`).style('top', `${event.pageY - 28}px`)
+      })
+      .on('mouseout', () => {
+        tooltip.style('display', 'none')
+      })
+  }, [events])
+
+  return <svg ref={svgRef} className="hidden md:block"></svg>
+}
+
 export default function EventsRoute() {
   const { events } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const bandId = useParams().bandId
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // Group and sum payments by venue
+  const venuePayments = events.reduce(
+    (acc, event) => {
+      const venueName = String(event?.venue?.name)
+      if (!acc[venueName]) {
+        acc[venueName] = 0
+      }
+      acc[venueName] += event.payment || 0
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  // Convert the object to an array of objects
+  const venuePaymentArray = Object.keys(venuePayments).map(venue => ({
+    venue,
+    payment: venuePayments[venue],
+  }))
 
   const columns: Column<(typeof events)[0]>[] = [
     {
@@ -101,7 +198,6 @@ export default function EventsRoute() {
       render: (venue, record) => {
         return (
           <div className="flex items-center gap-1">
-            {/* <span className="capitalize">{record.name}</span> */}
             <span className="">{venue.name}</span>
             <Link
               title="Edit event"
@@ -110,8 +206,6 @@ export default function EventsRoute() {
             >
               <Icon name="pencil-2" className="h-4 w-4" onClick={e => e.stopPropagation()} />
             </Link>
-
-            {/* If requires PA system and missing a tech show icon */}
 
             {record.requiresPASystem && !record.EventTech.length && (
               <span title="Requires PA system, but no tech assigned">
@@ -130,7 +224,6 @@ export default function EventsRoute() {
         )
       },
     },
-
     {
       title: 'Pay',
       dataIndex: 'payment',
@@ -151,7 +244,6 @@ export default function EventsRoute() {
         if (!setlistId) return 'N/A'
 
         return (
-          // http://localhost:3000/bands/cltg3ec8f0027ig7vxbhxxfab/setlists/cltg3o36q00024ey44moes965
           <Link
             className="hover:text-hyperlink hover:underline"
             to={`/bands/${bandId}/setlists/${setlistId}/view`}
@@ -189,8 +281,6 @@ export default function EventsRoute() {
       </HeaderWithActions>
 
       <div className="max-w-3xl">
-        {/* Future Only Toggle */}
-
         <div className="flex gap-2 pl-3">
           <span className="text-sm font-semibold">Show Future Only</span>
           <label className="switch">
@@ -208,6 +298,8 @@ export default function EventsRoute() {
         </div>
 
         <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
+
+        <EventBarChart events={venuePaymentArray} />
       </div>
     </>
   )
