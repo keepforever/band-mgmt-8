@@ -1,6 +1,7 @@
-import { Link, useNavigate } from '@remix-run/react'
-import React from 'react'
+import { Link, useFetcher, useNavigate } from '@remix-run/react'
+import React, { useEffect } from 'react'
 import { bandSubNavigation } from '#app/constants/navigation.js'
+import { type loader as bandRevenueLoader } from '#app/routes/resources+/band-revenue.tsx'
 import { cn, formatDate, removeLeadingSlash } from '#app/utils/misc.js'
 import { type useOptionalUser } from '#app/utils/user.js'
 
@@ -10,8 +11,33 @@ type BandSummaryProps = {
   user?: RootLoaderUserSummary
 }
 
+export const useBandRevenue = (bandId?: string) => {
+  const revenueFetcher = useFetcher<typeof bandRevenueLoader>({ key: 'revenue-fetcher' })
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  useEffect(() => {
+    const loadRevenue = async () => {
+      if (!bandId) {
+        setIsMounted(true)
+        return
+      }
+      const encodedBandId = encodeURIComponent(bandId)
+      revenueFetcher.load(`/resources/band-revenue?bandId=${encodedBandId}`)
+      setIsMounted(true)
+    }
+
+    if (isMounted) return
+    loadRevenue()
+  }, [revenueFetcher, isMounted, bandId])
+
+  const bandRevenue = revenueFetcher.data?.currentYearRevenue
+
+  return bandRevenue
+}
+
 export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
   const navigate = useNavigate()
+  const bandRevenue = useBandRevenue(user?.bands?.[0].band.id)
 
   return (
     <>
@@ -48,14 +74,12 @@ export const BandSummary: React.FC<BandSummaryProps> = ({ user }) => {
                 <div className="px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium">Current Year Revenue</dt>
                   <dd className="mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
-                    {band?.events
-                      .reduce((total, event) => total + (event?.event?.payment || 0), 0)
-                      .toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })}
+                    {bandRevenue?.toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })}
                   </dd>
                 </div>
 
