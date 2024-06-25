@@ -82,7 +82,7 @@ const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: num
     const svg = d3.select(svgRef.current)
     const width = 800
     const height = 400
-    const margin = { top: 20, right: 30, bottom: 60, left: 50 }
+    const margin = { top: 20, right: 30, bottom: 100, left: 50 }
 
     svg.attr('width', width).attr('height', height)
 
@@ -98,10 +98,14 @@ const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: num
       .nice()
       .range([height - margin.bottom, margin.top])
 
+    const truncateText = (text: string, maxLength: number) => {
+      return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text
+    }
+
     svg
       .append('g')
       .attr('transform', `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).tickFormat((d: string) => truncateText(d, 10)))
       .selectAll('text')
       .attr('transform', 'rotate(-45)')
       .style('text-anchor', 'end')
@@ -111,11 +115,15 @@ const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: num
     svg
       .append('g')
       .attr('transform', `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y))
+      .call(
+        d3
+          .axisLeft(y)
+          .ticks(4)
+          .tickFormat(d => `$${d}`),
+      )
       .selectAll('text')
       .style('font-size', '14px')
 
-    // Create a tooltip div and hide it initially
     const tooltip = d3
       .select('body')
       .append('div')
@@ -138,7 +146,7 @@ const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: num
       .attr('width', x.bandwidth())
       .attr('fill', `hsl(var(--accent-two))`)
       .on('mouseover', (event, d) => {
-        tooltip.style('display', 'block').html(`Total: ${d.payment}`)
+        tooltip.style('display', 'block').html(`${d.venue}<br><strong>$${d.payment}</strong>`)
       })
       .on('mousemove', event => {
         tooltip.style('left', `${event.pageX + 5}px`).style('top', `${event.pageY - 28}px`)
@@ -148,7 +156,12 @@ const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: num
       })
   }, [events])
 
-  return <svg ref={svgRef} className="hidden md:block"></svg>
+  return (
+    <div className="mt-6 flex flex-col gap-2">
+      <h2 className="text-lg font-semibold">Event Payments by Venue</h2>
+      <svg ref={svgRef} className="hidden md:block"></svg>
+    </div>
+  )
 }
 
 export default function EventsRoute() {
