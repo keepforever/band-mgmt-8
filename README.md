@@ -51,6 +51,15 @@ If you want to wipe the data and start fresh, you can run the following command:
 npx prisma migrate reset
 ```
 
+## If you want to nuke the database and start fresh in UAT or Production
+
+```sh
+# ssh into the fly app console
+fly ssh console -a <fly-app-name>
+# once you're in the console
+npx prisma migrate reset --force --skip-seed
+```
+
 ## Attribution
 
 This project was bootstrapped using [The Epic Stack](https://www.epicweb.dev/epic-stack), an opinionated project starter
