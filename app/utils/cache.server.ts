@@ -93,7 +93,6 @@ export const cache: CachifiedCache = {
     return { metadata, value }
   },
   async set(key, entry) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const { currentIsPrimary, primaryInstance } = await getInstanceInfo()
     if (currentIsPrimary) {
       cacheDb.prepare('INSERT OR REPLACE INTO cache (key, value, metadata) VALUES (@key, @value, @metadata)').run({

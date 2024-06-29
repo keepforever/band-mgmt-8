@@ -242,10 +242,6 @@ export default function SetlistDetailViewRoute() {
   const csvData = prepareCSVData(setlist)
   const [searchParams, setSearchParams] = useSearchParams()
 
-  console.group(`%c$setlistId_.view.tsx`, 'color: #00a3ff; font-size: 13px; font-weight: bold;')
-  console.log('\n', `unusedBandSongs = `, unusedBandSongs, '\n')
-  console.groupEnd()
-
   return (
     <div className="flex flex-col gap-4">
       <div className="mb-4 flex flex-wrap sm:justify-between">
