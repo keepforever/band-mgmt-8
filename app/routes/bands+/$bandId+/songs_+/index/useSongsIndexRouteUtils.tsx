@@ -4,7 +4,10 @@ import { type Column } from '#app/components/table-generic'
 import { Icon } from '#app/components/ui/icon.js'
 import { type loader } from './utils'
 
-type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & { lyricId?: string }
+type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & {
+  lyricId?: string
+  setSongCount?: number
+}
 
 export const useSongsIndexRouteUtils = () => {
   const { songs, songCount } = useLoaderData<typeof loader>()
@@ -48,6 +51,18 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Artist',
       dataIndex: 'artist',
+    },
+    {
+      title: 'Used',
+      dataIndex: 'setSongCount',
+      render: value => (
+        <div
+          className="flex items-center gap-2"
+          title={`Indicates that this song is used in ${value} different Set Lists`}
+        >
+          {value || 0}
+        </div>
+      ),
     },
     {
       title: 'Rating',

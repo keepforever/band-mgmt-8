@@ -84,10 +84,22 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
               id: true,
             },
           },
+          _count: {
+            select: {
+              SetSong: true,
+            },
+          },
         },
       },
     },
   })
 
-  return json({ songs: songs.map(song => ({ ...song.song, lyricId: song?.song?.lyrics?.id || '' })), songCount })
+  return json({
+    songs: songs.map(song => ({
+      ...song.song,
+      lyricId: song?.song?.lyrics?.id || '',
+      setSongCount: song.song._count.SetSong,
+    })),
+    songCount,
+  })
 }
