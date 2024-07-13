@@ -16,7 +16,7 @@ import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server'
 import { cn, formatDate, useDoubleCheck } from '#app/utils/misc.js'
 
-const prepareCSVData = (setlist: any): string[][] => {
+const prepareCSVData = (setlist: any, unusedBandSongs: any[]): string[][] => {
   const eventDetails = [
     ...(setlist?.event?.name ? [[`eventname`, setlist.event.name]] : []),
     ...(setlist?.event?.venue?.name ? [[`venueName`, setlist.event.venue.name]] : []),
@@ -24,14 +24,17 @@ const prepareCSVData = (setlist: any): string[][] => {
     ...(setlist?.event?.date ? [[`date`, formatDate(setlist.event.date)]] : []),
   ]
 
-  const setNames: string[] = setlist.sets.map((_: any, index: number) => `Set ${index + 1}`)
+  const setNames: string[] = [...setlist.sets.map((_: any, index: number) => `Set ${index + 1}`), 'Unused Songs']
 
-  const songsInSets: string[][] = setlist.sets.map((set: any) =>
-    set.setSongs.sort((a: any, b: any) => a.order - b.order).map((song: any) => song.song.title),
-  )
+  const songsInSets: string[][] = [
+    ...setlist.sets.map((set: any) =>
+      set.setSongs.sort((a: any, b: any) => a.order - b.order).map((song: any) => song.song.title),
+    ),
+    unusedBandSongs.map((song: any) => song.song.title),
+  ]
 
   const maxLength = Math.max(...songsInSets.map(set => set.length))
-  const songsRows: string[][] = Array.from({ length: maxLength }, () => Array(setlist.sets.length).fill(''))
+  const songsRows: string[][] = Array.from({ length: maxLength }, () => Array(setlist.sets.length + 1).fill(''))
 
   songsInSets.forEach((set, i) => {
     set.forEach((song, j) => {
@@ -239,7 +242,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function SetlistDetailViewRoute() {
   const { setlist, events, unusedBandSongs } = useLoaderData<typeof loader>()
   const params = useParams()
-  const csvData = prepareCSVData(setlist)
+  const csvData = prepareCSVData(setlist, unusedBandSongs)
   const [searchParams, setSearchParams] = useSearchParams()
 
   return (
