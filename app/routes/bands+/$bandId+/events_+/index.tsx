@@ -1,6 +1,7 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams, useSearchParams } from '@remix-run/react'
 import * as d3 from 'd3'
+import { startOfDay, subDays } from 'date-fns'
 import { useEffect, useRef } from 'react'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
@@ -18,7 +19,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const bandId = params.bandId
   const url = new URL(request.url)
   const futureOnly = url.searchParams.get('futureOnly') === 'true'
-  const now = new Date()
+  const now = startOfDay(subDays(new Date(), 1))
 
   const events = await prisma.event.findMany({
     where: {
