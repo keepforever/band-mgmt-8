@@ -111,7 +111,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const setlistName = formData.get('name')
   const eventId = formData.get('event')
   invariantResponse(typeof setlistName === 'string', 'Setlist name is required')
-  invariantResponse(typeof eventId === 'string', 'Event ID is required')
 
   const setlist = await prisma.setlist.findUnique({
     where: {
@@ -173,10 +172,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
         sets: {
           create: createSetsData,
         },
-        ...(eventId && {
+        ...(!!eventId && {
           events: {
             connect: {
-              id: eventId,
+              id: eventId as string,
             },
           },
         }),
@@ -184,7 +183,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     })
   })
 
-  return redirect(`/bands/${bandId}/setlists`)
+  return redirect(`/bands/${bandId}/setlists/${setlistId}/view`)
 }
 
 export default function EditSetlistRoute() {
