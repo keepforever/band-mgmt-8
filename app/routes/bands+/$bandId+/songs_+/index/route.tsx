@@ -4,6 +4,13 @@ import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '#app/components/ui/dropdown-menu.tsx'
 import { Icon } from '#app/components/ui/icon.js'
 import { Input } from '#app/components/ui/input.js'
 import { Label } from '#app/components/ui/label.js'
@@ -18,6 +25,10 @@ export default function SongsIndexRoute() {
   const handleSearchInputOnChange = useDebounce((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams({ q: event.target.value })
   }, 400)
+
+  const handleStatusChange = (status: string) => {
+    setSearchParams({ status })
+  }
 
   if (!songs.length && !searchParams.get('q'))
     return (
@@ -56,7 +67,7 @@ export default function SongsIndexRoute() {
       <HeaderWithActions title={`Songs (${songCount})`}>
         <div className="flex gap-4">
           <Button asChild variant="secondary" size="sm">
-            <Link to="new">Create</Link>
+            <Link to="new">Add New Song</Link>
           </Button>
 
           <Button asChild variant="destructive" size="sm">
@@ -91,6 +102,30 @@ export default function SongsIndexRoute() {
           >
             <Icon name="cross-1" className="h-4 w-4" />
           </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col justify-start gap-2">
+            <Label htmlFor="status" className="">
+              Status Filter
+            </Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="sm" className="mt-2">
+                  {searchParams.get('status') || 'Select Status'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
+                  <DropdownMenuItem onSelect={() => handleStatusChange('')}>All</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleStatusChange('active')}>Active</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleStatusChange('in-progress')}>In Progress</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleStatusChange('ready')}>Ready</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleStatusChange('proposed')}>Proposed</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

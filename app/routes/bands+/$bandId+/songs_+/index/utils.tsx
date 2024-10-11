@@ -9,6 +9,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   const url = new URL(request.url)
   const q = url.searchParams.get('q')
+  const status = url.searchParams.get('status')
   const bandId = params.bandId
 
   const filterByQuery = q
@@ -28,6 +29,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       }
     : {}
 
+  const filterByStatus = status
+    ? {
+        status: {
+          equals: status,
+        },
+      }
+    : {}
+
   const songCount = await prisma.song.count({
     where: {
       bandSongs: {
@@ -36,6 +45,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         },
       },
       ...filterByQuery,
+      ...filterByStatus,
     },
   })
 
@@ -64,6 +74,9 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     where: {
       bandId,
       ...bandSongFilterByQuery,
+      song: {
+        ...filterByStatus,
+      },
     },
     orderBy: {
       song: {

@@ -68,15 +68,10 @@ export const useSongsIndexRouteUtils = () => {
       title: 'Rating',
       dataIndex: 'rating',
     },
-    // {
-    //   title: 'YouTube',
-    //   dataIndex: 'youtubeUrl',
-    // },
-    // {
-    //   title: 'Lyric ID',
-    //   dataIndex: 'lyricId',
-    //   render: value => <span>{value || 'null'}</span>,
-    // },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
   ]
 
   return {
