@@ -55,6 +55,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           bandId: params.bandId,
         },
       },
+      status: 'ready',
     },
   })
 
