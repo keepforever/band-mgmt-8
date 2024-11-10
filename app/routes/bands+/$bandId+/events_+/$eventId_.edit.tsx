@@ -230,7 +230,7 @@ export default function EditEventRoute() {
           selectClassName="w-full"
           label="Venue"
           labelHtmlFor={getSelectProps(fields.venueId).id}
-          options={[{ label: 'Select a Venue', value: '' }, ...selectOptions]}
+          options={[{ label: 'Select a venue', value: '' }, ...selectOptions]}
           selectProps={getSelectProps(fields.venueId)}
           getOptionLabel={(option: { label: string; value: string }) => option.label}
           getOptionValue={(option: { label: string; value: string }) => option.value}
