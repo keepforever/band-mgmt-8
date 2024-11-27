@@ -1,3 +1,4 @@
+import { type Prisma } from '@prisma/client'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/react'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
@@ -11,7 +12,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const q = url.searchParams.get('q')
   const status = url.searchParams.get('status')
   const sortBy = url.searchParams.get('sortBy') || 'title'
-  const sortOrder = url.searchParams.get('sortOrder') || 'asc'
+  const sortOrder = (url.searchParams.get('sortOrder') || 'asc') as Prisma.SortOrder
+
   const bandId = params.bandId
 
   const filterByQuery = q
@@ -80,11 +82,20 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         ...filterByStatus,
       },
     },
-    orderBy: {
-      song: {
-        [sortBy]: sortOrder,
-      },
-    },
+    orderBy:
+      sortBy === 'setSongCount'
+        ? {
+            song: {
+              SetSong: {
+                _count: sortOrder,
+              },
+            },
+          }
+        : {
+            song: {
+              [sortBy]: sortOrder,
+            },
+          },
     select: {
       song: {
         select: {
@@ -108,6 +119,25 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       },
     },
   })
+
+  // If sorting by setSongCount, we need to sort manually since Prisma doesn't support
+  // sorting by aggregates in this case
+  if (sortBy === 'setSongCount') {
+    const sortedSongs = songs.sort((a, b) => {
+      const countA = a.song._count.SetSong
+      const countB = b.song._count.SetSong
+      return sortOrder === 'asc' ? countA - countB : countB - countA
+    })
+
+    return json({
+      songs: sortedSongs.map(song => ({
+        ...song.song,
+        lyricId: song?.song?.lyrics?.id || '',
+        setSongCount: song.song._count.SetSong,
+      })),
+      songCount,
+    })
+  }
 
   return json({
     songs: songs.map(song => ({

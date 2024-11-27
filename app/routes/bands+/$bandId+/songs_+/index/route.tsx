@@ -156,6 +156,7 @@ export default function SongsIndexRoute() {
                   <DropdownMenuItem onSelect={() => handleSortFieldChange('artist')}>Artist</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleSortFieldChange('status')}>Status</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleSortFieldChange('rating')}>Rating</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleSortFieldChange('setSongCount')}>Times Used</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuPortal>
             </DropdownMenu>
