@@ -16,51 +16,66 @@ import { Input } from '#app/components/ui/input.js'
 import { Label } from '#app/components/ui/label.js'
 import { useDebounce } from '#app/utils/misc.js'
 import { useSongsIndexRouteUtils } from './useSongsIndexRouteUtils'
-export { loader } from './utils'
+export { loader } from './songs-list-loader'
 
 export default function SongsIndexRoute() {
   const { columns, navigate, params, songs, songCount } = useSongsIndexRouteUtils()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const handleSearchInputOnChange = useDebounce((event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams({ q: event.target.value })
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set('q', event.target.value)
+    setSearchParams(newSearchParams)
   }, 400)
 
   const handleStatusChange = (status: string) => {
-    setSearchParams({ status })
+    const newSearchParams = new URLSearchParams(searchParams)
+    if (status) {
+      newSearchParams.set('status', status)
+    } else {
+      newSearchParams.delete('status')
+    }
+    setSearchParams(newSearchParams)
   }
 
-  if (!songs.length && !searchParams.get('q'))
-    return (
-      <>
-        <EmptyStateGeneric
-          iconNames={['rocket']}
-          title="No Songs"
-          messages={['Create a song to get started.', 'Or, upload a bunch of songs at once with a CSV!']}
-          // primary
-          linkTo="new"
-          buttonTitle="Add Song"
-          // secondary
-          secondaryLinkTo="bulk-upload"
-          secondaryButtonTitle="Bulk Upload"
-          extra={
-            <>
-              {/* Anchor tag that downloads a csv from the /public dir */}
+  const handleSortFieldChange = (sortBy: string) => {
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set('sortBy', sortBy)
+    setSearchParams(newSearchParams)
+  }
 
-              <p className="mt-6">
-                You can download a demo CSV file to see how to format your bulk upload file. Or, simply use the provided
-                songs to get started and test out the app.
-              </p>
-              <Button asChild variant="secondary" size="sm">
-                <a href="/bulk-song-upload-demo.csv" download>
-                  Download Demo Bulk Upload CSV
-                </a>
-              </Button>
-            </>
-          }
-        />
-      </>
+  const handleSortOrderChange = (sortOrder: string) => {
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set('sortOrder', sortOrder)
+    setSearchParams(newSearchParams)
+  }
+
+  if (!songs.length && !searchParams.get('q')) {
+    return (
+      <EmptyStateGeneric
+        iconNames={['rocket']}
+        title="No Songs"
+        messages={['Create a song to get started.', 'Or, upload a bunch of songs at once with a CSV!']}
+        linkTo="new"
+        buttonTitle="Add Song"
+        secondaryLinkTo="bulk-upload"
+        secondaryButtonTitle="Bulk Upload"
+        extra={
+          <>
+            <p className="mt-6">
+              You can download a demo CSV file to see how to format your bulk upload file. Or, simply use the provided
+              songs to get started and test out the app.
+            </p>
+            <Button asChild variant="secondary" size="sm">
+              <a href="/bulk-song-upload-demo.csv" download>
+                Download Demo Bulk Upload CSV
+              </a>
+            </Button>
+          </>
+        }
+      />
     )
+  }
 
   return (
     <div>
@@ -77,12 +92,10 @@ export default function SongsIndexRoute() {
       </HeaderWithActions>
 
       <div className="flex flex-col gap-2 md:w-2/3">
-        <Label htmlFor="q" className="">
-          Song Search
-        </Label>
+        <Label htmlFor="q">Song Search</Label>
         <div className="relative flex flex-wrap items-center gap-2">
           <Input
-            type="q"
+            type="text"
             name="q"
             id="q"
             defaultValue={searchParams.get('q') || ''}
@@ -94,7 +107,9 @@ export default function SongsIndexRoute() {
             variant="secondary"
             size="sm"
             onClick={() => {
-              setSearchParams({ q: '' })
+              const newSearchParams = new URLSearchParams(searchParams)
+              newSearchParams.delete('q')
+              setSearchParams(newSearchParams)
               const input = document.getElementById('q') as HTMLInputElement
               input.value = ''
             }}
@@ -104,14 +119,13 @@ export default function SongsIndexRoute() {
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-col justify-start gap-2">
-            <Label htmlFor="status" className="">
-              Status Filter
-            </Label>
+        <div className="mt-4 flex flex-wrap items-start gap-6">
+          {/* Status Filter */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="status">Status Filter</Label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="sm" className="mt-2">
+                <Button variant="secondary" size="sm">
                   {searchParams.get('status') || 'Select Status'}
                 </Button>
               </DropdownMenuTrigger>
@@ -126,16 +140,56 @@ export default function SongsIndexRoute() {
               </DropdownMenuPortal>
             </DropdownMenu>
           </div>
+
+          {/* Sort By */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="sortBy">Sort By</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="sm">
+                  {searchParams.get('sortBy') || 'Title'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
+                  <DropdownMenuItem onSelect={() => handleSortFieldChange('title')}>Title</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleSortFieldChange('artist')}>Artist</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleSortFieldChange('status')}>Status</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleSortFieldChange('rating')}>Rating</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </DropdownMenu>
+          </div>
+
+          {/* Sort Order */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="sortOrder">Sort Order</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="sm">
+                  {searchParams.get('sortOrder') === 'desc' ? 'Descending' : 'Ascending'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
+                  <DropdownMenuItem onSelect={() => handleSortOrderChange('asc')}>Ascending</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleSortOrderChange('desc')}>Descending</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
-      <TableGeneric
-        columns={columns}
-        data={songs}
-        onRowClick={event => navigate(`/bands/${params?.bandId}/songs/${event.id}/view`)}
-        classNames="max-w-3xl"
-        searchQuery={searchParams.get('q') || ''}
-      />
+      <div className="mt-6">
+        <TableGeneric
+          columns={columns}
+          data={songs}
+          onRowClick={event => navigate(`/bands/${params?.bandId}/songs/${event.id}/view`)}
+          classNames="max-w-3xl"
+          searchQuery={searchParams.get('q') || ''}
+        />
+      </div>
     </div>
   )
 }

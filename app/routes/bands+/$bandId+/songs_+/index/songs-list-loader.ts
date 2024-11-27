@@ -10,6 +10,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
   const q = url.searchParams.get('q')
   const status = url.searchParams.get('status')
+  const sortBy = url.searchParams.get('sortBy') || 'title'
+  const sortOrder = url.searchParams.get('sortOrder') || 'asc'
   const bandId = params.bandId
 
   const filterByQuery = q
@@ -80,7 +82,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     },
     orderBy: {
       song: {
-        title: 'asc',
+        [sortBy]: sortOrder,
       },
     },
     select: {

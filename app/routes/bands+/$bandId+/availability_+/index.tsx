@@ -114,7 +114,7 @@ export const Weekdays = () => (
 export default function AvailabilityIndexRoute() {
   const currentDate = new Date()
   const { events, allBlackoutDates } = useLoaderData<typeof loader>()
-  const months = getMonths(12)
+  const months = getMonths(14)
   const allEventDatesSet = new Set(events.map(e => e.date))
 
   return (

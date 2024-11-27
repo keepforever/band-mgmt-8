@@ -2,7 +2,7 @@ import { type Song } from '@prisma/client'
 import { Link, useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { type Column } from '#app/components/table-generic'
 import { Icon } from '#app/components/ui/icon.js'
-import { type loader } from './utils'
+import { type loader } from './songs-list-loader'
 
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & {
   lyricId?: string
