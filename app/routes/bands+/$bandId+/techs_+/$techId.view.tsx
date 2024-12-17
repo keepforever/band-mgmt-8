@@ -25,6 +25,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         },
       },
       events: {
+        where: {
+          event: {
+            date: {
+              gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+            },
+          },
+        },
         select: {
           event: {
             select: {
@@ -168,7 +175,7 @@ function DeleteTech() {
           type: 'submit',
         })}
         variant={dc.doubleCheck ? 'destructive' : 'destructive'}
-        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        status={fetcher.state !== 'idle' ? 'pending' : (fetcher?.state ?? 'idle')}
         size="sm"
       >
         <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Tech`}</Icon>
