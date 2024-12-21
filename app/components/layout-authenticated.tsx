@@ -267,10 +267,10 @@ const UserBands = () => {
                       {item.name}
                     </NavLink>
 
-                    {item.toCreate && (
+                    {item.toCreateUrl && (
                       <Link
                         title={`Create new ${item.name}`}
-                        to={`${band.to}${item.to}/new`}
+                        to={`${band.to}${item.toCreateUrl}`}
                         className="flex items-center gap-1.5 rounded-md px-2 py-1 text-button font-semibold transition-all duration-300 ease-in-out hover:bg-status-info hover:text-accent-foreground"
                       >
                         <Icon name="pencil-2" className="h-4 w-4" />

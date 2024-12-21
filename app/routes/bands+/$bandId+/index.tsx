@@ -14,6 +14,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   const nextThreeEvents = await getNextThreeEventsByBandId(String(bandId))
 
+  const currentYear = new Date().getFullYear()
+  const startOfYear = new Date(currentYear, 0, 1)
+  const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59)
+
   const band = await prisma.band.findUnique({
     where: {
       id: bandId,
@@ -48,6 +52,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         },
       },
       events: {
+        where: {
+          event: {
+            date: {
+              gte: startOfYear,
+              lte: endOfYear,
+            },
+          },
+        },
         select: {
           event: {
             select: {

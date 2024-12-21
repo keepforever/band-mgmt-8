@@ -85,7 +85,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
   })
 
-  return redirect(`/bands/${bandId}/events`)
+  return redirect(`/bands/${bandId}/events?futureOnly=true`)
 }
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
