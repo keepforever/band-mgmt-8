@@ -126,6 +126,7 @@ export default function AvailabilityIndexRoute() {
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map(month => {
           const isCurrentMonth = currentDate.getMonth() === month.monthIndex
+          const isCurrentYear = currentDate.getFullYear() === month.year
           return (
             <section key={`${month.name}_${month.year}}`} className="text-center">
               <h2 className="font-semibold text-foreground">
@@ -152,7 +153,7 @@ export default function AvailabilityIndexRoute() {
                     <DayComponent
                       key={day.date}
                       day={day}
-                      isToday={isToday}
+                      isToday={isToday && isCurrentYear}
                       isBlackoutForUser={isBlackoutForUser}
                       isBlackoutForCurrentUser={isBlackoutForCurrentUser}
                       isEventDay={isEventDay}

@@ -77,7 +77,7 @@ const Weekdays = () => (
 )
 
 const Legend = () => (
-  <div className="flex items-center justify-center space-x-6 text-sm">
+  <div className="flex items-center justify-center space-x-6 text-sm font-semibold">
     <div className="flex items-center space-x-2">
       <div className="h-8 w-8 rounded bg-status-warning"></div>
       <span>Not Available</span>
@@ -108,11 +108,18 @@ export default function PublicCalendarView() {
         </div>
 
         <Legend />
+
+        {/* <p className="max-w-lg">
+          We do our best to keep this availability calendar up to date, but any date will need to be confirmed with all band
+          members before we can commit.
+        </p> */}
       </div>
 
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map(month => {
           const isCurrentMonth = currentDate.getMonth() === month.monthIndex
+          const isCurrentYear = currentDate.getFullYear() === month.year
+
           return (
             <section key={`${month.name}_${month.year}}`} className="text-center">
               <h2 className="font-semibold text-foreground">
@@ -136,7 +143,7 @@ export default function PublicCalendarView() {
                     <DayComponent
                       key={day.date}
                       day={day}
-                      isToday={isToday}
+                      isToday={isToday && isCurrentYear}
                       isBlackoutDay={isBlackoutDay}
                       isEventDay={isEventDay}
                     />

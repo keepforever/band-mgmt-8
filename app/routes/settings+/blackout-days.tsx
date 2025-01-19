@@ -135,6 +135,7 @@ export default function BlackoutDays() {
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map((month, index) => {
           const isCurrentMonth = currentDate.getMonth() === month.monthIndex
+          const isCurrentYear = currentDate.getFullYear() === month.year
 
           return (
             <section key={`${month.name}_${month.year}}`} className="text-center">
@@ -160,7 +161,7 @@ export default function BlackoutDays() {
                     <DayComponent
                       key={day.date}
                       day={day.date}
-                      isToday={isToday}
+                      isToday={isToday && isCurrentYear}
                       isBlackoutForUser={isCurrentDayBlackedOutForUser}
                       onToggleBlackout={(date, isCurrentlyBlackout) => {
                         submit({ date, intent: isCurrentlyBlackout ? 'delete' : 'add' }, { method: 'post' })
