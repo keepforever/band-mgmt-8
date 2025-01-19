@@ -77,7 +77,7 @@ const Weekdays = () => (
 )
 
 const Legend = () => (
-  <div className="flex items-center justify-center space-x-6 text-sm font-semibold">
+  <div className="flex flex-wrap items-center gap-6 text-sm font-semibold md:justify-center">
     <div className="flex items-center space-x-2">
       <div className="h-8 w-8 rounded bg-status-warning"></div>
       <span>Not Available</span>
@@ -104,7 +104,7 @@ export default function PublicCalendarView() {
     <div className="container mx-auto space-y-6">
       <div className="flex flex-col items-center gap-6">
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <img src="/endrock-logo.png" className="max-w-md" alt="Endrock Logo" />
+          <img src="/endrock-logo.png" className="w-full max-w-sm" alt="Endrock Logo" />
         </div>
 
         <Legend />
