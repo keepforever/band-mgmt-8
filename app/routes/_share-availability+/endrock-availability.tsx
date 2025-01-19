@@ -1,6 +1,5 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { json, useLoaderData } from '@remix-run/react'
-import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { getMonths } from '#app/constants/months'
 import { prisma } from '#app/utils/db.server'
 import { getEventsByBandId } from '#app/utils/events.server'
@@ -77,6 +76,23 @@ const Weekdays = () => (
   </div>
 )
 
+const Legend = () => (
+  <div className="flex items-center justify-center space-x-6 text-sm">
+    <div className="flex items-center space-x-2">
+      <div className="h-8 w-8 rounded bg-status-warning"></div>
+      <span>Not Available</span>
+    </div>
+    <div className="flex items-center space-x-2">
+      <div className="h-8 w-8 rounded bg-status-success"></div>
+      <span>Today</span>
+    </div>
+    <div className="flex items-center space-x-2">
+      <div className="h-8 w-8 rounded bg-muted outline outline-1"></div>
+      <span>Available</span>
+    </div>
+  </div>
+)
+
 export default function PublicCalendarView() {
   const currentDate = new Date()
   const { events, blackoutDates } = useLoaderData<typeof loader>()
@@ -85,8 +101,14 @@ export default function PublicCalendarView() {
   const blackoutDatesSet = new Set(blackoutDates)
 
   return (
-    <div className="container mx-auto">
-      <HeaderWithActions title="Schedule" />
+    <div className="container mx-auto space-y-6">
+      <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <img src="/endrock-logo.png" className="max-w-md" alt="Endrock Logo" />
+        </div>
+
+        <Legend />
+      </div>
 
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map(month => {
