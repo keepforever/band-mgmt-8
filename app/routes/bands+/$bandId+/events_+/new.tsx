@@ -40,6 +40,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   const { name, date, location, venueId, payment, startEndTime, requiresPASystem, notes } = submission.value
 
+  // Parse the date string into a UTC date
+  const [year, month, day] = date.split('-').map(Number)
+  const eventDate = new Date(Date.UTC(year, month - 1, day))
+
   // Handle Tech IDs similar to how they are handled in the edit route
   const techIds = formData.getAll('techIds') as Array<string>
   let validTechIds = false
@@ -55,7 +59,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await prisma.event.create({
     data: {
       name,
-      date: new Date(date),
+      date: eventDate,
       location,
       payment,
       startEndTime,

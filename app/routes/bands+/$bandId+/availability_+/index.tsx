@@ -11,7 +11,6 @@ import { cn } from '#app/utils/misc'
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   await requireUserBelongToBand(request, params)
-
   const bandId = params.bandId
   invariantResponse(bandId, 'Band ID is required')
   const events = await getEventsByBandId(bandId)
@@ -58,7 +57,7 @@ interface DayComponentProps {
   }
   isToday: boolean
   isBlackoutForUser: boolean
-  isBlackoutForCurrentUser: boolean // New property
+  isBlackoutForCurrentUser: boolean
   isEventDay: boolean
 }
 
@@ -71,7 +70,6 @@ export const DayComponent: React.FC<DayComponentProps> = ({
 }) => {
   const navigate = useNavigate()
   const handleDayClick = () => navigate(day.date)
-  // if (isToday) console.info('Availability DayComponent', { day, isToday, isBlackoutForUser })
   return (
     <button
       type="button"
@@ -121,14 +119,12 @@ export default function AvailabilityIndexRoute() {
     <div>
       <HeaderWithActions title="Availability" />
 
-      {/* Months Grid */}
-
       <div className="mx-auto grid max-w-3xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 2xl:grid-cols-4">
         {months.map(month => {
           const isCurrentMonth = currentDate.getMonth() === month.monthIndex
           const isCurrentYear = currentDate.getFullYear() === month.year
           return (
-            <section key={`${month.name}_${month.year}}`} className="text-center">
+            <section key={`${month.name}_${month.year}`} className="text-center">
               <h2 className="font-semibold text-foreground">
                 {month.name} <small>{month.year}</small>
               </h2>
@@ -141,7 +137,10 @@ export default function AvailabilityIndexRoute() {
                 ))}
 
                 {month.days.map((day, dayIndex) => {
-                  const dayIsoString = new Date(day.date).toISOString()
+                  // Use UTC parsing to ensure dayIsoString matches the stored event date
+                  const [year, monthStr, dayNum] = day.date.split('-').map(Number)
+                  const dayIsoString = new Date(Date.UTC(year, monthStr - 1, dayNum)).toISOString()
+
                   const isEventDay = allEventDatesSet.has(dayIsoString)
                   const isToday = isCurrentMonth && currentDate.getDate() === day.day
                   const isBlackoutForUser = allBlackoutDates.some(d => d.date === dayIsoString)
@@ -152,7 +151,7 @@ export default function AvailabilityIndexRoute() {
                   return (
                     <DayComponent
                       key={day.date}
-                      day={day}
+                      day={{ ...day, dateIsoString: dayIsoString }}
                       isToday={isToday && isCurrentYear}
                       isBlackoutForUser={isBlackoutForUser}
                       isBlackoutForCurrentUser={isBlackoutForCurrentUser}
