@@ -226,7 +226,7 @@ function DeleteSong() {
           value: data.song.id,
         })}
         variant={dc.doubleCheck ? 'destructive' : 'destructive'}
-        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        status={fetcher.state !== 'idle' ? 'pending' : (fetcher?.state ?? 'idle')}
         size="sm"
       >
         <Icon name="avatar">{dc.doubleCheck ? `Are you sure?` : `Delete`}</Icon>

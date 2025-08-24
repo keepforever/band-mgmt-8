@@ -204,7 +204,7 @@ export default function SignupRoute() {
           <div className="flex items-center justify-between gap-6">
             <StatusButton
               className="w-full"
-              status={isPending ? 'pending' : form.status ?? 'idle'}
+              status={isPending ? 'pending' : (form.status ?? 'idle')}
               type="submit"
               disabled={isPending}
             >

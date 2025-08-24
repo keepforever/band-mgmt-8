@@ -7,7 +7,7 @@ export function BandsEmptyState() {
   return (
     <Card className="mx-auto w-full max-w-lg">
       <CardContent className="flex flex-col items-center gap-4 p-10">
-        <Icon name="rocket" className="h-40 w-40 fill-accent-two " />
+        <Icon name="rocket" className="h-40 w-40 fill-accent-two" />
 
         {/* <Icon name="monkey" className="h-40 w-40 bg-destructive fill-blue-200 stroke-red-400" /> */}
 

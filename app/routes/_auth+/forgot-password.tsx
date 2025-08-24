@@ -136,7 +136,7 @@ export default function ForgotPasswordRoute() {
             <div className="mt-6">
               <StatusButton
                 className="w-full"
-                status={forgotPassword.state === 'submitting' ? 'pending' : form.status ?? 'idle'}
+                status={forgotPassword.state === 'submitting' ? 'pending' : (form.status ?? 'idle')}
                 type="submit"
                 disabled={forgotPassword.state !== 'idle'}
               >

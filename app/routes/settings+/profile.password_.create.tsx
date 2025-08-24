@@ -111,7 +111,7 @@ export default function CreatePasswordRoute() {
         <Button variant="secondary" asChild>
           <Link to="..">Cancel</Link>
         </Button>
-        <StatusButton type="submit" status={isPending ? 'pending' : form.status ?? 'idle'}>
+        <StatusButton type="submit" status={isPending ? 'pending' : (form.status ?? 'idle')}>
           Create Password
         </StatusButton>
       </div>

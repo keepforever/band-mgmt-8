@@ -14,7 +14,7 @@
     "predev": "npm run build:icons --silent",
     "dev": "node ./server/dev-server.js",
     "prisma:studio": "prisma studio",
-    "format": "prettier --write .",
+    "format": "npx prettier --write \"**/*.{ts,tsx,css}\"",
     "lint": "eslint .",
     "setup": "npm run build && prisma generate && prisma migrate deploy && prisma db seed && playwright install",
     "start": "cross-env NODE_ENV=production node .",

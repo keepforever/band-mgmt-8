@@ -208,7 +208,7 @@ function DeleteVenue() {
           value: params?.venueId,
         })}
         variant={dc.doubleCheck ? 'destructive' : 'destructive'}
-        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        status={fetcher.state !== 'idle' ? 'pending' : (fetcher?.state ?? 'idle')}
         size="sm"
       >
         <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Venue`}</Icon>

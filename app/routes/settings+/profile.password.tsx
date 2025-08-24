@@ -154,7 +154,7 @@ export default function ChangePasswordRoute() {
         <Button variant="secondary" asChild>
           <Link to="..">Cancel</Link>
         </Button>
-        <StatusButton type="submit" status={isPending ? 'pending' : form.status ?? 'idle'}>
+        <StatusButton type="submit" status={isPending ? 'pending' : (form.status ?? 'idle')}>
           Change Password
         </StatusButton>
       </div>

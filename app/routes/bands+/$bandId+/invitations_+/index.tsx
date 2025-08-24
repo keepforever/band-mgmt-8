@@ -58,7 +58,7 @@ export default function BandIdIndex() {
                 Invitee: {invitation.invitee.name} - {invitation.invitee.email}
               </p>
             )}
-            <p className=" text-muted-foreground">Sent: {new Date(invitation.createdAt).toLocaleDateString()}</p>
+            <p className="text-muted-foreground">Sent: {new Date(invitation.createdAt).toLocaleDateString()}</p>
           </div>
         ))}
       </div>

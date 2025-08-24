@@ -215,7 +215,7 @@ function DeleteEvent() {
           value: data?.event?.id,
         })}
         variant={dc.doubleCheck ? 'destructive' : 'destructive'}
-        status={fetcher.state !== 'idle' ? 'pending' : fetcher?.state ?? 'idle'}
+        status={fetcher.state !== 'idle' ? 'pending' : (fetcher?.state ?? 'idle')}
         size="sm"
       >
         <Icon name="trash">{dc.doubleCheck ? `Are you sure?` : `Delete Event`}</Icon>

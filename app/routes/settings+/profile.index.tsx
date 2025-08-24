@@ -275,7 +275,7 @@ function UpdateProfile() {
           size="sm"
           name="intent"
           value={profileUpdateActionIntent}
-          status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'}
+          status={fetcher.state !== 'idle' ? 'pending' : (form.status ?? 'idle')}
         >
           Save changes
         </StatusButton>
@@ -314,7 +314,7 @@ function SignOutOfSessions() {
               value: signOutOfSessionsActionIntent,
             })}
             variant={dc.doubleCheck ? 'destructive' : 'default'}
-            status={fetcher.state !== 'idle' ? 'pending' : fetcher.data?.status ?? 'idle'}
+            status={fetcher.state !== 'idle' ? 'pending' : (fetcher.data?.status ?? 'idle')}
           >
             <Icon name="avatar">
               {dc.doubleCheck ? `Are you sure?` : `Sign out of ${otherSessionsCount} other sessions`}
