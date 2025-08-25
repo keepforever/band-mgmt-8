@@ -367,6 +367,85 @@ async function seed() {
   }
   console.timeEnd('🎵 Creating songs for KODY band...')
 
+  // Assign vocalists to songs
+  console.time('🎤 Assigning vocalists to songs...')
+
+  // Get all band members who could be vocalists
+  const bandMembers = await prisma.userBand.findMany({
+    where: { bandId: kodyBand.id },
+    include: { user: true },
+  })
+
+  // Track how many songs each member is assigned as lead vocalist for even distribution
+  const leadVocalistCounts: Record<string, number> = {}
+  bandMembers.forEach(member => {
+    leadVocalistCounts[member.userId] = 0
+  })
+
+  // Assign vocalists to songs - EVERY song gets at least a lead vocalist
+  for (let songIndex = 0; songIndex < createdSongs.length; songIndex++) {
+    const song = createdSongs[songIndex]
+
+    // Find the band member with the least lead vocal assignments for even distribution
+    const leadVocalist = bandMembers.reduce((prev, current) => {
+      return leadVocalistCounts[prev.userId] <= leadVocalistCounts[current.userId] ? prev : current
+    })
+
+    // Assign lead vocalist with lorem ipsum notes
+    await prisma.bandSongVocalist.create({
+      data: {
+        bandId: kodyBand.id,
+        songId: song.id,
+        userId: leadVocalist.userId,
+        vocalType: 'lead',
+        notes: faker.lorem.sentences(faker.number.int({ min: 1, max: 2 })),
+      },
+    })
+
+    // Increment the count for this lead vocalist
+    leadVocalistCounts[leadVocalist.userId]++
+
+    // 70% chance of having additional vocalists (harmony, backing, etc.)
+    if (faker.datatype.boolean(0.7)) {
+      // Randomly assign 1-2 additional vocalists
+      const numberOfAdditionalVocalists = faker.number.int({ min: 1, max: 2 })
+
+      // Get other band members (excluding the lead vocalist)
+      const otherMembers = bandMembers.filter(member => member.userId !== leadVocalist.userId)
+      const selectedAdditionalMembers = faker.helpers.arrayElements(
+        otherMembers,
+        Math.min(numberOfAdditionalVocalists, otherMembers.length),
+      )
+
+      for (const member of selectedAdditionalMembers) {
+        const vocalType = faker.helpers.arrayElement(['harmony', 'backing', 'duet'])
+
+        try {
+          await prisma.bandSongVocalist.create({
+            data: {
+              bandId: kodyBand.id,
+              songId: song.id,
+              userId: member.userId,
+              vocalType,
+              notes: faker.datatype.boolean(0.8) ? faker.lorem.sentence() : null,
+            },
+          })
+        } catch (error) {
+          // Skip if combination already exists (shouldn't happen with our logic, but just in case)
+          console.log(`Skipping duplicate vocalist assignment for song ${song.title}`)
+        }
+      }
+    }
+  }
+
+  // Log the distribution for debugging
+  console.log('Lead vocalist distribution:')
+  for (const member of bandMembers) {
+    console.log(`${member.user.name || member.user.username}: ${leadVocalistCounts[member.userId]} lead vocals`)
+  }
+
+  console.timeEnd('🎤 Assigning vocalists to songs...')
+
   // Create setlists with two sets containing 15 songs each
   console.time('📝 Creating setlists for KODY band...')
 
@@ -434,7 +513,7 @@ async function seed() {
   for (let index = 0; index < 5; index++) {
     const venue = await prisma.venue.create({
       data: {
-        location: faker.location.city() + ', ' + faker.location.stateAbbr(),
+        location: faker.location.city() + ', ' + faker.location.state({ abbreviated: true }),
         name: dummyVenueNames[index],
         capacity: faker.number.int({ min: 100, max: 1000 }),
         bands: {

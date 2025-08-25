@@ -27,15 +27,26 @@ const SongSchema = z.object({
   youtubeUrl: z.string().url().optional(),
   rating: z.number().min(0).max(5).optional(),
   status: z.string().optional(),
+  vocalists: z
+    .array(
+      z.object({
+        userId: z.string(),
+        vocalType: z.string(),
+        notes: z.string().optional(),
+      }),
+    )
+    .optional(),
 })
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   await requireUserBelongToBand(request, params)
   const songId = params.songId
+  const bandId = params.bandId
 
   invariantResponse(userId, 'You must be logged in to create a song')
   invariantResponse(songId, 'Song is required')
+  invariantResponse(bandId, 'Band is required')
 
   const song = await prisma.song.findUnique({
     where: {
@@ -53,11 +64,50 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           id: true,
         },
       },
+      bandSongs: {
+        where: {
+          bandId: bandId,
+        },
+        select: {
+          vocalists: {
+            select: {
+              id: true,
+              userId: true,
+              vocalType: true,
+              notes: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  // Get all band members for vocalist selection
+  const bandMembers = await prisma.userBand.findMany({
+    where: {
+      bandId: bandId,
+    },
+    select: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+        },
+      },
     },
   })
 
   return json({
     song,
+    bandMembers: bandMembers.map(member => member.user),
   })
 }
 
@@ -78,8 +128,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 })
   }
 
-  const { artist, title, youtubeUrl, rating, status } = submission.value
+  const { artist, title, youtubeUrl, rating, status, vocalists } = submission.value
 
+  // Update song details
   await prisma.song.update({
     where: {
       id: songId,
@@ -93,6 +144,32 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
   })
 
+  // Handle vocalist assignments
+  if (vocalists) {
+    // First, remove all existing vocalist assignments for this band-song
+    await prisma.bandSongVocalist.deleteMany({
+      where: {
+        bandId: bandId,
+        songId: songId,
+      },
+    })
+
+    // Then add new vocalist assignments
+    for (const vocalist of vocalists) {
+      if (vocalist.userId && vocalist.vocalType) {
+        await prisma.bandSongVocalist.create({
+          data: {
+            bandId: bandId,
+            songId: songId,
+            userId: vocalist.userId,
+            vocalType: vocalist.vocalType,
+            notes: vocalist.notes || null,
+          },
+        })
+      }
+    }
+  }
+
   return redirect(`/bands/${bandId}/songs`)
 }
 
@@ -104,6 +181,25 @@ export default function CreateSongRoute() {
   const location = useLocation()
   const submit = useSubmit()
   const params = useParams()
+
+  // Get current vocalists from the band song
+  const currentVocalists = loaderData.song?.bandSongs?.[0]?.vocalists || []
+
+  // Initialize vocalists state
+  const [vocalists, setVocalists] = useState<
+    Array<{
+      userId: string
+      vocalType: string
+      notes: string
+    }>
+  >(
+    currentVocalists.map(v => ({
+      userId: v.userId,
+      vocalType: v.vocalType || 'lead',
+      notes: v.notes || '',
+    })),
+  )
+
   const [form, fields] = useForm({
     id: 'update-song-form',
     constraint: getZodConstraint(SongSchema),
@@ -126,6 +222,19 @@ export default function CreateSongRoute() {
   const [lyricHtml, setLyricHtml] = useState<string>('')
 
   const isLyricUpdating = fetchers?.find(f => f.key === 'lyric')?.state === 'submitting'
+
+  // Helper functions for managing vocalists
+  const addVocalist = () => {
+    setVocalists(prev => [...prev, { userId: '', vocalType: 'lead', notes: '' }])
+  }
+
+  const removeVocalist = (index: number) => {
+    setVocalists(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateVocalist = (index: number, field: string, value: string) => {
+    setVocalists(prev => prev.map((vocalist, i) => (i === index ? { ...vocalist, [field]: value } : vocalist)))
+  }
 
   useEffect(() => {
     const fetchPdfUrl = async (id: string) => {
@@ -220,6 +329,80 @@ export default function CreateSongRoute() {
           inputProps={getInputProps(fields.status, { type: 'text' })}
           errors={fields.status.errors}
         />
+
+        {/* Vocalists Section */}
+        <div className="col-span-2">
+          <h3 className="mb-3 text-lg font-medium">Vocalists</h3>
+          {vocalists.map((vocalist, index) => (
+            <div key={index} className="mb-3 grid grid-cols-1 gap-2 rounded-md border p-3 sm:grid-cols-4">
+              {/* Band Member Selection */}
+              <div>
+                <label className="mb-1 block text-sm font-medium">Singer</label>
+                <select
+                  name={`vocalists[${index}].userId`}
+                  value={vocalist.userId}
+                  onChange={e => updateVocalist(index, 'userId', e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select a band member</option>
+                  {loaderData.bandMembers.map(member => (
+                    <option key={member.id} value={member.id}>
+                      {member.name || member.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Vocal Type Selection */}
+              <div>
+                <label className="mb-1 block text-sm font-medium">Role</label>
+                <select
+                  name={`vocalists[${index}].vocalType`}
+                  value={vocalist.vocalType}
+                  onChange={e => updateVocalist(index, 'vocalType', e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="lead">Lead</option>
+                  <option value="harmony">Harmony</option>
+                  <option value="backing">Backing</option>
+                  <option value="duet">Duet</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="mb-1 block text-sm font-medium">Notes</label>
+                <input
+                  type="text"
+                  name={`vocalists[${index}].notes`}
+                  value={vocalist.notes}
+                  onChange={e => updateVocalist(index, 'notes', e.target.value)}
+                  placeholder="Optional notes"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Remove Button */}
+              <div className="flex items-end">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => removeVocalist(index)}
+                  className="w-full"
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          ))}
+
+          <Button type="button" variant="outline" size="sm" onClick={addVocalist} className="mt-2">
+            + Add Vocalist
+          </Button>
+        </div>
       </Form>
 
       <input

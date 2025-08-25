@@ -16,10 +16,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   await requireUserBelongToBand(request, params)
   const songId = params.songId
+  const bandId = params.bandId
 
   // If either userId or songId is missing, terminate the request with an error.
   invariantResponse(userId, 'Unauthorized access')
   invariantResponse(songId, 'Missing song ID')
+  invariantResponse(bandId, 'Missing band ID')
 
   // Fetch song details using the provided songId.
   const song = await prisma.song.findUnique({
@@ -36,11 +38,35 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           id: true,
         },
       },
+      bandSongs: {
+        where: {
+          bandId: bandId,
+        },
+        select: {
+          vocalists: {
+            select: {
+              id: true,
+              vocalType: true,
+              notes: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   })
 
   // Ensure song was found; otherwise, terminate the request with an error.
   if (!song) throw new Error('Song not found')
+
+  // Extract vocalists from the band song relationship
+  const vocalists = song.bandSongs?.[0]?.vocalists || []
 
   // Initialize variables to hold lyrics or PDF URL based on content type.
   let pdfUrl = ''
@@ -58,7 +84,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pdfUrl = String(songLyricResp?.url)
   }
 
-  const payload = { song, lyricHtml, pdfUrl }
+  const payload = { song, lyricHtml, pdfUrl, vocalists }
 
   return json(payload)
 }
@@ -66,7 +92,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function SongDetails() {
   const submit = useSubmit()
   const params = useParams()
-  const { song, lyricHtml, pdfUrl } = useLoaderData<typeof loader>()
+  const { song, lyricHtml, pdfUrl, vocalists } = useLoaderData<typeof loader>()
   const revalidator = useRevalidator()
   const lyricUploadRef = useRef<HTMLInputElement>(null)
 
@@ -125,6 +151,52 @@ export default function SongDetails() {
             <dt className="text-sm font-medium leading-5">Status</dt>
             <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">{song?.status}</dd>
           </div>
+
+          {/* Vocalists Section */}
+          {vocalists && vocalists.length > 0 && (
+            <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt className="text-sm font-medium leading-6">Vocalists</dt>
+              <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">
+                <div className="space-y-3">
+                  {vocalists.map(vocalist => {
+                    // Color coding for different vocal types
+                    const getVocalTypeStyle = (type: string) => {
+                      switch (type.toLowerCase()) {
+                        case 'lead':
+                          return 'bg-green-50 text-green-700 ring-green-700/10 dark:bg-green-900/20 dark:text-green-400 dark:ring-green-400/20'
+                        case 'harmony':
+                          return 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-900/20 dark:text-blue-400 dark:ring-blue-400/20'
+                        case 'backing':
+                          return 'bg-purple-50 text-purple-700 ring-purple-700/10 dark:bg-purple-900/20 dark:text-purple-400 dark:ring-purple-400/20'
+                        case 'duet':
+                          return 'bg-orange-50 text-orange-700 ring-orange-700/10 dark:bg-orange-900/20 dark:text-orange-400 dark:ring-orange-400/20'
+                        default:
+                          return 'bg-gray-50 text-gray-700 ring-gray-700/10 dark:bg-gray-900/20 dark:text-gray-400 dark:ring-gray-400/20'
+                      }
+                    }
+
+                    return (
+                      <div key={vocalist.id} className="flex flex-col gap-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium text-foreground">
+                            {vocalist.user.name || vocalist.user.username}
+                          </span>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${getVocalTypeStyle(vocalist.vocalType || '')}`}
+                          >
+                            {vocalist.vocalType}
+                          </span>
+                        </div>
+                        {vocalist.notes && (
+                          <span className="ml-0 text-sm italic text-muted-foreground">{vocalist.notes}</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </dd>
+            </div>
+          )}
         </dl>
       </div>
 

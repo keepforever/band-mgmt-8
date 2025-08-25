@@ -31,6 +31,9 @@ model User {
   blackoutDates BlackoutDate[]
   Invitation    Invitation[]
 
+  // Relationship to track which songs this user sings
+  songVocals BandSongVocalist[]
+
   @@index([id])
 }
 
@@ -188,7 +191,31 @@ model BandSong {
   band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
 
+  // Relationship to track vocalists for this band-song combination
+  vocalists BandSongVocalist[]
+
   @@id([bandId, songId])
+}
+
+model BandSongVocalist {
+  id     String @id @default(cuid())
+  bandId String
+  songId String
+  userId String
+
+  // Optional fields for additional vocalist details
+  vocalType String? // e.g., "lead", "harmony", "backing", "duet"
+  notes     String? // Optional notes about this vocalist's role
+
+  // Relationships
+  bandSong BandSong @relation(fields: [bandId, songId], references: [bandId, songId], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure a user can only be assigned once per band-song combination with same vocal type
+  @@unique([bandId, songId, userId, vocalType])
+  // Indexes for performance
+  @@index([bandId, songId])
+  @@index([userId])
 }
 
 model Song {
