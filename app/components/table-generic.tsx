@@ -45,8 +45,10 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames, searchQ
     if (!column.sortable) return null
 
     const sortKey = column.sortKey || String(column.dataIndex)
+
+    // Only show icon for the currently active sort column
     if (currentSortBy !== sortKey) {
-      return <Icon name="arrow-right" size="xs" className="ml-2 rotate-90 opacity-50" />
+      return null
     }
 
     return currentSortDirection === 'asc' ? (
@@ -88,9 +90,17 @@ export function TableGeneric<T>({ columns, data, onRowClick, classNames, searchQ
                     onKeyDown={e => handleHeaderKeyDown(e, column)}
                     tabIndex={column.sortable ? 0 : undefined}
                   >
-                    <div className="flex items-center">
+                    <div className="group flex items-center">
                       {column.title}
                       {getSortIcon(column)}
+                      {/* Show hover indicator for sortable columns that aren't currently active */}
+                      {column.sortable && currentSortBy !== (column.sortKey || String(column.dataIndex)) && (
+                        <Icon
+                          name="arrow-right"
+                          size="xs"
+                          className="ml-2 rotate-90 opacity-0 transition-opacity group-hover:opacity-30"
+                        />
+                      )}
                     </div>
                   </th>
                 ))}
