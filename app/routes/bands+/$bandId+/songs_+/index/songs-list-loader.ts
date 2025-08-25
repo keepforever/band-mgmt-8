@@ -12,7 +12,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const q = url.searchParams.get('q')
   const status = url.searchParams.get('status')
   const sortBy = url.searchParams.get('sortBy') || 'title'
-  const sortOrder = (url.searchParams.get('sortOrder') || 'asc') as Prisma.SortOrder
+  const sortDirection = (url.searchParams.get('sortDirection') || 'asc') as Prisma.SortOrder
 
   const bandId = params.bandId
 
@@ -87,13 +87,13 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         ? {
             song: {
               SetSong: {
-                _count: sortOrder,
+                _count: sortDirection,
               },
             },
           }
         : {
             song: {
-              [sortBy]: sortOrder,
+              [sortBy]: sortDirection,
             },
           },
     select: {
@@ -126,7 +126,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     const sortedSongs = songs.sort((a, b) => {
       const countA = a.song._count.SetSong
       const countB = b.song._count.SetSong
-      return sortOrder === 'asc' ? countA - countB : countB - countA
+      return sortDirection === 'asc' ? countA - countB : countB - countA
     })
 
     return json({

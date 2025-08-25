@@ -18,6 +18,7 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Title',
       dataIndex: 'title',
+      sortable: true,
       render: (value, record) => (
         <div className="flex items-center gap-2">
           <span>{value}</span>
@@ -51,10 +52,12 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Artist',
       dataIndex: 'artist',
+      sortable: true,
     },
     {
       title: 'Used',
       dataIndex: 'setSongCount',
+      sortable: true,
       render: value => (
         <div
           className="flex items-center gap-2"
@@ -67,10 +70,12 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Rating',
       dataIndex: 'rating',
+      sortable: true,
     },
     {
       title: 'Status',
       dataIndex: 'status',
+      sortable: true,
     },
   ]
 

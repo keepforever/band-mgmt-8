@@ -38,18 +38,6 @@ export default function SongsIndexRoute() {
     setSearchParams(newSearchParams)
   }
 
-  const handleSortFieldChange = (sortBy: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set('sortBy', sortBy)
-    setSearchParams(newSearchParams)
-  }
-
-  const handleSortOrderChange = (sortOrder: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set('sortOrder', sortOrder)
-    setSearchParams(newSearchParams)
-  }
-
   if (!songs.length && !searchParams.get('q')) {
     return (
       <EmptyStateGeneric
@@ -136,45 +124,6 @@ export default function SongsIndexRoute() {
                   <DropdownMenuItem onSelect={() => handleStatusChange('in-progress')}>In Progress</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleStatusChange('ready')}>Ready</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleStatusChange('proposed')}>Proposed</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuPortal>
-            </DropdownMenu>
-          </div>
-
-          {/* Sort By */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="sortBy">Sort By</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="sm">
-                  {searchParams.get('sortBy') || 'Title'}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
-                  <DropdownMenuItem onSelect={() => handleSortFieldChange('title')}>Title</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleSortFieldChange('artist')}>Artist</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleSortFieldChange('status')}>Status</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleSortFieldChange('rating')}>Rating</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleSortFieldChange('setSongCount')}>Times Used</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuPortal>
-            </DropdownMenu>
-          </div>
-
-          {/* Sort Order */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="sortOrder">Sort Order</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="sm">
-                  {searchParams.get('sortOrder') === 'desc' ? 'Descending' : 'Ascending'}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuContent sideOffset={8} alignOffset={-20} align="start">
-                  <DropdownMenuItem onSelect={() => handleSortOrderChange('asc')}>Ascending</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleSortOrderChange('desc')}>Descending</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuPortal>
             </DropdownMenu>
