@@ -232,41 +232,124 @@ async function seed() {
   })
   console.timeEnd('🎸 Created KODY band...')
 
-  // Create Techs for Kody Band
-  // console.time('🔧 Creating techs for KODY band...')
-  // const serviceTypes = ['Sound Engineer', 'Lighting Technician', 'Stage Manager', 'Roadie', 'Security']
+  // Add more members to Kody's band for a robust representation
+  console.time('👥 Adding more members to KODY band...')
 
-  // for (let i = 0; i < serviceTypes.length; i++) {
-  //   await prisma.tech.create({
-  //     data: {
-  //       name: faker.person.firstName() + ' ' + faker.person.lastName(),
-  //       contactInfo: faker.internet.email(),
-  //       email: faker.internet.email(),
-  //       phone: faker.phone.number(),
-  //       rate: faker.number.int({ min: 100, max: 500 }),
-  //       serviceType: {
-  //         create: {
-  //           name: serviceTypes[i],
-  //           description: `Responsible for ${serviceTypes[i].toLowerCase()} at events.`,
-  //         },
-  //       },
-  //       bands: {
-  //         create: [{ bandId: kodyBand.id }],
-  //       },
-  //     },
-  //   })
-  // }
-  // console.timeEnd('🔧 Creating techs for KODY band...')
+  const bandMemberData = [
+    { name: 'Alex Johnson', instrument: 'Guitar', email: 'alex.johnson@example.com' },
+    { name: 'Sarah Williams', instrument: 'Bass', email: 'sarah.williams@example.com' },
+    { name: 'Mike Chen', instrument: 'Drums', email: 'mike.chen@example.com' },
+    { name: 'Emma Davis', instrument: 'Keyboard', email: 'emma.davis@example.com' },
+    { name: 'Jordan Smith', instrument: 'Vocals', email: 'jordan.smith@example.com' },
+  ]
 
-  // Create 5 songs associated with the created band
-  for (let i = 0; i < 5; i++) {
-    await prisma.song.create({
+  for (const memberData of bandMemberData) {
+    // Create user for band member
+    const bandMember = await prisma.user.create({
       data: {
-        artist: faker.music.genre(), // Random artist name
-        title: faker.music.songName(), // Random song title
-        youtubeUrl: 'https://youtu.be/i8dh9gDzmz8', // Random URL, assuming songs might have a video link
-        rating: faker.number.int({ min: 0, max: 5 }), // Random rating
-        status: 'active', // Assuming a default status for the song
+        name: memberData.name,
+        username: memberData.name.toLowerCase().replace(' ', '_'),
+        email: memberData.email,
+        password: { create: createPassword('password123') },
+        roles: { connect: { name: 'user' } },
+        // Add some blackout dates for variety
+        blackoutDates: {
+          create: Array.from({ length: faker.number.int({ min: 2, max: 5 }) }, () => ({
+            date: getFutureDate(),
+            reason: faker.datatype.boolean(0.7) ? faker.lorem.sentence() : null,
+          })),
+        },
+      },
+    })
+
+    // Connect the user to Kody's band
+    await prisma.userBand.create({
+      data: {
+        userId: bandMember.id,
+        bandId: kodyBand.id,
+        isAdmin: faker.datatype.boolean(0.2), // 20% chance of being admin
+        instrument: memberData.instrument,
+      },
+    })
+  }
+
+  console.timeEnd('👥 Adding more members to KODY band...')
+
+  // Create Techs for Kody Band
+  console.time('🔧 Creating techs for KODY band...')
+
+  // Get existing service types
+  const serviceTypes = await prisma.serviceType.findMany()
+
+  // Create 2-3 techs for each service type
+  for (const serviceType of serviceTypes) {
+    const techCount = faker.number.int({ min: 2, max: 3 })
+
+    for (let i = 0; i < techCount; i++) {
+      const tech = await prisma.tech.create({
+        data: {
+          name: faker.person.firstName() + ' ' + faker.person.lastName(),
+          contactInfo: faker.lorem.sentence(),
+          email: faker.internet.email(),
+          phone: faker.phone.number(),
+          rate: faker.number.int({ min: 150, max: 800 }),
+          serviceTypeId: serviceType.id,
+        },
+      })
+
+      // Connect tech to Kody's band
+      await prisma.bandTech.create({
+        data: {
+          bandId: kodyBand.id,
+          techId: tech.id,
+        },
+      })
+    }
+  }
+
+  console.timeEnd('🔧 Creating techs for KODY band...')
+
+  // Create 50 songs associated with the created band
+  console.time('🎵 Creating songs for KODY band...')
+  const createdSongs = []
+
+  // Popular rock/pop artists for more realistic data
+  const popularArtists = [
+    'The Beatles',
+    'Led Zeppelin',
+    'Queen',
+    'Pink Floyd',
+    'The Rolling Stones',
+    'AC/DC',
+    'Eagles',
+    'Fleetwood Mac',
+    'Nirvana',
+    'Pearl Jam',
+    'Red Hot Chili Peppers',
+    'U2',
+    'Radiohead',
+    'Foo Fighters',
+    'Green Day',
+    'Coldplay',
+    'The Killers',
+    'Arctic Monkeys',
+    'Muse',
+    'Oasis',
+  ]
+
+  const musicKeys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+  const statuses = ['active', 'learning', 'retired', 'considering']
+
+  for (let i = 0; i < 50; i++) {
+    const song = await prisma.song.create({
+      data: {
+        artist: popularArtists[faker.number.int({ min: 0, max: popularArtists.length - 1 })],
+        title: faker.music.songName(),
+        youtubeUrl: faker.datatype.boolean(0.7) ? `https://youtu.be/${faker.string.alphanumeric(11)}` : null,
+        rating: faker.number.int({ min: 1, max: 5 }),
+        status: statuses[faker.number.int({ min: 0, max: statuses.length - 1 })],
+        key: faker.datatype.boolean(0.6) ? musicKeys[faker.number.int({ min: 0, max: musicKeys.length - 1 })] : null,
+        capoPosition: faker.datatype.boolean(0.3) ? faker.number.int({ min: 1, max: 7 }) : null,
         bandSongs: {
           create: [
             {
@@ -280,14 +363,78 @@ async function seed() {
         },
       },
     })
+    createdSongs.push(song)
   }
+  console.timeEnd('🎵 Creating songs for KODY band...')
+
+  // Create setlists with two sets containing 15 songs each
+  console.time('📝 Creating setlists for KODY band...')
+
+  const setlistNames = [
+    'Summer Tour 2024',
+    'Acoustic Evening',
+    'Rock Classics Night',
+    'Festival Ready',
+    'Birthday Bash Set',
+  ]
+
+  // Create 3 different setlists
+  for (let setlistIndex = 0; setlistIndex < 3; setlistIndex++) {
+    // Shuffle the songs array to ensure variety
+    const shuffledSongs = [...createdSongs].sort(() => Math.random() - 0.5)
+
+    const setlist = await prisma.setlist.create({
+      data: {
+        name: setlistNames[setlistIndex],
+      },
+    })
+
+    // Connect the setlist to the band
+    await prisma.bandSetlist.create({
+      data: {
+        bandId: kodyBand.id,
+        setlistId: setlist.id,
+        notes: faker.datatype.boolean(0.5) ? faker.lorem.sentence() : null,
+      },
+    })
+
+    // Create two sets for this setlist
+    for (let setIndex = 0; setIndex < 2; setIndex++) {
+      const setName = setIndex === 0 ? 'Set 1' : 'Set 2'
+
+      const set = await prisma.set.create({
+        data: {
+          name: setName,
+          setlistId: setlist.id,
+          order: setIndex + 1,
+        },
+      })
+
+      // Add 15 unique songs to each set
+      const startIndex = setIndex * 15
+      const endIndex = startIndex + 15
+      const songsForThisSet = shuffledSongs.slice(startIndex, endIndex)
+
+      for (let songOrderIndex = 0; songOrderIndex < songsForThisSet.length; songOrderIndex++) {
+        await prisma.setSong.create({
+          data: {
+            setId: set.id,
+            songId: songsForThisSet[songOrderIndex].id,
+            order: songOrderIndex + 1,
+          },
+        })
+      }
+    }
+  }
+
+  console.timeEnd('📝 Creating setlists for KODY band...')
 
   console.time('🏟️ Created venues...')
   const venueIds = []
   for (let index = 0; index < 5; index++) {
-    const tempId = await prisma.venue.create({
+    const venue = await prisma.venue.create({
       data: {
-        location: faker.location.city(),
+        location: faker.location.city() + ', ' + faker.location.stateAbbr(),
         name: dummyVenueNames[index],
         capacity: faker.number.int({ min: 100, max: 1000 }),
         bands: {
@@ -301,34 +448,84 @@ async function seed() {
             },
           ],
         },
+        contacts: {
+          create: [
+            {
+              name: faker.person.fullName(),
+              email: faker.internet.email(),
+              phone: faker.phone.number(),
+              isPrimary: true,
+              status: 'active',
+            },
+            // Sometimes add a secondary contact
+            ...(faker.datatype.boolean(0.6)
+              ? [
+                  {
+                    name: faker.person.fullName(),
+                    email: faker.internet.email(),
+                    phone: faker.phone.number(),
+                    isPrimary: false,
+                    status: 'active',
+                  },
+                ]
+              : []),
+          ],
+        },
       },
     })
-    venueIds.push(tempId.id)
+    venueIds.push(venue.id)
   }
   console.timeEnd('🏟️ Created venues...')
 
   // create events
   console.time('📅 Created events...')
-  for (let index = 0; index < 2; index++) {
+
+  // Get some setlists to associate with events
+  const availableSetlists = await prisma.setlist.findMany({
+    where: {
+      BandSetlist: {
+        some: {
+          bandId: kodyBand.id,
+        },
+      },
+    },
+  })
+
+  for (let index = 0; index < 5; index++) {
+    // Increased from 2 to 5 events
     const tempDate = faker.date.future({
       refDate: new Date(),
       years: 0.5,
     })
     const datePayload = new Date(Date.UTC(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()))
 
-    await prisma.event.create({
+    const event = await prisma.event.create({
       data: {
         date: datePayload,
-        // location: faker.location.city(),
         requiresPASystem: faker.datatype.boolean(),
-        payment: faker.number.int({ min: 750, max: 1300 }),
-        name: dummyEventNames[index],
-        startEndTime: '8:00 PM - 11:00 PM',
+        payment: faker.number.int({ min: 750, max: 2500 }),
+        name: index < dummyEventNames.length ? dummyEventNames[index] : capitalLorem() + ' Concert',
+        startEndTime: faker.helpers.arrayElement([
+          '7:00 PM - 10:00 PM',
+          '8:00 PM - 11:00 PM',
+          '9:00 PM - 12:00 AM',
+          '6:00 PM - 9:00 PM',
+        ]),
+        notes: faker.datatype.boolean(0.4) ? faker.lorem.paragraph() : null,
         venue: {
           connect: {
             id: venueIds[faker.number.int({ min: 0, max: venueIds.length - 1 })],
           },
         },
+        // Connect some events to setlists
+        setlist:
+          availableSetlists.length > 0 && faker.datatype.boolean(0.6)
+            ? {
+                connect: {
+                  id: availableSetlists[faker.number.int({ min: 0, max: availableSetlists.length - 1 })].id,
+                },
+              }
+            : undefined,
         bands: {
           create: [
             {
@@ -342,6 +539,34 @@ async function seed() {
         },
       },
     })
+
+    // Add some techs to events
+    if (faker.datatype.boolean(0.7)) {
+      // 70% chance of having techs
+      const availableTechs = await prisma.tech.findMany({
+        where: {
+          bands: {
+            some: {
+              bandId: kodyBand.id,
+            },
+          },
+        },
+        take: faker.number.int({ min: 1, max: 3 }),
+      })
+
+      for (const tech of availableTechs) {
+        await prisma.eventTech
+          .create({
+            data: {
+              eventId: event.id,
+              techId: tech.id,
+            },
+          })
+          .catch(() => {
+            // Ignore if already exists (duplicate key)
+          })
+      }
+    }
   }
   console.timeEnd('📅 Created events...')
 
