@@ -20,7 +20,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
           },
         },
       },
-      select: { title: true, id: true, artist: true },
+      select: {
+        title: true,
+        id: true,
+        artist: true,
+        bandSongs: {
+          where: {
+            bandId: url.searchParams.get('bandId') || undefined,
+          },
+          select: {
+            vocalists: {
+              where: {
+                vocalType: 'lead',
+              },
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })) || []
 
   return json({ songs } as const)

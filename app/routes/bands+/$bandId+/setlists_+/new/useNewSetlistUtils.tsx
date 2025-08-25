@@ -22,6 +22,7 @@ export default function useNewSetlistUtils() {
                 id: setSong.song.id,
                 title: setSong.song.title,
                 artist: setSong.song.artist,
+                bandSongs: setSong.song.bandSongs,
                 order: setSong.order,
               }))
               .sort((a, b) => a.order - b.order),

@@ -33,6 +33,27 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                     id: true,
                     title: true,
                     artist: true,
+                    bandSongs: {
+                      where: {
+                        bandId: params.bandId,
+                      },
+                      select: {
+                        vocalists: {
+                          where: {
+                            vocalType: 'lead',
+                          },
+                          select: {
+                            user: {
+                              select: {
+                                id: true,
+                                name: true,
+                                username: true,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -48,6 +69,27 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       id: true,
       title: true,
       artist: true,
+      bandSongs: {
+        where: {
+          bandId: params.bandId,
+        },
+        select: {
+          vocalists: {
+            where: {
+              vocalType: 'lead',
+            },
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
     where: {
       bandSongs: {

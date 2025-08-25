@@ -16,7 +16,78 @@ import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, formatDate } from '#app/utils/misc'
 
-export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist'>>
+// Color palette for vocalist badges (20 distinct hex colors)
+const VOCALIST_COLORS = [
+  '#FF6B6B',
+  '#4ECDC4',
+  '#45B7D1',
+  '#96CEB4',
+  '#FECA57',
+  '#FF9FF3',
+  '#54A0FF',
+  '#5F27CD',
+  '#00D2D3',
+  '#FF9F43',
+  '#EE5A24',
+  '#0ABDE3',
+  '#10AC84',
+  '#7BED9F',
+  '#70A1FF',
+  '#FFA502',
+  '#FF6348',
+  '#2ED573',
+  '#5352ED',
+  '#FF3838',
+]
+
+// Helper function to get initials from a name
+const getInitials = (name: string): string => {
+  if (!name) return '?'
+  const words = name.trim().split(' ')
+  if (words.length === 1) {
+    return words[0].charAt(0).toUpperCase()
+  }
+  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase()
+}
+
+// Helper function to get a consistent color for a user
+const getUserColor = (userId: string): string => {
+  // Create a simple hash from the userId to get consistent colors
+  let hash = 0
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return VOCALIST_COLORS[Math.abs(hash) % VOCALIST_COLORS.length]
+}
+
+// Vocalist Badge Component
+const VocalistBadge = ({ user }: { user: { id: string; name: string | null; username: string } }) => {
+  const displayName = user.name || user.username
+  const initials = getInitials(displayName)
+  const color = getUserColor(user.id)
+
+  return (
+    <span
+      className="inline-flex h-4 w-4 items-center justify-center rounded-full text-xs font-medium text-white"
+      style={{ backgroundColor: color }}
+      title={displayName}
+    >
+      {initials}
+    </span>
+  )
+}
+
+export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist'>> & {
+  bandSongs?: Array<{
+    vocalists?: Array<{
+      user: {
+        id: string
+        name: string | null
+        username: string
+      }
+    }>
+  }>
+}
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireUserId(request)
@@ -27,6 +98,27 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       id: true,
       title: true,
       artist: true,
+      bandSongs: {
+        where: {
+          bandId: params.bandId,
+        },
+        select: {
+          vocalists: {
+            where: {
+              vocalType: 'lead',
+            },
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
     where: {
       bandSongs: {
@@ -84,6 +176,27 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                   id: true,
                   title: true,
                   artist: true,
+                  bandSongs: {
+                    where: {
+                      bandId: params.bandId,
+                    },
+                    select: {
+                      vocalists: {
+                        where: {
+                          vocalType: 'lead',
+                        },
+                        select: {
+                          user: {
+                            select: {
+                              id: true,
+                              name: true,
+                              username: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -211,6 +324,7 @@ export default function EditSetlistRoute() {
               id: setSong.song.id,
               title: setSong.song.title,
               artist: setSong.song.artist,
+              bandSongs: setSong.song.bandSongs,
               order: setSong.order,
             }))
             .sort((a, b) => a.order - b.order),
@@ -450,6 +564,13 @@ export default function EditSetlistRoute() {
                                   <div className="flex flex-wrap items-center gap-2">
                                     <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                     <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
+
+                                    {/* Lead Vocalist Badges */}
+                                    <div className="flex items-center gap-1">
+                                      {song.bandSongs?.[0]?.vocalists?.map(vocalist => (
+                                        <VocalistBadge key={vocalist.user.id} user={vocalist.user} />
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
                               )
@@ -504,6 +625,13 @@ export default function EditSetlistRoute() {
                                   </span>
                                   <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                   <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
+
+                                  {/* Lead Vocalist Badges */}
+                                  <div className="flex items-center gap-1">
+                                    {song.bandSongs?.[0]?.vocalists?.map(vocalist => (
+                                      <VocalistBadge key={vocalist.user.id} user={vocalist.user} />
+                                    ))}
+                                  </div>
                                 </div>
                                 <Button
                                   type="button"
