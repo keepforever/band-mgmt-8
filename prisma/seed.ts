@@ -341,13 +341,18 @@ async function seed() {
   const statuses = ['active', 'learning', 'retired', 'considering']
 
   for (let i = 0; i < 50; i++) {
+    // Most songs (95%) should have "ready" status, only 5% get other statuses
+    const statusToUse = faker.datatype.boolean(0.95)
+      ? 'ready'
+      : statuses[faker.number.int({ min: 0, max: statuses.length - 1 })]
+
     const song = await prisma.song.create({
       data: {
         artist: popularArtists[faker.number.int({ min: 0, max: popularArtists.length - 1 })],
         title: faker.music.songName(),
         youtubeUrl: faker.datatype.boolean(0.7) ? `https://youtu.be/${faker.string.alphanumeric(11)}` : null,
         rating: faker.number.int({ min: 1, max: 5 }),
-        status: statuses[faker.number.int({ min: 0, max: statuses.length - 1 })],
+        status: statusToUse,
         key: faker.datatype.boolean(0.6) ? musicKeys[faker.number.int({ min: 0, max: musicKeys.length - 1 })] : null,
         capoPosition: faker.datatype.boolean(0.3) ? faker.number.int({ min: 1, max: 7 }) : null,
         bandSongs: {

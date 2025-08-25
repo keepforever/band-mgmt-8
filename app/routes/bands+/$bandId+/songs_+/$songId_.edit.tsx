@@ -144,17 +144,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
   })
 
-  // Handle vocalist assignments
-  if (vocalists) {
-    // First, remove all existing vocalist assignments for this band-song
-    await prisma.bandSongVocalist.deleteMany({
-      where: {
-        bandId: bandId,
-        songId: songId,
-      },
-    })
+  // Handle vocalist assignments - always clear existing first
+  // First, remove all existing vocalist assignments for this band-song
+  await prisma.bandSongVocalist.deleteMany({
+    where: {
+      bandId: bandId,
+      songId: songId,
+    },
+  })
 
-    // Then add new vocalist assignments
+  // Then add new vocalist assignments if any exist
+  if (vocalists && vocalists.length > 0) {
     for (const vocalist of vocalists) {
       if (vocalist.userId && vocalist.vocalType) {
         await prisma.bandSongVocalist.create({

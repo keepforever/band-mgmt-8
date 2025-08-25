@@ -59,6 +59,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
   })
 
+  console.log(`
+  #########################################################
+                  songs
+  #########################################################
+  `)
+
+  console.log('\n', '\n', `songs = `, songs, '\n', '\n')
+
+  console.log(`
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  #########################################################
+  `)
+
   const events = await prisma.event.findMany({
     where: {
       bands: {
