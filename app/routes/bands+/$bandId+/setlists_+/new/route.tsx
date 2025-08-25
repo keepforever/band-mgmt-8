@@ -187,6 +187,9 @@ export default function CreateSetlistRoute() {
                                 className="mb-2 flex items-center justify-between rounded-lg bg-secondary bg-opacity-40 p-2"
                               >
                                 <div className="flex flex-wrap items-center gap-1">
+                                  <span className="rounded bg-gray-500 bg-opacity-60 px-2 py-1 text-body-2xs font-bold text-muted-foreground">
+                                    {index + 1}
+                                  </span>
                                   <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                   <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                   {/* <span>{song.id.slice(-4)}</span> */}

@@ -489,6 +489,8 @@ export default function EditSetlistRoute() {
                       {col.list.map((song: Song, index) => (
                         <Draggable draggableId={song?.id} index={index} key={song?.id}>
                           {provided => {
+                            // Draggable Song
+
                             return (
                               <div
                                 ref={provided.innerRef}
@@ -497,6 +499,9 @@ export default function EditSetlistRoute() {
                                 className="mb-2 flex items-center justify-between rounded-lg bg-gray-600 bg-opacity-40 p-2"
                               >
                                 <div className="flex flex-wrap items-center gap-2">
+                                  <span className="rounded bg-gray-500 bg-opacity-60 px-2 py-1 text-body-2xs font-bold text-muted-foreground">
+                                    {index + 1}
+                                  </span>
                                   <h5 className="text-body-xs font-bold text-secondary-foreground">{song.title}</h5>
                                   <span className="text-body-2xs text-muted-foreground">{song.artist}</span>
                                 </div>
