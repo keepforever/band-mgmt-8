@@ -55,26 +55,3 @@ export const dummyServiceTypes = [
   { name: 'Video Technician', description: 'Operates video recording and editing equipment.' },
   { name: 'Photography Technician', description: 'Takes professional photographs at events.' },
 ]
-
-export const VOCALIST_COLORS = [
-  '#FF6B6B',
-  '#4ECDC4',
-  '#45B7D1',
-  '#96CEB4',
-  '#FECA57',
-  '#FF9FF3',
-  '#54A0FF',
-  '#5F27CD',
-  '#00D2D3',
-  '#FF9F43',
-  '#EE5A24',
-  '#0ABDE3',
-  '#10AC84',
-  '#7BED9F',
-  '#70A1FF',
-  '#FFA502',
-  '#FF6348',
-  '#2ED573',
-  '#5352ED',
-  '#FF3838',
-]
