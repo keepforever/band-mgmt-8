@@ -91,11 +91,13 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
               },
             },
           }
-        : {
-            song: {
-              [sortBy]: sortDirection,
+        : sortBy === 'vocalist'
+          ? undefined // We'll handle vocalist sorting manually
+          : {
+              song: {
+                [sortBy]: sortDirection,
+              },
             },
-          },
     select: {
       song: {
         select: {
@@ -134,13 +136,30 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     },
   })
 
-  // If sorting by setSongCount, we need to sort manually since Prisma doesn't support
-  // sorting by aggregates in this case
-  if (sortBy === 'setSongCount') {
+  // If sorting by setSongCount or vocalist, we need to sort manually
+  if (sortBy === 'setSongCount' || sortBy === 'vocalist') {
     const sortedSongs = songs.sort((a, b) => {
-      const countA = a.song._count.SetSong
-      const countB = b.song._count.SetSong
-      return sortDirection === 'asc' ? countA - countB : countB - countA
+      if (sortBy === 'setSongCount') {
+        const countA = a.song._count.SetSong
+        const countB = b.song._count.SetSong
+        return sortDirection === 'asc' ? countA - countB : countB - countA
+      }
+
+      if (sortBy === 'vocalist') {
+        // Get the first vocalist's name (or empty string if no vocalist)
+        const vocalistA = a.vocalists[0]?.user?.name || a.vocalists[0]?.user?.username || ''
+        const vocalistB = b.vocalists[0]?.user?.name || b.vocalists[0]?.user?.username || ''
+
+        // Sort alphabetically, with empty strings at the end
+        if (vocalistA === '' && vocalistB === '') return 0
+        if (vocalistA === '') return 1
+        if (vocalistB === '') return -1
+
+        const comparison = vocalistA.localeCompare(vocalistB)
+        return sortDirection === 'asc' ? comparison : -comparison
+      }
+
+      return 0
     })
 
     return json({

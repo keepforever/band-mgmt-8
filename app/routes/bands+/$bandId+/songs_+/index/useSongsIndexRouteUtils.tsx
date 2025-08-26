@@ -65,7 +65,8 @@ export const useSongsIndexRouteUtils = () => {
     {
       title: 'Lead Vocalist',
       dataIndex: 'vocalists',
-      sortable: false,
+      sortable: true,
+      sortKey: 'vocalist',
       render: (value: MySong['vocalists']) => (
         <div className="flex items-center gap-1">
           {value?.map(vocalist => <VocalistBadge key={vocalist.user.id} user={vocalist.user} compact />)}
