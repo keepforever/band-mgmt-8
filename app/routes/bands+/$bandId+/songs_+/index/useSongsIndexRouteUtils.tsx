@@ -2,11 +2,19 @@ import { type Song } from '@prisma/client'
 import { Link, useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { type Column } from '#app/components/table-generic'
 import { Icon } from '#app/components/ui/icon.js'
+import { VocalistBadge } from '#app/components/vocalist-badge.tsx'
 import { type loader } from './songs-list-loader'
 
 type MySong = Pick<Song, 'id' | 'title' | 'artist' | 'status' | 'rating' | 'youtubeUrl'> & {
   lyricId?: string
   setSongCount?: number
+  vocalists?: Array<{
+    user: {
+      id: string
+      name: string | null
+      username: string
+    }
+  }>
 }
 
 export const useSongsIndexRouteUtils = () => {
@@ -53,6 +61,17 @@ export const useSongsIndexRouteUtils = () => {
       title: 'Artist',
       dataIndex: 'artist',
       sortable: true,
+    },
+    {
+      title: 'Lead Vocalist',
+      dataIndex: 'vocalists',
+      sortable: false,
+      render: (value: MySong['vocalists']) => (
+        <div className="flex items-center gap-1">
+          {value?.map(vocalist => <VocalistBadge key={vocalist.user.id} user={vocalist.user} compact />)}
+          {!value?.length && <span className="text-sm text-muted-foreground">-</span>}
+        </div>
+      ),
     },
     {
       title: 'Used',

@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSpinDelay } from 'spin-delay'
 import { extendTailwindMerge } from 'tailwind-merge'
+import { VOCALIST_COLORS } from '#prisma/seed-utils/constants.ts'
 import { extendedTheme } from './extended-theme.ts'
 
 export function getUserImgSrc(imageId?: string | null) {
@@ -316,4 +317,24 @@ export function formatDollars(amount?: number | null) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
+}
+
+// Helper function to get initials from a name
+export const getInitials = (name: string): string => {
+  if (!name) return '?'
+  const words = name.trim().split(' ')
+  if (words.length === 1) {
+    return words[0].charAt(0).toUpperCase()
+  }
+  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase()
+}
+
+// Helper function to get a consistent color for a user
+export const getUserColor = (userId: string): string => {
+  // Create a simple hash from the userId to get consistent colors
+  let hash = 0
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return VOCALIST_COLORS[Math.abs(hash) % VOCALIST_COLORS.length]
 }

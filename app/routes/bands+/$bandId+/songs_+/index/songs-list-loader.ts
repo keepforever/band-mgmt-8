@@ -117,6 +117,20 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
           },
         },
       },
+      vocalists: {
+        where: {
+          vocalType: 'lead',
+        },
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
+        },
+      },
     },
   })
 
@@ -134,6 +148,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         ...song.song,
         lyricId: song?.song?.lyrics?.id || '',
         setSongCount: song.song._count.SetSong,
+        vocalists: song.vocalists,
       })),
       songCount,
     })
@@ -144,6 +159,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       ...song.song,
       lyricId: song?.song?.lyrics?.id || '',
       setSongCount: song.song._count.SetSong,
+      vocalists: song.vocalists,
     })),
     songCount,
   })
