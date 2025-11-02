@@ -1,12 +1,12 @@
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, json, useLoaderData, useNavigate, useParams, useSearchParams } from '@remix-run/react'
-import * as d3 from 'd3'
 import { startOfDay, subDays } from 'date-fns'
-import { useEffect, useRef } from 'react'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { HeaderWithActions } from '#app/components/header-with-actions.js'
 import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '#app/components/ui/chart'
 import { Checkbox } from '#app/components/ui/checkbox.js'
 import { Icon } from '#app/components/ui/icon.js'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
@@ -21,18 +21,13 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const futureOnly = url.searchParams.get('futureOnly') === 'true'
   const now = startOfDay(subDays(new Date(), 1))
 
-  const events = await prisma.event.findMany({
+  const baseQuery = {
     where: {
       bands: {
         some: {
           bandId,
         },
       },
-      ...(futureOnly && {
-        date: {
-          gte: now,
-        },
-      }),
     },
     select: {
       id: true,
@@ -69,112 +64,104 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       },
     },
     orderBy: {
-      date: 'asc',
+      date: 'asc' as const,
+    },
+  }
+
+  // Get filtered events (for table and first chart)
+  const events = await prisma.event.findMany({
+    ...baseQuery,
+    where: {
+      ...baseQuery.where,
+      ...(futureOnly && {
+        date: {
+          gte: now,
+        },
+      }),
     },
   })
 
-  return json({ events })
+  // Get all-time events (for second chart)
+  const allTimeEvents = await prisma.event.findMany(baseQuery)
+
+  return json({ events, allTimeEvents })
 }
 
-const EventBarChart = ({ events }: { events: Array<{ venue: string; payment: number }> }) => {
-  const svgRef = useRef<SVGSVGElement | null>(null)
+const chartConfig: ChartConfig = {
+  payment: {
+    label: 'Payment',
+    color: 'hsl(var(--accent-two))',
+  },
+}
 
-  useEffect(() => {
-    const svg = d3.select(svgRef.current)
-    const width = 800
-    const height = 400
-    const margin = { top: 20, right: 30, bottom: 100, left: 50 }
-
-    svg.attr('width', width).attr('height', height)
-
-    const x = d3
-      .scaleBand()
-      .domain(events.map(event => event.venue))
-      .range([margin.left, width - margin.right])
-      .padding(0.1)
-
-    const y = d3
-      .scaleLinear()
-      .domain([0, d3.max(events, event => event.payment)!])
-      .nice()
-      .range([height - margin.bottom, margin.top])
-
-    const truncateText = (text: string, maxLength: number) => {
-      return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text
-    }
-
-    svg
-      .append('g')
-      .attr('transform', `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).tickFormat((d: string) => truncateText(d, 10)))
-      .selectAll('text')
-      .attr('transform', 'rotate(-45)')
-      .style('text-anchor', 'end')
-      .attr('dy', '1em')
-      .style('font-size', '14px')
-
-    svg
-      .append('g')
-      .attr('transform', `translate(${margin.left},0)`)
-      .call(
-        d3
-          .axisLeft(y)
-          .ticks(4)
-          .tickFormat(d => `$${d}`),
-      )
-      .selectAll('text')
-      .style('font-size', '14px')
-
-    const tooltip = d3
-      .select('body')
-      .append('div')
-      .style('position', 'absolute')
-      .style('background', 'white')
-      .style('border', '1px solid #ccc')
-      .style('padding', '5px')
-      .style('display', 'none')
-      .style('pointer-events', 'none')
-
-    svg
-      .append('g')
-      .selectAll('rect')
-      .data(events)
-      .enter()
-      .append('rect')
-      .attr('x', event => x(event.venue)!)
-      .attr('y', event => y(event.payment))
-      .attr('height', event => y(0) - y(event.payment))
-      .attr('width', x.bandwidth())
-      .attr('fill', `hsl(var(--accent-two))`)
-      .on('mouseover', (event, d) => {
-        tooltip.style('display', 'block').html(`${d.venue}<br><strong>$${d.payment}</strong>`)
-      })
-      .on('mousemove', event => {
-        tooltip.style('left', `${event.pageX + 5}px`).style('top', `${event.pageY - 28}px`)
-      })
-      .on('mouseout', () => {
-        tooltip.style('display', 'none')
-      })
-  }, [events])
-
+const EventBarCharts = ({
+  events,
+  allTimeEvents,
+}: {
+  events: Array<{ venue: string; payment: number }>
+  allTimeEvents: Array<{ venue: string; payment: number }>
+}) => {
   return (
-    <div className="mt-6 flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Event Payments by Venue</h2>
-      <svg ref={svgRef} className="hidden md:block"></svg>
+    <div className="mt-6 space-y-8">
+      {/* Filtered Events Chart */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold">Current View: Event Payments by Venue</h2>
+          <p className="text-sm text-muted-foreground">Shows payments based on your current filter settings</p>
+        </div>
+        {events.length > 0 ? (
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <BarChart data={events}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="venue" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={100} interval={0} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={value => `$${value}`} />
+              <ChartTooltip content={<ChartTooltipContent />} formatter={value => [`$${value}`, 'Payment']} />
+              <Bar dataKey="payment" fill="var(--color-payment)" />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex h-[300px] items-center justify-center rounded-lg border bg-muted/10">
+            <p className="text-muted-foreground">No events in current view</p>
+          </div>
+        )}
+      </div>
+
+      {/* All Time Events Chart */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold">All Time: Event Payments by Venue</h2>
+          <p className="text-sm text-muted-foreground">Complete payment history across all events</p>
+        </div>
+        {allTimeEvents.length > 0 ? (
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <BarChart data={allTimeEvents}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="venue" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={100} interval={0} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={value => `$${value}`} />
+              <ChartTooltip content={<ChartTooltipContent />} formatter={value => [`$${value}`, 'Payment']} />
+              <Bar dataKey="payment" fill="var(--color-payment)" />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex h-[300px] items-center justify-center rounded-lg border bg-muted/10">
+            <p className="text-muted-foreground">No events found</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
 export default function EventsRoute() {
-  const { events } = useLoaderData<typeof loader>()
+  const { events, allTimeEvents } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const bandId = useParams().bandId
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Group and sum payments by venue
+  // Group and sum payments by venue for filtered events
   const venuePayments = events.reduce(
     (acc, event) => {
-      const venueName = String(event?.venue?.name)
+      const venueName = String(event?.venue?.name || 'Unknown Venue')
       if (!acc[venueName]) {
         acc[venueName] = 0
       }
@@ -184,10 +171,28 @@ export default function EventsRoute() {
     {} as Record<string, number>,
   )
 
-  // Convert the object to an array of objects
+  // Group and sum payments by venue for all-time events
+  const allTimeVenuePayments = allTimeEvents.reduce(
+    (acc, event) => {
+      const venueName = String(event?.venue?.name || 'Unknown Venue')
+      if (!acc[venueName]) {
+        acc[venueName] = 0
+      }
+      acc[venueName] += event.payment || 0
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  // Convert the objects to arrays of objects
   const venuePaymentArray = Object.keys(venuePayments).map(venue => ({
     venue,
     payment: venuePayments[venue],
+  }))
+
+  const allTimeVenuePaymentArray = Object.keys(allTimeVenuePayments).map(venue => ({
+    venue,
+    payment: allTimeVenuePayments[venue],
   }))
 
   const columns: Column<(typeof events)[0]>[] = [
@@ -313,7 +318,7 @@ export default function EventsRoute() {
 
         <TableGeneric columns={columns} data={events} onRowClick={event => navigate(`${event.id}/view`)} />
 
-        <EventBarChart events={venuePaymentArray} />
+        <EventBarCharts events={venuePaymentArray} allTimeEvents={allTimeVenuePaymentArray} />
       </div>
     </>
   )
