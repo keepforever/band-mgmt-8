@@ -27,6 +27,14 @@ export const bandSubNavigation = [
     icon: TempIcon,
     current: false,
   },
+  {
+    name: 'Thunderdome',
+    to: '/thunderdome',
+    toCreate: false,
+    toCreateUrl: '',
+    icon: TempIcon,
+    current: false,
+  },
 
   {
     name: 'Venues',
