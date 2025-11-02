@@ -1,3 +1,10 @@
+export const SONG_STATUS_OPTIONS = [
+  { value: 'ready', label: 'Ready' },
+  { value: 'suspended', label: 'Suspended' },
+  { value: 'proposed', label: 'Proposed' },
+  { value: 'in-progress', label: 'In Progress' },
+] as const
+
 export const songs = [
   {},
   // {

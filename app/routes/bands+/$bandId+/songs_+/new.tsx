@@ -13,10 +13,11 @@ import {
 import { Form, Link, useActionData, useLoaderData, useParams, useRouteError } from '@remix-run/react'
 import { useState } from 'react'
 import { z } from 'zod'
-import { Field, ErrorList } from '#app/components/forms.tsx'
+import { Field, ErrorList, SelectField } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.js'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { MAX_SONG_COUNT } from '#app/constants/entity-allowances'
+import { SONG_STATUS_OPTIONS } from '#app/constants/songs'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn } from '#app/utils/misc'
@@ -233,12 +234,18 @@ export default function CreateSongRoute() {
           inputProps={getInputProps(fields.rating, { type: 'number' })}
           errors={fields.rating.errors}
         />
-        <Field
-          className="col-span-2 sm:col-span-1"
-          labelProps={{ htmlFor: fields.status.id, children: 'Status' }}
-          inputProps={getInputProps(fields.status, { type: 'text' })}
-          errors={fields.status.errors}
-        />
+        <div className="col-span-2 sm:col-span-1">
+          <SelectField
+            label="Status"
+            options={[...SONG_STATUS_OPTIONS]}
+            getOptionValue={option => option.value}
+            getOptionLabel={option => option.label}
+            selectProps={{
+              ...getInputProps(fields.status, { type: 'text' }),
+            }}
+            errors={fields.status.errors}
+          />
+        </div>
 
         {/* Vocalists Section */}
         <div className="col-span-2">
@@ -247,38 +254,39 @@ export default function CreateSongRoute() {
             <div key={index} className="mb-3 grid grid-cols-1 gap-2 rounded-md border p-3 sm:grid-cols-4">
               {/* Band Member Selection */}
               <div>
-                <label className="mb-1 block text-sm font-medium">Singer</label>
-                <select
-                  name={`vocalists[${index}].userId`}
-                  value={vocalist.userId}
-                  onChange={e => updateVocalist(index, 'userId', e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select a band member</option>
-                  {loaderData.bandMembers.map(member => (
-                    <option key={member.id} value={member.id}>
-                      {member.name || member.username}
-                    </option>
-                  ))}
-                </select>
+                <SelectField
+                  label="Singer"
+                  options={[{ id: '', name: 'Select a band member' }, ...loaderData.bandMembers]}
+                  getOptionValue={option => option.id}
+                  getOptionLabel={option => option.name || option.username || 'Select a band member'}
+                  selectProps={{
+                    name: `vocalists[${index}].userId`,
+                    value: vocalist.userId,
+                    onChange: e => updateVocalist(index, 'userId', e.target.value),
+                    required: true,
+                  }}
+                />
               </div>
 
               {/* Vocal Type Selection */}
               <div>
-                <label className="mb-1 block text-sm font-medium">Role</label>
-                <select
-                  name={`vocalists[${index}].vocalType`}
-                  value={vocalist.vocalType}
-                  onChange={e => updateVocalist(index, 'vocalType', e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="lead">Lead</option>
-                  <option value="harmony">Harmony</option>
-                  <option value="backing">Backing</option>
-                  <option value="duet">Duet</option>
-                </select>
+                <SelectField
+                  label="Role"
+                  options={[
+                    { value: 'lead', label: 'Lead' },
+                    { value: 'harmony', label: 'Harmony' },
+                    { value: 'backing', label: 'Backing' },
+                    { value: 'duet', label: 'Duet' },
+                  ]}
+                  getOptionValue={option => option.value}
+                  getOptionLabel={option => option.label}
+                  selectProps={{
+                    name: `vocalists[${index}].vocalType`,
+                    value: vocalist.vocalType,
+                    onChange: e => updateVocalist(index, 'vocalType', e.target.value),
+                    required: true,
+                  }}
+                />
               </div>
 
               {/* Notes */}
