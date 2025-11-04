@@ -2,10 +2,33 @@ import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData, useParams } from '@remix-run/react'
 import { EmptyStateGeneric } from '#app/components/empty-state-generic.js'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.js'
+import { HeaderWithActions } from '#app/components/header-with-actions.js'
+import { TableGeneric, type Column } from '#app/components/table-generic'
 import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon.js'
 import { VocalistBadge } from '#app/components/vocalist-badge.tsx'
 import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server.js'
 import { prisma } from '#app/utils/db.server'
+
+type ProposedSong = {
+  id: string
+  title: string
+  artist: string
+  status: string | null
+  rating: number | null
+  youtubeUrl: string | null
+  lyricId: string
+  setSongCount: number
+  vocalists: Array<{
+    vocalType: string | null
+    notes: string | null
+    user: {
+      id: string
+      name: string | null
+      username: string
+    }
+  }>
+}
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request)
@@ -89,118 +112,139 @@ export default function ThunderdomeIndex() {
     )
   }
 
-  return (
-    <div className="container mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="mb-6 rounded-lg border bg-card p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">The Thunderdome</h1>
-            <p className="text-muted-foreground">
-              {proposedSongCount} proposed {proposedSongCount === 1 ? 'song' : 'songs'} awaiting review
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button asChild variant="secondary" size="sm">
-              <Link to={`/bands/${params.bandId}/songs`}>All Songs</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to={`/bands/${params.bandId}/songs/new`}>Propose Song</Link>
-            </Button>
-          </div>
+  const columns: Column<ProposedSong>[] = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      sortable: true,
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          <span>{value}</span>
+
+          {!!record.lyricId && (
+            <Link
+              to={`/bands/${params?.bandId}/songs/${record.id}/lyrics`}
+              className="flex items-center text-muted-foreground"
+              onClick={e => e.stopPropagation()}
+            >
+              <Icon name="file-text" className="h-5 w-5 text-hyperlink hover:text-hyperlink-hover" />
+            </Link>
+          )}
+
+          <a
+            href={
+              record.youtubeUrl ||
+              `https://www.google.com/search?q=${encodeURIComponent(`${record.title} by ${record.artist}`)}+youtube+video`
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center"
+            title="Search YouTube for Song Video"
+            onClick={e => e.stopPropagation()}
+          >
+            <Icon name="youtube" className="h-6 w-6 stroke-hyperlink text-background hover:stroke-hyperlink-hover" />
+          </a>
         </div>
-      </div>
-
-      {/* Songs List */}
-      <div className="space-y-2">
-        {proposedSongs.map(song => (
-          <div key={song.id} className="rounded border bg-card p-3 shadow-sm transition-shadow hover:shadow-md">
-            {/* Compact Song Layout */}
-            <div className="flex flex-col gap-2">
-              {/* Title Row */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="truncate font-semibold text-foreground">{song.title}</h3>
-                    <span className="text-xs text-muted-foreground">by {song.artist}</span>
-                    <span className="rounded bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
-                      Proposed
-                    </span>
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
-                  <span>★ {song.rating ? `${song.rating}/5` : 'Unrated'}</span>
-                  <span>Sets: {song.setSongCount || 0}</span>
-                </div>
-              </div>
-
-              {/* Vocalists Row */}
-              {song.vocalists.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Vocalists:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {song.vocalists.map((vocalist, vIndex) => (
-                      <div key={`${vocalist.user.id}-${vIndex}`} className="flex items-center gap-1">
-                        <VocalistBadge user={vocalist.user} compact />
-                        <span className="text-xs text-muted-foreground">({vocalist.vocalType})</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Notes Row */}
-              {song.vocalists.some(v => v.notes) && (
-                <div className="text-xs">
-                  {song.vocalists
-                    .filter(v => v.notes)
-                    .map((vocalist, vIndex) => (
-                      <div key={`${vocalist.user.id}-notes-${vIndex}`} className="text-muted-foreground">
-                        <span className="font-medium">{vocalist.user.name || vocalist.user.username}:</span>{' '}
-                        <span className="italic">"{vocalist.notes}"</span>
-                      </div>
-                    ))}
-                </div>
-              )}
-
-              {/* Actions Row */}
-              <div className="flex flex-wrap gap-1">
-                <Button asChild size="sm" className="h-7 text-xs">
-                  <Link to={`/bands/${params.bandId}/songs/${song.id}/edit`}>Edit</Link>
-                </Button>
-                <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                  <Link to={`/bands/${params.bandId}/songs/${song.id}/view`}>View</Link>
-                </Button>
-                {song.lyricId && (
-                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                    <Link to={`/bands/${params.bandId}/songs/${song.id}/lyrics`}>Lyrics</Link>
-                  </Button>
-                )}
-                {song.youtubeUrl ? (
-                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                    <a href={song.youtubeUrl} target="_blank" rel="noreferrer">
-                      YouTube
-                    </a>
-                  </Button>
-                ) : (
-                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                    <a
-                      href={`https://www.google.com/search?q=${encodeURIComponent(
-                        `${song.title} by ${song.artist}`,
-                      )}+youtube+video`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Search YouTube
-                    </a>
-                  </Button>
-                )}
-              </div>
+      ),
+    },
+    {
+      title: 'Artist',
+      dataIndex: 'artist',
+      sortable: true,
+    },
+    {
+      title: 'Vocalists',
+      dataIndex: 'vocalists',
+      sortable: true,
+      sortKey: 'vocalist',
+      render: (value: ProposedSong['vocalists']) => (
+        <div className="space-y-1">
+          {value?.map((vocalist, vIndex) => (
+            <div key={`${vocalist.user.id}-${vIndex}`} className="flex items-center gap-2">
+              <VocalistBadge user={vocalist.user} compact />
+              {vocalist.vocalType && <span className="text-xs text-muted-foreground">({vocalist.vocalType})</span>}
             </div>
-          </div>
-        ))}
+          ))}
+          {!value?.length && <span className="text-sm text-muted-foreground">-</span>}
+        </div>
+      ),
+    },
+    {
+      title: 'Notes',
+      dataIndex: 'vocalists',
+      render: (value: ProposedSong['vocalists']) => (
+        <div className="max-w-xs">
+          {value
+            ?.filter(v => v.notes)
+            .map((vocalist, vIndex) => (
+              <div key={`${vocalist.user.id}-notes-${vIndex}`} className="mb-1 text-xs text-muted-foreground">
+                <span className="font-medium">{vocalist.user.name || vocalist.user.username}:</span>{' '}
+                <span className="italic">"{vocalist.notes}"</span>
+              </div>
+            ))}
+          {!value?.some(v => v.notes) && <span className="text-sm text-muted-foreground">-</span>}
+        </div>
+      ),
+    },
+    {
+      title: 'Used',
+      dataIndex: 'setSongCount',
+      sortable: true,
+      render: value => (
+        <div
+          className="flex items-center gap-2"
+          title={`Indicates that this song is used in ${value} different Set Lists`}
+        >
+          {value || 0}
+        </div>
+      ),
+    },
+    {
+      title: 'Rating',
+      dataIndex: 'rating',
+      sortable: true,
+      render: value => <span>{value ? `${value}/5` : 'Unrated'}</span>,
+    },
+    {
+      title: 'Actions',
+      dataIndex: 'id',
+      render: (value, record) => (
+        <div className="flex flex-wrap gap-1">
+          <Button asChild size="sm" className="h-7 text-xs">
+            <Link to={`/bands/${params.bandId}/songs/${record.id}/edit`} onClick={e => e.stopPropagation()}>
+              Edit
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+            <Link to={`/bands/${params.bandId}/songs/${record.id}/view`} onClick={e => e.stopPropagation()}>
+              View
+            </Link>
+          </Button>
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <div>
+      <HeaderWithActions title={`The Thunderdome (${proposedSongCount})`}>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button asChild variant="secondary" size="sm">
+            <Link to={`/bands/${params.bandId}/songs`}>All Songs</Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link to={`/bands/${params.bandId}/songs/new`}>Propose Song</Link>
+          </Button>
+        </div>
+      </HeaderWithActions>
+
+      <div className="mt-6">
+        <TableGeneric
+          columns={columns}
+          data={proposedSongs}
+          onRowClick={record => (window.location.href = `/bands/${params?.bandId}/songs/${record.id}/view`)}
+          classNames="max-w-full"
+        />
       </div>
     </div>
   )
