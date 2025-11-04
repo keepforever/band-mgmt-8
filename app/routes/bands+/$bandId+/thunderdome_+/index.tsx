@@ -112,98 +112,92 @@ export default function ThunderdomeIndex() {
       </div>
 
       {/* Songs List */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {proposedSongs.map(song => (
-          <div key={song.id} className="rounded-lg border bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
-            {/* Song Header */}
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground">{song.title}</h3>
-                <p className="text-muted-foreground">by {song.artist}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
-                  Proposed
-                </span>
-              </div>
-            </div>
+          <div key={song.id} className="rounded border bg-card p-3 shadow-sm transition-shadow hover:shadow-md">
+            {/* Compact Song Layout */}
+            <div className="flex flex-col gap-2">
+              {/* Title Row */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="truncate font-semibold text-foreground">{song.title}</h3>
+                    <span className="text-xs text-muted-foreground">by {song.artist}</span>
+                    <span className="rounded bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
+                      Proposed
+                    </span>
+                  </div>
+                </div>
 
-            {/* Song Details */}
-            <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div>
-                <div className="text-xs text-muted-foreground">Rating</div>
-                <div className="font-medium">{song.rating ? `${song.rating}/5` : 'Unrated'}</div>
+                {/* Quick Stats */}
+                <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+                  <span>★ {song.rating ? `${song.rating}/5` : 'Unrated'}</span>
+                  <span>Sets: {song.setSongCount || 0}</span>
+                </div>
               </div>
-              <div>
-                <div className="text-xs text-muted-foreground">Used in Sets</div>
-                <div className="font-medium">{song.setSongCount || 0}</div>
-              </div>
-              <div className="col-span-2 sm:col-span-2">
-                <div className="text-xs text-muted-foreground">Vocalists</div>
-                <div className="flex flex-wrap gap-1">
-                  {song.vocalists.length > 0 ? (
-                    song.vocalists.map((vocalist, vIndex) => (
+
+              {/* Vocalists Row */}
+              {song.vocalists.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Vocalists:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {song.vocalists.map((vocalist, vIndex) => (
                       <div key={`${vocalist.user.id}-${vIndex}`} className="flex items-center gap-1">
                         <VocalistBadge user={vocalist.user} compact />
                         <span className="text-xs text-muted-foreground">({vocalist.vocalType})</span>
                       </div>
-                    ))
-                  ) : (
-                    <span className="text-sm text-muted-foreground">None assigned</span>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
 
-            {/* Notes */}
-            {song.vocalists.some(v => v.notes) && (
-              <div className="mb-4">
-                <div className="text-xs text-muted-foreground">Notes</div>
-                <div className="space-y-1">
+              {/* Notes Row */}
+              {song.vocalists.some(v => v.notes) && (
+                <div className="text-xs">
                   {song.vocalists
                     .filter(v => v.notes)
                     .map((vocalist, vIndex) => (
-                      <div key={`${vocalist.user.id}-notes-${vIndex}`} className="text-sm">
+                      <div key={`${vocalist.user.id}-notes-${vIndex}`} className="text-muted-foreground">
                         <span className="font-medium">{vocalist.user.name || vocalist.user.username}:</span>{' '}
-                        <span className="italic text-muted-foreground">"{vocalist.notes}"</span>
+                        <span className="italic">"{vocalist.notes}"</span>
                       </div>
                     ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Actions */}
-            <div className="flex flex-wrap gap-2">
-              <Button asChild size="sm">
-                <Link to={`/bands/${params.bandId}/songs/${song.id}/edit`}>Edit</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link to={`/bands/${params.bandId}/songs/${song.id}/view`}>View</Link>
-              </Button>
-              {song.lyricId && (
-                <Button asChild variant="outline" size="sm">
-                  <Link to={`/bands/${params.bandId}/songs/${song.id}/lyrics`}>Lyrics</Link>
+              {/* Actions Row */}
+              <div className="flex flex-wrap gap-1">
+                <Button asChild size="sm" className="h-7 text-xs">
+                  <Link to={`/bands/${params.bandId}/songs/${song.id}/edit`}>Edit</Link>
                 </Button>
-              )}
-              {song.youtubeUrl ? (
-                <Button asChild variant="outline" size="sm">
-                  <a href={song.youtubeUrl} target="_blank" rel="noreferrer">
-                    YouTube
-                  </a>
+                <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+                  <Link to={`/bands/${params.bandId}/songs/${song.id}/view`}>View</Link>
                 </Button>
-              ) : (
-                <Button asChild variant="outline" size="sm">
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(
-                      `${song.title} by ${song.artist}`,
-                    )}+youtube+video`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Search YouTube
-                  </a>
-                </Button>
-              )}
+                {song.lyricId && (
+                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+                    <Link to={`/bands/${params.bandId}/songs/${song.id}/lyrics`}>Lyrics</Link>
+                  </Button>
+                )}
+                {song.youtubeUrl ? (
+                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+                    <a href={song.youtubeUrl} target="_blank" rel="noreferrer">
+                      YouTube
+                    </a>
+                  </Button>
+                ) : (
+                  <Button asChild variant="outline" size="sm" className="h-7 text-xs">
+                    <a
+                      href={`https://www.google.com/search?q=${encodeURIComponent(
+                        `${song.title} by ${song.artist}`,
+                      )}+youtube+video`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Search YouTube
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         ))}
