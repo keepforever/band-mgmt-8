@@ -17,7 +17,7 @@ import { requireUserBelongToBand, requireUserId } from '#app/utils/auth.server'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn, formatDate } from '#app/utils/misc'
 
-export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist'>> & {
+export type Song = SerializeFrom<Pick<SongModel, 'id' | 'title' | 'artist' | 'status'>> & {
   bandSongs?: Array<{
     vocalists?: Array<{
       user: {
@@ -38,6 +38,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       id: true,
       title: true,
       artist: true,
+      status: true,
       bandSongs: {
         where: {
           bandId: params.bandId,
@@ -116,6 +117,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                   id: true,
                   title: true,
                   artist: true,
+                  status: true,
                   bandSongs: {
                     where: {
                       bandId: params.bandId,
@@ -264,6 +266,7 @@ export default function EditSetlistRoute() {
               id: setSong.song.id,
               title: setSong.song.title,
               artist: setSong.song.artist,
+              status: setSong.song.status,
               bandSongs: setSong.song.bandSongs,
               order: setSong.order,
             }))
@@ -274,9 +277,10 @@ export default function EditSetlistRoute() {
 
     const bucketColumn = {
       order: setlistPayload.length,
-      // filter out any songs that are already in a set, sort songs alphabetically
+      // filter out any songs that are already in a set, only show ready songs, sort songs alphabetically
       list: songs
         .filter(song => !setlistPayload.some(set => set.list.some(setSong => setSong.id === song.id)))
+        .filter(song => song.status === 'ready')
         .sort((a, b) => a.title.localeCompare(b.title)),
     }
 
@@ -408,10 +412,10 @@ export default function EditSetlistRoute() {
           const newList = column.list.filter(song => song?.id !== songId)
           return { ...column, list: newList }
         }
-        // if last column, add song back to bucket
+        // if last column, add song back to bucket (only if it's ready status)
         if (column.order === currentColumns.length - 1) {
           const song = songs.find(s => s.id === songId)
-          if (song) {
+          if (song && song.status === 'ready') {
             const newList = [...column.list, song]
             return { ...column, list: newList }
           }

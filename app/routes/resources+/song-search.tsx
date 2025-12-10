@@ -14,6 +14,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     (await prisma.song.findMany({
       where: {
         title: { contains: url.searchParams.get('q') || '' },
+        status: 'ready',
         bandSongs: {
           some: {
             bandId: url.searchParams.get('bandId') || undefined,
@@ -24,6 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         title: true,
         id: true,
         artist: true,
+        status: true,
         bandSongs: {
           where: {
             bandId: url.searchParams.get('bandId') || undefined,

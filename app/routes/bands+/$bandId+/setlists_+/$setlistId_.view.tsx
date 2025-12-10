@@ -125,6 +125,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const unusedBandSongs = await prisma.bandSong.findMany({
     where: {
       bandId: params.bandId,
+      song: {
+        status: 'ready',
+      },
       NOT: {
         songId: {
           in: setlist?.sets.flatMap(set => set.setSongs.map(setSong => setSong.song.id)),

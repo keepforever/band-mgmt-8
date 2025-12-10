@@ -22,6 +22,7 @@ export default function useNewSetlistUtils() {
                 id: setSong.song.id,
                 title: setSong.song.title,
                 artist: setSong.song.artist,
+                status: setSong.song.status,
                 bandSongs: setSong.song.bandSongs,
                 order: setSong.order,
               }))

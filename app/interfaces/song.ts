@@ -1,6 +1,6 @@
 import { type Song } from '@prisma/client'
 
-export type SongSelectorItem = Pick<Song, 'id' | 'title' | 'artist'> & {
+export type SongSelectorItem = Pick<Song, 'id' | 'title' | 'artist' | 'status'> & {
   bandSongs?: Array<{
     vocalists?: Array<{
       user: {

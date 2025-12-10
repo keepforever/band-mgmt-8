@@ -33,6 +33,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                     id: true,
                     title: true,
                     artist: true,
+                    status: true,
                     bandSongs: {
                       where: {
                         bandId: params.bandId,
@@ -69,6 +70,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       id: true,
       title: true,
       artist: true,
+      status: true,
       bandSongs: {
         where: {
           bandId: params.bandId,
